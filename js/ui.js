@@ -1,0 +1,157 @@
+/**
+ * UI utilities — routing, rendering helpers, animations, modals.
+ */
+const UI = (() => {
+  const app = () => document.getElementById("app");
+
+  /* Simple hash-based router */
+  let _routes = {};
+
+  function registerRoute(hash, renderFn) {
+    _routes[hash] = renderFn;
+  }
+
+  function navigate(hash) {
+    window.location.hash = hash;
+  }
+
+  function handleRoute() {
+    const hash = window.location.hash || "#dashboard";
+    const route = _routes[hash] || _routes[hash.split("/")[0]];
+    if (route) {
+      route();
+    } else {
+      _routes["#dashboard"]();
+    }
+  }
+
+  function init() {
+    window.addEventListener("hashchange", handleRoute);
+    handleRoute();
+  }
+
+  /* Rendering */
+  function render(html) {
+    app().innerHTML = html;
+    app().scrollTop = 0;
+  }
+
+  function $(selector) {
+    return document.querySelector(selector);
+  }
+
+  function $$(selector) {
+    return document.querySelectorAll(selector);
+  }
+
+  /* Confetti / celebration */
+  function celebrate(levelName, emoji) {
+    const overlay = document.createElement("div");
+    overlay.className = "celebrate-overlay";
+    overlay.innerHTML = `
+      <div class="celebrate-content">
+        <div class="celebrate-burst"></div>
+        <div class="celebrate-emoji">${emoji}</div>
+        <h2>Level Up!</h2>
+        <p>You're now a <strong>${levelName}</strong></p>
+        <button class="btn btn-primary" onclick="this.closest('.celebrate-overlay').remove()">Amazing!</button>
+      </div>
+      ${generateConfettiHTML()}
+    `;
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.classList.add("active"), 10);
+  }
+
+  function generateConfettiHTML() {
+    const colors = ["#f59e0b", "#ef4444", "#10b981", "#6366f1", "#ec4899", "#14b8a6"];
+    let html = "";
+    for (let i = 0; i < 50; i++) {
+      const color = colors[i % colors.length];
+      const left = Math.random() * 100;
+      const delay = Math.random() * 0.5;
+      const size = 6 + Math.random() * 8;
+      html += `<div class="confetti-piece" style="left:${left}%;animation-delay:${delay}s;background:${color};width:${size}px;height:${size}px;"></div>`;
+    }
+    return html;
+  }
+
+  /* Toast notification */
+  function toast(message, type = "info") {
+    const el = document.createElement("div");
+    el.className = `toast toast-${type}`;
+    el.textContent = message;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("show"));
+    setTimeout(() => {
+      el.classList.remove("show");
+      setTimeout(() => el.remove(), 300);
+    }, 2000);
+  }
+
+  /* XP popup */
+  function showXP(amount, x, y) {
+    const el = document.createElement("div");
+    el.className = "xp-popup";
+    el.textContent = `+${amount} XP`;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    document.body.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("animate"));
+    setTimeout(() => el.remove(), 800);
+  }
+
+  /* Time formatting */
+  function timeAgo(timestamp) {
+    if (!timestamp) return "Never";
+    const diff = Date.now() - timestamp;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  /* Nav bar */
+  function navBar(active = "") {
+    return `
+      <nav class="nav-bar">
+        <button class="nav-btn ${active === "dashboard" ? "active" : ""}" onclick="UI.navigate('#dashboard')">
+          <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+        </button>
+        <button class="nav-btn ${active === "alphabet" ? "active" : ""}" onclick="UI.navigate('#alphabet')">
+          <span class="nav-icon">ก</span><span class="nav-label">Alphabet</span>
+        </button>
+        <button class="nav-btn ${active === "settings" ? "active" : ""}" onclick="UI.navigate('#settings')">
+          <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+        </button>
+      </nav>
+    `;
+  }
+
+  /* Progress ring SVG */
+  function progressRing(percent, size = 48, stroke = 4) {
+    const r = (size - stroke) / 2;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (percent * circ);
+    return `
+      <svg class="progress-ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="${stroke}"/>
+        <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--accent)" stroke-width="${stroke}"
+          stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"
+          transform="rotate(-90 ${size/2} ${size/2})" style="transition: stroke-dashoffset 0.6s ease;"/>
+      </svg>
+    `;
+  }
+
+  /* Apply theme */
+  function applyTheme() {
+    document.body.classList.toggle("light-mode", !State.get().darkMode);
+  }
+
+  return {
+    registerRoute, navigate, handleRoute, init, render, $, $$,
+    celebrate, toast, showXP, timeAgo, navBar, progressRing, applyTheme
+  };
+})();
