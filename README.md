@@ -5,17 +5,75 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 ## Features
 
 - **Vocabulary Matching** — Tap-to-match Thai↔English with streak bonuses and XP
-- **Flashcards** — 3D flip cards with spaced repetition
+- **Flashcards** — 3D flip cards with spaced repetition + contextual example sentences
 - **Speed Round** — 60-second timed quiz with multipliers and personal bests
+- **Thai Clock** — Live analog + digital clock displaying time in formal Thai, colloquial Thai, and English, plus Thai date with Buddhist Era year
+- **Tell-the-Time Game** — Practice reading clocks in Thai (Easy: formal 24h, Hard: colloquial 6-period system)
+- **Thai Tones** — Learn all 5 Thai tones with SVG pitch contour diagrams, mnemonics, and recognition quiz
+- **Sentence Builder** — Arrange Thai words into correct sentence order (unlocks at 60% topic mastery)
 - **Thai Alphabet** — Browse 44 consonants (by class), 21 vowels, 4 tone marks + recognition quizzes
 - **Gamification** — XP, levels (Seedling→Fluent), daily streaks, level-up celebrations
 - **Persistent** — All progress saved in localStorage
+
+## Topics
+
+| # | Topic | Pairs | Type |
+|---|-------|-------|------|
+| 1 | 📅 Days of the Week | 7 | Core |
+| 2 | ⏰ Time Expressions | 8 | Core |
+| 3 | 🌸 Months (Jan–Jun) | 6 | Core |
+| 4 | 🍂 Months (Jul–Dec) | 6 | Core |
+| 5 | 🌅 Time of Day | 7 | Core |
+| 6 | 🔢 Numbers 1–10 | 10 | Core |
+| 7 | 👨‍👩‍👧 Family | 14 | Core |
+| 8 | 💬 Basic Verbs | 10 | Core |
+| 9 | 🔢 Numbers — Extended | 16 | Core |
+| 10 | 🍽️ Kitchenware | 10 | Core |
+| 11 | 🍉 Fruits | 10 | Core |
+| 12 | 🍖 Meats & Proteins | 8 | Core |
+| 13 | 🧄 Ingredients | 10 | Core |
+| 14 | 🍜 Ordering Food | 8 | Situation |
+| 15 | 🛺 Getting Around | 8 | Situation |
+| 16 | 🏪 7-Eleven | 8 | Situation |
 
 ## Setup
 
 1. Clone or download this folder
 2. Open `index.html` in a browser
 3. That's it — no install, no build
+
+## Special Fields
+
+Topic pairs support several optional fields beyond the required `romanized`, `script`, and `english`:
+
+### `example`
+Every pair should have an example sentence with `thai`, `romanized`, and `english` fields. Shown on flashcard back face below a divider.
+
+```js
+example: { thai: "วันนี้คือวันจันทร์", romanized: "Wan nee khue Wan Jan", english: "Today is Monday" }
+```
+
+### `note`
+Used for vocabulary that needs extra context — special rules, cultural notes, homophones, etc. Shown as an amber pill tooltip in the matching game after a correct match. Auto-dismisses after 2.5 seconds.
+
+```js
+note: "เอ็ด (et) replaces หนึ่ง (nueng) in the ones position after 10"
+```
+
+Used extensively in the Numbers — Extended topic and for culturally notable pairs like Farang (guava/foreigner) and Khai (egg vs. sell homophone).
+
+### `situation`
+A boolean on the **topic** object (not individual pairs). When `situation: true`, the topic card shows a "SITUATION" badge on the dashboard. Used for practical phrase packs (Ordering Food, Getting Around, 7-Eleven).
+
+```js
+{
+  id: "ordering-food",
+  label: "Ordering Food",
+  emoji: "🍜",
+  situation: true,
+  pairs: [...]
+}
+```
 
 ## Adding a New Topic
 
@@ -27,8 +85,16 @@ Edit `data/topics.js` and add an object to the `TOPICS` array:
   label: "Greetings",
   emoji: "👋",
   pairs: [
-    { romanized: "Sa-wat-dee", script: "สวัสดี", english: "Hello" },
-    { romanized: "Khawp khun", script: "ขอบคุณ", english: "Thank you" }
+    {
+      romanized: "Sa-wat-dee",
+      script: "สวัสดี",
+      english: "Hello",
+      example: {
+        thai: "สวัสดีครับ",
+        romanized: "Sa-wat-dee khrap",
+        english: "Hello (polite, male)"
+      }
+    }
   ]
 }
 ```
@@ -47,22 +113,64 @@ Edit `data/alphabet.js`. Add to `THAI_CONSONANTS`, `THAI_VOWELS`, or `THAI_TONE_
 { char: "–า", romanized: "aa", example: "มา (maa) = come", note: "Long 'a' — like 'a' in 'father'" }
 ```
 
+## Adding Sentences
+
+Edit `data/sentences.js`. Each sentence needs the correct word order and the topic IDs it depends on:
+
+```js
+{
+  english: "Today is Monday",
+  words: ["วันนี้", "คือ", "วันจันทร์"],
+  romanized: "Wan nee khue Wan Jan",
+  requiredTopics: ["days", "time-expressions"],
+  difficulty: 1
+}
+```
+
+Sentences unlock automatically once the user reaches 60% mastery on any required topic.
+
+## Thai Time Systems
+
+The app teaches two Thai time-telling systems:
+
+**Formal 24-hour**: `[hour] นาฬิกา [minute] นาที` — Midnight = เที่ยงคืน, Noon = เที่ยงวัน
+
+**Colloquial 6-period**:
+| Period | Hours | Format | Example |
+|--------|-------|--------|---------|
+| Late night | 1–5 AM | ตี + [1–5] | ตีสาม = 3 AM |
+| Morning | 6 AM | หกโมงเช้า | (special) |
+| Morning | 7–11 AM | [7–11] โมงเช้า | เจ็ดโมงเช้า = 7 AM |
+| Noon | 12 PM | เที่ยง | (standalone) |
+| Afternoon | 1–3 PM | บ่าย [1–3] โมง | บ่ายสามโมง = 3 PM |
+| Evening | 4–6 PM | [4–6] โมงเย็น | สี่โมงเย็น = 4 PM |
+| Night | 7–11 PM | [1–5] ทุ่ม | สามทุ่ม = 9 PM |
+| Midnight | 12 AM | เที่ยงคืน | |
+
+Minutes: add นาที (naa-thee) after the number. ครึ่ง (khrueng) = :30.
+
 ## File Structure
 
 ```
-├── index.html          Entry point
-├── css/styles.css      All styles, CSS custom properties for theming
+├── index.html              Entry point
+├── css/styles.css          All styles, CSS custom properties for theming
 ├── js/
-│   ├── state.js        localStorage manager, XP/streak/stats API
-│   ├── ui.js           Routing, rendering helpers, animations
-│   ├── game.js         Vocabulary matching game
-│   ├── flashcard.js    Flashcard mode with spaced repetition
-│   ├── speed.js        60-second speed round
-│   ├── alphabet.js     Thai script browser + recognition quiz
-│   └── app.js          Dashboard, onboarding, settings, routing
+│   ├── state.js            localStorage manager, XP/streak/stats API
+│   ├── ui.js               Routing, rendering helpers, animations, nav bar
+│   ├── thai-time.js        Thai time generation (formal + colloquial), dates, numerals
+│   ├── game.js             Vocabulary matching game + note tooltips
+│   ├── flashcard.js        Flashcard mode with spaced repetition + examples
+│   ├── speed.js            60-second speed round
+│   ├── alphabet.js         Thai script browser + recognition quiz
+│   ├── clock.js            Live Thai clock with analog face + digital display
+│   ├── time-game.js        Tell-the-time quiz game
+│   ├── tone-trainer.js     5 Thai tones: browse with pitch contours + quiz
+│   ├── sentence-builder.js Word arrangement game
+│   └── app.js              Dashboard, onboarding, settings, routing
 ├── data/
-│   ├── topics.js       Vocabulary data (6 topics, 44 pairs)
-│   └── alphabet.js     Thai alphabet data (44 consonants, 21 vowels, 4 tones)
+│   ├── topics.js           Vocabulary data (16 topics, 146 pairs, all with examples)
+│   ├── alphabet.js         Thai alphabet data (44 consonants, 21 vowels, 4 tones)
+│   └── sentences.js        Sentence builder data (15 sentences)
 └── README.md
 ```
 

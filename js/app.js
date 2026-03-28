@@ -13,6 +13,10 @@ const App = (() => {
     UI.registerRoute("#flashcard", routeFlashcard);
     UI.registerRoute("#speed", routeSpeed);
     UI.registerRoute("#alphabet", () => Alphabet.show());
+    UI.registerRoute("#clock", () => { Clock.show(); UI.setCleanup(() => Clock.cleanup()); });
+    UI.registerRoute("#time-game", () => TimeGame.show());
+    UI.registerRoute("#tones", () => ToneTrainer.show());
+    UI.registerRoute("#sentences", () => SentenceBuilder.show());
     UI.registerRoute("#settings", renderSettings);
 
     // Check onboarding
@@ -127,6 +131,7 @@ const App = (() => {
                 <div class="topic-card-header">
                   <div class="topic-ring">${UI.progressRing(mastery, 44, 3)}</div>
                   <span class="topic-emoji">${t.emoji}</span>
+                  ${t.situation ? '<span class="situation-badge">SITUATION</span>' : ''}
                 </div>
                 <h3 class="topic-name">${t.label}</h3>
                 <div class="topic-meta">
@@ -144,13 +149,40 @@ const App = (() => {
           }).join("")}
         </div>
 
-        <div class="dash-alphabet-cta" onclick="UI.navigate('#alphabet')">
-          <span class="cta-char">ก</span>
-          <div class="cta-text">
-            <strong>Learn Thai Script</strong>
-            <span>44 consonants, ${THAI_VOWELS.length} vowels, 4 tone marks</span>
+        <h2 class="section-title">Learn More</h2>
+        <div class="dash-cta-grid">
+          <div class="dash-cta-card" onclick="UI.navigate('#clock')">
+            <span class="cta-icon">🕐</span>
+            <div class="cta-text">
+              <strong>Thai Clock</strong>
+              <span>Live time in Thai</span>
+            </div>
+            <span class="continue-arrow">→</span>
           </div>
-          <span class="continue-arrow">→</span>
+          <div class="dash-cta-card" onclick="UI.navigate('#tones')">
+            <span class="cta-icon">🎵</span>
+            <div class="cta-text">
+              <strong>Thai Tones</strong>
+              <span>5 tones with pitch contours</span>
+            </div>
+            <span class="continue-arrow">→</span>
+          </div>
+          <div class="dash-cta-card" onclick="UI.navigate('#sentences')">
+            <span class="cta-icon">📝</span>
+            <div class="cta-text">
+              <strong>Sentence Builder</strong>
+              <span>Arrange words into sentences</span>
+            </div>
+            <span class="continue-arrow">→</span>
+          </div>
+          <div class="dash-cta-card" onclick="UI.navigate('#alphabet')">
+            <span class="cta-icon cta-char">ก</span>
+            <div class="cta-text">
+              <strong>Thai Script</strong>
+              <span>44 consonants, ${THAI_VOWELS.length} vowels, 4 tones</span>
+            </div>
+            <span class="continue-arrow">→</span>
+          </div>
         </div>
       </div>
     `);

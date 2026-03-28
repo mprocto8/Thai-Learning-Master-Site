@@ -65,6 +65,13 @@ const Flashcard = (() => {
             <div class="flashcard-back">
               <div class="flashcard-english">${card.english}</div>
               <div class="flashcard-thai-small">${card.romanized} · ${card.script}</div>
+              ${card.example ? `
+                <div class="flashcard-example">
+                  <div class="flashcard-example-thai">${card.example.thai}</div>
+                  <div class="flashcard-example-rom">${card.example.romanized}</div>
+                  <div class="flashcard-example-eng">${card.example.english}</div>
+                </div>
+              ` : ''}
             </div>
           </div>
         </div>

@@ -81,8 +81,8 @@ const THAI_VOWELS = [
 ];
 
 const THAI_TONE_MARKS = [
-  { char: "–่", romanized: "mái èek", example: "เด่น (dèn) = outstanding", note: "First tone mark — low tone" },
-  { char: "–้", romanized: "mái thoo", example: "น้ำ (náam) = water", note: "Second tone mark — falling tone" },
-  { char: "–๊", romanized: "mái dtrii", example: "โต๊ะ (dtó) = table", note: "Third tone mark — high tone" },
-  { char: "–๋", romanized: "mái jàt-dtà-waa", example: "หม๋อ (mǒo) = pot (rare)", note: "Fourth tone mark — rising tone" }
+  { char: "–่", romanized: "mai ek", example: "เด่น (dèn) = outstanding", note: "Produces low tone on mid-class consonants, low on high-class" },
+  { char: "–้", romanized: "mai tho", example: "น้ำ (náam) = water", note: "Produces falling tone on mid-class, falling on high-class" },
+  { char: "–๊", romanized: "mai tri", example: "โต๊ะ (dtó) = table", note: "Produces high tone — only used on mid-class consonants" },
+  { char: "–๋", romanized: "mai jattawa", example: "หม๋อ (mǒo) = pot (rare)", note: "Produces rising tone — only used on mid-class consonants, rare" }
 ];

@@ -15,16 +15,6 @@ const UI = (() => {
     window.location.hash = hash;
   }
 
-  function handleRoute() {
-    const hash = window.location.hash || "#dashboard";
-    const route = _routes[hash] || _routes[hash.split("/")[0]];
-    if (route) {
-      route();
-    } else {
-      _routes["#dashboard"]();
-    }
-  }
-
   function init() {
     window.addEventListener("hashchange", handleRoute);
     handleRoute();
@@ -113,12 +103,37 @@ const UI = (() => {
     return `${days}d ago`;
   }
 
-  /* Nav bar */
+  /* Cleanup hook — called before each route change */
+  let _cleanupFn = null;
+  function setCleanup(fn) { _cleanupFn = fn; }
+
+  function handleRoute() {
+    // Run cleanup from previous route
+    if (_cleanupFn) { _cleanupFn(); _cleanupFn = null; }
+    const hash = window.location.hash || "#dashboard";
+    const route = _routes[hash] || _routes[hash.split("/")[0]];
+    if (route) {
+      route();
+    } else {
+      _routes["#dashboard"]();
+    }
+  }
+
+  /* Nav bar — 6 sections: Home, Clock, Tones, Sentences, Alphabet, Settings */
   function navBar(active = "") {
     return `
       <nav class="nav-bar">
         <button class="nav-btn ${active === "dashboard" ? "active" : ""}" onclick="UI.navigate('#dashboard')">
           <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+        </button>
+        <button class="nav-btn ${active === "clock" ? "active" : ""}" onclick="UI.navigate('#clock')">
+          <span class="nav-icon">🕐</span><span class="nav-label">Clock</span>
+        </button>
+        <button class="nav-btn ${active === "tones" ? "active" : ""}" onclick="UI.navigate('#tones')">
+          <span class="nav-icon">🎵</span><span class="nav-label">Tones</span>
+        </button>
+        <button class="nav-btn ${active === "sentences" ? "active" : ""}" onclick="UI.navigate('#sentences')">
+          <span class="nav-icon">📝</span><span class="nav-label">Sentences</span>
         </button>
         <button class="nav-btn ${active === "alphabet" ? "active" : ""}" onclick="UI.navigate('#alphabet')">
           <span class="nav-icon">ก</span><span class="nav-label">Alphabet</span>
@@ -152,6 +167,6 @@ const UI = (() => {
 
   return {
     registerRoute, navigate, handleRoute, init, render, $, $$,
-    celebrate, toast, showXP, timeAgo, navBar, progressRing, applyTheme
+    celebrate, toast, showXP, timeAgo, navBar, progressRing, applyTheme, setCleanup
   };
 })();

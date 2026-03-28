@@ -1,5 +1,6 @@
 /**
  * Vocabulary matching game — two-column tap-to-match.
+ * Shows note tooltips on correct matches when a pair has a note field.
  */
 const Game = (() => {
   let currentTopic = null;
@@ -97,7 +98,8 @@ const Game = (() => {
 
     if (selectedThai === index) {
       // Correct match
-      matchedPairs.add(index);
+      const matchedIndex = index;
+      matchedPairs.add(matchedIndex);
       streak++;
       roundCorrect++;
 
@@ -118,6 +120,12 @@ const Game = (() => {
 
       const levelUp = State.addXP(xp);
       State.checkStreak();
+
+      // Show note tooltip if pair has a note field
+      const pair = pairs[matchedIndex];
+      if (pair.note) {
+        showMatchNote(engCard, pair.note);
+      }
 
       setTimeout(() => {
         thaiCard.classList.add("matched");
@@ -152,6 +160,20 @@ const Game = (() => {
         updateStreakDisplay();
       }, 500);
     }
+  }
+
+  function showMatchNote(targetEl, noteText) {
+    const note = document.createElement("div");
+    note.className = "match-note";
+    note.textContent = "💡 " + noteText;
+    targetEl.parentElement.insertBefore(note, targetEl.nextSibling);
+
+    setTimeout(() => {
+      if (note.parentElement) {
+        note.style.opacity = "0";
+        setTimeout(() => note.remove(), 300);
+      }
+    }, 2500);
   }
 
   function updateStreakDisplay() {

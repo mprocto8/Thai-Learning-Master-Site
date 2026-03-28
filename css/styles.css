@@ -1116,6 +1116,751 @@ p { color: var(--text-1); }
   100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
 
+/* --- Flashcard example sentences --- */
+.flashcard-example {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--surface-2);
+  text-align: center;
+  width: 100%;
+}
+
+.flashcard-example-thai {
+  font-size: 1rem;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+
+.flashcard-example-rom {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+
+.flashcard-example-eng {
+  font-size: 0.82rem;
+  color: var(--text-1);
+  font-style: italic;
+}
+
+/* --- Dashboard CTA grid --- */
+.dash-cta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+
+.dash-cta-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--bg-1);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.dash-cta-card:hover { background: var(--bg-2); transform: translateY(-1px); }
+
+.cta-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 36px;
+  text-align: center;
+}
+
+/* --- Clock Screen --- */
+.clock-screen {
+  padding-top: var(--sp-4);
+}
+
+.clock-face-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-4);
+}
+
+.clock-face {
+  width: 200px;
+  height: 200px;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+
+.clock-digital {
+  text-align: center;
+  margin-bottom: var(--sp-5);
+}
+
+.clock-digital-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.digital-time {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+
+.digital-seconds {
+  font-size: 1.5rem;
+  color: var(--text-2);
+}
+
+.digital-thai-numerals {
+  font-size: 1.3rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.clock-time-formats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.time-format-card {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  border-left: 3px solid var(--accent);
+}
+
+.time-format-card.colloquial {
+  border-left-color: var(--coral);
+}
+
+.time-format-card.english {
+  border-left-color: var(--blue);
+}
+
+.time-format-label {
+  font-size: 0.7rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--sp-1);
+}
+
+.time-format-thai {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.time-format-rom {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.time-format-english {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.clock-date-section {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+.clock-date-row {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  padding: var(--sp-2) 0;
+}
+
+.clock-date-row + .clock-date-row {
+  border-top: 1px solid var(--surface-1);
+}
+
+.clock-date-label {
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.clock-date-thai {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.clock-date-rom {
+  font-size: 0.85rem;
+  color: var(--text-1);
+}
+
+.clock-date-eng {
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.clock-era-row {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-top: var(--sp-3);
+}
+
+.clock-era-badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.clock-era-badge.era-gregorian {
+  background: var(--blue-glow);
+  color: var(--blue);
+}
+
+.clock-cta {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+
+/* --- Time Game --- */
+.time-game-screen {
+  padding-top: var(--sp-4);
+}
+
+.difficulty-select {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin: var(--sp-5) 0;
+}
+
+.difficulty-select .btn {
+  padding: var(--sp-5) var(--sp-4);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.difficulty-select .btn small {
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+.time-game-active {
+  padding-top: var(--sp-4);
+}
+
+.tg-timer {
+  position: relative;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: var(--r-full);
+  overflow: visible;
+  margin-bottom: var(--sp-5);
+}
+
+.tg-timer-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--accent));
+  border-radius: var(--r-full);
+  transition: width 1s linear;
+}
+
+.tg-timer-value {
+  position: absolute;
+  right: 0;
+  top: -22px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.tg-timer-value.urgent {
+  color: var(--coral);
+  animation: pulse 0.5s infinite;
+}
+
+.tg-streak {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+  min-height: 1.2em;
+  margin-bottom: var(--sp-3);
+}
+
+.tg-clock-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.tg-clock-svg {
+  width: 140px;
+  height: 140px;
+  margin-bottom: var(--sp-2);
+}
+
+.tg-clock-digital {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+
+.tg-prompt {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: var(--sp-1);
+}
+
+.tg-system-label {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-2);
+  margin-bottom: var(--sp-4);
+}
+
+.tg-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.tg-option {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+  border: 2px solid var(--surface-2);
+  color: var(--text-0);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  text-align: center;
+  min-height: 48px;
+}
+
+.tg-option:active { transform: scale(0.98); }
+.tg-option.correct { border-color: var(--green); background: var(--green-glow); }
+.tg-option.wrong { border-color: var(--coral); background: var(--coral-glow); }
+
+.tg-breakdown {
+  animation: fadeInUp 0.3s var(--ease);
+}
+
+.tg-breakdown-card {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+}
+
+.tg-breakdown-card h4 {
+  margin-bottom: var(--sp-3);
+  font-size: 0.9rem;
+}
+
+.tg-bd-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--surface-1);
+}
+
+.tg-bd-row:last-of-type { border-bottom: none; }
+
+.tg-bd-label {
+  font-size: 0.68rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.tg-bd-thai {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.tg-bd-rom {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+/* --- Tone Trainer --- */
+.tone-screen {
+  padding-top: var(--sp-4);
+}
+
+.tone-quiz-cta {
+  text-align: center;
+  margin-bottom: var(--sp-5);
+}
+
+.tone-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+
+.tone-card {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--surface-2);
+}
+
+.tone-mid { border-left-color: var(--blue); }
+.tone-low { border-left-color: var(--green); }
+.tone-falling { border-left-color: var(--coral); }
+.tone-high { border-left-color: var(--accent); }
+.tone-rising { border-left-color: var(--purple); }
+
+.tone-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--sp-3);
+}
+
+.tone-name-eng {
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+}
+
+.tone-name-thai {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.tone-mark-display {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.tone-contour {
+  margin: var(--sp-3) 0;
+}
+
+.tone-contour-svg {
+  width: 100%;
+  max-width: 280px;
+  height: 60px;
+  display: block;
+  margin: 0 auto;
+}
+
+.tone-contour-svg.large {
+  max-width: 320px;
+  height: 80px;
+}
+
+.tone-contour-quiz {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-4);
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+}
+
+.tone-description {
+  font-size: 0.85rem;
+  color: var(--text-1);
+  line-height: 1.5;
+  margin-bottom: var(--sp-3);
+}
+
+.tone-description-quiz {
+  font-size: 0.9rem;
+  color: var(--text-1);
+  margin-top: var(--sp-2);
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tone-example {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-2);
+}
+
+.tone-ex-thai {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.tone-ex-rom {
+  font-size: 0.85rem;
+  color: var(--text-1);
+}
+
+.tone-ex-eng {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.tone-mnemonic {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  font-style: italic;
+}
+
+/* Tone rules table */
+.tone-rules-section {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-6);
+}
+
+.tone-rules-section h3 {
+  margin-bottom: var(--sp-2);
+  font-size: 1rem;
+}
+
+.tone-rules-note {
+  font-size: 0.82rem;
+  margin-bottom: var(--sp-4);
+}
+
+.tone-rules-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--surface-1);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.tone-rules-header, .tone-rules-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1px;
+}
+
+.tone-rules-header span, .tone-rules-row span {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: 0.78rem;
+  background: var(--bg-2);
+}
+
+.tone-rules-header span {
+  font-weight: 600;
+  background: var(--surface-2);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.tone-rule-mark {
+  font-weight: 500;
+}
+
+/* --- Sentence Builder --- */
+.sentence-screen {
+  padding-top: var(--sp-4);
+}
+
+.sentence-start-card {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  text-align: center;
+  margin-bottom: var(--sp-4);
+}
+
+.sentence-start-card p {
+  margin-bottom: var(--sp-4);
+  font-size: 0.95rem;
+}
+
+.sentence-locked-card {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-8) var(--sp-6);
+  text-align: center;
+}
+
+.locked-icon {
+  font-size: 3rem;
+  margin-bottom: var(--sp-3);
+}
+
+.sentence-locked-card h3 {
+  margin-bottom: var(--sp-2);
+}
+
+.sentence-locked-card p {
+  margin-bottom: var(--sp-5);
+  font-size: 0.9rem;
+}
+
+.sentence-locked-preview {
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  text-align: center;
+  opacity: 0.6;
+}
+
+.sentence-locked-preview h3 { font-size: 0.9rem; margin-bottom: var(--sp-1); }
+.sentence-locked-preview p { font-size: 0.78rem; }
+
+.sb-active {
+  padding-top: var(--sp-4);
+}
+
+.sb-prompt {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-5);
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+}
+
+.sb-english {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+
+.sb-romanized {
+  font-size: 0.85rem;
+  color: var(--text-2);
+}
+
+.sb-answer-slots {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 56px;
+  margin-bottom: var(--sp-5);
+  padding: var(--sp-3);
+  background: var(--bg-1);
+  border-radius: var(--r-lg);
+  border: 2px dashed var(--surface-2);
+}
+
+.sb-slot {
+  min-width: 60px;
+  min-height: 48px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 2px solid var(--surface-2);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  background: var(--bg-2);
+}
+
+.sb-slot.filled {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.sb-slot.correct {
+  border-color: var(--green) !important;
+  background: var(--green-glow) !important;
+  animation: pop 0.3s var(--ease-bounce);
+}
+
+.sb-slot.wrong {
+  border-color: var(--coral) !important;
+  background: var(--coral-glow) !important;
+  animation: shake 0.4s var(--ease);
+}
+
+.sb-slot-word {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.sb-slot-placeholder {
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+
+.sb-word-bank {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-5);
+}
+
+.sb-word {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: var(--r-md);
+  background: var(--bg-1);
+  border: 2px solid var(--surface-2);
+  color: var(--text-0);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.sb-word:active { transform: scale(0.95); }
+
+.sb-word.selected {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.sb-word.used {
+  opacity: 0.3;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+.sb-actions {
+  display: flex;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.sb-actions .btn {
+  flex: 1;
+}
+
+/* --- Updated Nav for 6 items --- */
+.nav-bar {
+  gap: var(--sp-1);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nav-bar::-webkit-scrollbar { display: none; }
+
+.nav-btn {
+  padding: var(--sp-2) var(--sp-3);
+  min-width: 54px;
+  flex-shrink: 0;
+}
+
 /* --- Media queries --- */
 @media (max-width: 380px) {
   #app { padding: 0 var(--sp-3); }
@@ -1125,9 +1870,39 @@ p { color: var(--text-1); }
   .match-card { font-size: 0.82rem; padding: var(--sp-2) var(--sp-3); }
   .speed-thai { font-size: 2rem; }
   .quiz-char { font-size: 4.5rem; }
+  .nav-btn { padding: var(--sp-1) var(--sp-2); min-width: 48px; }
+  .nav-label { font-size: 0.6rem; }
+  .digital-time { font-size: 2rem; }
 }
 
 @media (min-width: 600px) {
   #app { max-width: 540px; }
   .alpha-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .tg-options { grid-template-columns: 1fr 1fr; }
+}
+
+/* --- Match Note (game note tooltip) --- */
+.match-note {
+  font-size: 0.72rem;
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  margin-top: 4px;
+  text-align: center;
+  animation: fadeInUp 0.3s ease;
+  transition: opacity 0.3s ease;
+}
+
+/* --- Situation Badge --- */
+.situation-badge {
+  background: var(--accent);
+  color: #0f1117;
+  padding: 2px 6px;
+  border-radius: var(--r-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-left: auto;
 }

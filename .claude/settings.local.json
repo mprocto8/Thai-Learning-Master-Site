@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Read(//c/Users/ASUS/AppData/Local/Programs/**)",
+      "Bash(ls /c/Python*)",
+      "Read(//c/Users/ASUS/**)",
+      "Bash(wc -l js/*.js data/*.js css/styles.css index.html)",
+      "Bash(npx --version)",
+      "Read(//c/Program Files/nodejs/**)",
+      "Read(//c/ProgramData/**)",
+      "Bash(powershell.exe -Command \"Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell.exe -Command \"Get-Command npx -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(where winget:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")"
+    ]
+  }
+}
