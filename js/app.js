@@ -9,6 +9,8 @@ const App = (() => {
 
     // Register routes
     UI.registerRoute("#dashboard", renderDashboard);
+    UI.registerRoute("#pathways", () => Pathways.show());
+    UI.registerRoute("#practice", () => PracticeHub.show());
     UI.registerRoute("#game", routeGame);
     UI.registerRoute("#flashcard", routeFlashcard);
     UI.registerRoute("#speed", routeSpeed);
@@ -69,15 +71,37 @@ const App = (() => {
     const nextLevel = State.getNextLevel();
     const progress = State.getLevelProgress();
     const streakAtRisk = State.isStreakAtRisk();
+    const streakUrgent = State.isStreakUrgent();
+    const badges = s.badges || [];
 
-    // Find last played topic
-    let lastTopic = null;
-    let lastTime = 0;
-    for (const t of TOPICS) {
-      const ts = s.topicStats[t.id];
-      if (ts && ts.lastPlayed > lastTime) {
-        lastTopic = t;
-        lastTime = ts.lastPlayed;
+    // Find smart suggestion: lowest mastery topic from active pathway, or last played
+    let suggestedTopic = null;
+    let suggestReason = "";
+
+    // Try pathway-based suggestion first
+    for (const p of PATHWAYS) {
+      if (p.usesAlphabet) continue;
+      const prog = State.getPathwayProgress(p.id);
+      if (prog.nextTopic) {
+        const t = TOPICS.find(tp => tp.id === prog.nextTopic);
+        if (t) {
+          suggestedTopic = t;
+          suggestReason = `Next in ${p.label}`;
+          break;
+        }
+      }
+    }
+
+    // Fallback: last played
+    if (!suggestedTopic) {
+      let lastTime = 0;
+      for (const t of TOPICS) {
+        const ts = s.topicStats[t.id];
+        if (ts && ts.lastPlayed > lastTime) {
+          suggestedTopic = t;
+          lastTime = ts.lastPlayed;
+          suggestReason = "Continue where you left off";
+        }
       }
     }
 
@@ -93,11 +117,12 @@ const App = (() => {
         </div>
 
         <div class="dash-stats">
-          <div class="stat-card streak-card">
+          <div class="stat-card streak-card ${streakUrgent ? 'urgent' : streakAtRisk ? 'at-risk' : ''}">
             <div class="stat-icon">🔥</div>
             <div class="stat-value">${s.streak}</div>
             <div class="stat-label">Day Streak</div>
-            ${streakAtRisk ? '<div class="streak-warning">⚠️ Play today to keep your streak!</div>' : ''}
+            ${streakUrgent ? '<div class="streak-warning urgent">🚨 Streak expires soon! Play now!</div>' :
+              streakAtRisk ? '<div class="streak-warning">⚠️ Play today to keep your streak!</div>' : ''}
           </div>
           <div class="stat-card level-card">
             <div class="stat-icon">${level.emoji}</div>
@@ -110,20 +135,38 @@ const App = (() => {
           </div>
         </div>
 
-        ${lastTopic ? `
-          <div class="continue-card" onclick="UI.navigate('#game/${lastTopic.id}')">
-            <span class="continue-emoji">${lastTopic.emoji}</span>
+        ${suggestedTopic ? `
+          <div class="continue-card" onclick="UI.navigate('#game/${suggestedTopic.id}')">
+            <span class="continue-emoji">${suggestedTopic.emoji}</span>
             <div class="continue-text">
-              <strong>Continue: ${lastTopic.label}</strong>
-              <span>${UI.timeAgo(lastTime)}</span>
+              <strong>${suggestReason}</strong>
+              <span>${suggestedTopic.label}</span>
             </div>
             <span class="continue-arrow">→</span>
           </div>
         ` : ''}
 
+        <div class="dash-quick-actions">
+          <button class="btn btn-primary dash-quick5" onclick="PracticeHub.quick5()">🎲 Quick 5</button>
+          <button class="btn btn-secondary" onclick="UI.navigate('#practice')">⚡ All Topics</button>
+          <button class="btn btn-secondary" onclick="UI.navigate('#pathways')">🗺️ Pathways</button>
+        </div>
+
+        ${badges.length > 0 ? `
+          <div class="badge-shelf dash-badges">
+            <h3 class="section-title">Badges</h3>
+            <div class="badge-list">
+              ${badges.map(id => {
+                const p = PATHWAYS.find(pw => pw.id === id);
+                return p ? `<div class="badge-item"><span class="badge-emoji">${p.badge.emoji}</span><span class="badge-label">${p.badge.label}</span></div>` : '';
+              }).join("")}
+            </div>
+          </div>
+        ` : ''}
+
         <h2 class="section-title">Topics</h2>
         <div class="topic-grid">
-          ${TOPICS.map(t => {
+          ${TOPICS.slice(0, 12).map(t => {
             const mastery = State.getTopicMastery(t.id);
             const ts = s.topicStats[t.id];
             return `
@@ -132,6 +175,7 @@ const App = (() => {
                   <div class="topic-ring">${UI.progressRing(mastery, 44, 3)}</div>
                   <span class="topic-emoji">${t.emoji}</span>
                   ${t.situation ? '<span class="situation-badge">SITUATION</span>' : ''}
+                  ${t.essential ? '<span class="essential-badge">CORE</span>' : ''}
                 </div>
                 <h3 class="topic-name">${t.label}</h3>
                 <div class="topic-meta">
@@ -148,6 +192,12 @@ const App = (() => {
             `;
           }).join("")}
         </div>
+
+        ${TOPICS.length > 12 ? `
+          <div class="dash-see-all">
+            <button class="btn btn-secondary" onclick="UI.navigate('#practice')">See all ${TOPICS.length} topics →</button>
+          </div>
+        ` : ''}
 
         <h2 class="section-title">Learn More</h2>
         <div class="dash-cta-grid">
@@ -179,7 +229,7 @@ const App = (() => {
             <span class="cta-icon cta-char">ก</span>
             <div class="cta-text">
               <strong>Thai Script</strong>
-              <span>44 consonants, ${THAI_VOWELS.length} vowels, 4 tones</span>
+              <span>44 consonants, ${typeof THAI_VOWELS !== 'undefined' ? THAI_VOWELS.length : 21} vowels, 4 tones</span>
             </div>
             <span class="continue-arrow">→</span>
           </div>
@@ -193,7 +243,7 @@ const App = (() => {
     if (hour < 12) return "Good morning! Ready to learn?";
     if (hour < 17) return "Good afternoon! Let's practice.";
     if (hour < 21) return "Good evening! Time for Thai.";
-    return "Late night study session? 🌙";
+    return "Late night study session?";
   }
 
   /* Route helpers — extract topic ID from hash */
@@ -218,6 +268,7 @@ const App = (() => {
   /* Settings */
   function renderSettings() {
     const s = State.get();
+    const badges = s.badges || [];
 
     UI.render(`
       <div class="settings-screen">
@@ -245,8 +296,8 @@ const App = (() => {
           <div class="setting-item">
             <label>Theme</label>
             <div class="toggle-group">
-              <button class="btn btn-sm ${s.darkMode ? 'btn-active' : ''}" onclick="App.setTheme(true)">🌙 Dark</button>
-              <button class="btn btn-sm ${!s.darkMode ? 'btn-active' : ''}" onclick="App.setTheme(false)">☀️ Light</button>
+              <button class="btn btn-sm ${s.darkMode ? 'btn-active' : ''}" onclick="App.setTheme(true)">Dark</button>
+              <button class="btn btn-sm ${!s.darkMode ? 'btn-active' : ''}" onclick="App.setTheme(false)">Light</button>
             </div>
           </div>
 
@@ -257,8 +308,21 @@ const App = (() => {
               <div class="mini-stat"><strong>${s.streak}</strong> Day Streak</div>
               <div class="mini-stat"><strong>${State.getLevel().name}</strong> Level</div>
               <div class="mini-stat"><strong>${Object.keys(s.topicStats).length}</strong> Topics Played</div>
+              <div class="mini-stat"><strong>${badges.length}</strong> Badges</div>
             </div>
           </div>
+
+          ${badges.length > 0 ? `
+            <div class="setting-item">
+              <label>Earned Badges</label>
+              <div class="badge-list settings-badges">
+                ${badges.map(id => {
+                  const p = PATHWAYS.find(pw => pw.id === id);
+                  return p ? `<div class="badge-item"><span class="badge-emoji">${p.badge.emoji}</span><span class="badge-label">${p.badge.label}</span></div>` : '';
+                }).join("")}
+              </div>
+            </div>
+          ` : ''}
 
           <div class="setting-item danger-zone">
             <label>Danger Zone</label>

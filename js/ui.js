@@ -119,29 +119,48 @@ const UI = (() => {
     }
   }
 
-  /* Nav bar — 6 sections: Home, Clock, Tones, Sentences, Alphabet, Settings */
+  /* Nav bar — 5 sections: Home, Pathways, Practice, Script, Settings */
   function navBar(active = "") {
     return `
       <nav class="nav-bar">
         <button class="nav-btn ${active === "dashboard" ? "active" : ""}" onclick="UI.navigate('#dashboard')">
           <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
         </button>
-        <button class="nav-btn ${active === "clock" ? "active" : ""}" onclick="UI.navigate('#clock')">
-          <span class="nav-icon">🕐</span><span class="nav-label">Clock</span>
+        <button class="nav-btn ${active === "pathways" ? "active" : ""}" onclick="UI.navigate('#pathways')">
+          <span class="nav-icon">🗺️</span><span class="nav-label">Pathways</span>
         </button>
-        <button class="nav-btn ${active === "tones" ? "active" : ""}" onclick="UI.navigate('#tones')">
-          <span class="nav-icon">🎵</span><span class="nav-label">Tones</span>
-        </button>
-        <button class="nav-btn ${active === "sentences" ? "active" : ""}" onclick="UI.navigate('#sentences')">
-          <span class="nav-icon">📝</span><span class="nav-label">Sentences</span>
+        <button class="nav-btn ${active === "practice" ? "active" : ""}" onclick="UI.navigate('#practice')">
+          <span class="nav-icon">⚡</span><span class="nav-label">Practice</span>
         </button>
         <button class="nav-btn ${active === "alphabet" ? "active" : ""}" onclick="UI.navigate('#alphabet')">
-          <span class="nav-icon">ก</span><span class="nav-label">Alphabet</span>
+          <span class="nav-icon">ก</span><span class="nav-label">Script</span>
         </button>
         <button class="nav-btn ${active === "settings" ? "active" : ""}" onclick="UI.navigate('#settings')">
           <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
         </button>
       </nav>
+    `;
+  }
+
+  /* One-time tooltip helper */
+  function showTutorial(sectionId, text) {
+    if (State.isTutorialSeen(sectionId)) return;
+    const tip = document.createElement("div");
+    tip.className = "tutorial-tip";
+    tip.innerHTML = `<p>${text}</p><button class="btn btn-sm btn-primary" onclick="State.markTutorialSeen('${sectionId}');this.parentElement.remove();">Got it</button>`;
+    const container = app();
+    if (container.firstChild) {
+      container.insertBefore(tip, container.firstChild.nextSibling);
+    }
+  }
+
+  /* Script toggle component */
+  function scriptToggle(currentShowScript) {
+    return `
+      <div class="script-toggle">
+        <button class="btn btn-sm ${!currentShowScript ? 'btn-active' : ''}" onclick="State.set('showScript',false);location.reload();">Romanized</button>
+        <button class="btn btn-sm ${currentShowScript ? 'btn-active' : ''}" onclick="State.set('showScript',true);location.reload();">Thai Script</button>
+      </div>
     `;
   }
 

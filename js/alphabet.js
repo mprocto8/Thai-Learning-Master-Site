@@ -1,5 +1,6 @@
 /**
  * Thai alphabet learning section — browse + quiz modes.
+ * Respects romanized/script toggle for hints.
  */
 const Alphabet = (() => {
   let mode = "browse"; // "browse" | "quiz"
@@ -11,6 +12,7 @@ const Alphabet = (() => {
   let quizTotal = 0;
   let currentQuestion = null;
   let quizOptions = [];
+  let showHint = false;
 
   function show() {
     mode = "browse";
@@ -18,6 +20,7 @@ const Alphabet = (() => {
   }
 
   function renderBrowse() {
+    const showScript = State.get().showScript;
     let chars = [];
     let title = "";
 
@@ -60,6 +63,11 @@ const Alphabet = (() => {
           </div>
         ` : ''}
 
+        <div class="script-toggle">
+          <button class="btn btn-sm ${!showScript ? 'btn-active' : ''}" onclick="Alphabet.setDisplay(false)">Romanized</button>
+          <button class="btn btn-sm ${showScript ? 'btn-active' : ''}" onclick="Alphabet.setDisplay(true)">Thai Script</button>
+        </div>
+
         <div class="alpha-mode-toggle">
           <button class="btn btn-primary" onclick="Alphabet.startQuiz()">🧠 Start Quiz</button>
         </div>
@@ -95,11 +103,17 @@ const Alphabet = (() => {
     renderBrowse();
   }
 
+  function setDisplay(useScript) {
+    State.set("showScript", useScript);
+    renderBrowse();
+  }
+
   function startQuiz() {
     mode = "quiz";
     quizIndex = 0;
     quizCorrect = 0;
     quizTotal = 0;
+    showHint = false;
 
     // Build quiz from current selection
     let chars;
@@ -118,6 +132,7 @@ const Alphabet = (() => {
   }
 
   function nextQuizQuestion() {
+    showHint = false;
     if (quizIndex >= quizQueue.length) {
       finishQuiz();
       return;
@@ -160,6 +175,14 @@ const Alphabet = (() => {
           ${currentQuestion.class ? `<span class="alpha-class class-${currentQuestion.class}">${currentQuestion.class} class</span>` : ''}
         </div>
 
+        ${showHint ? `
+          <div class="quiz-hint">
+            <span class="quiz-hint-text">💡 ${currentQuestion.example || currentQuestion.note || currentQuestion.mnemonic || ''}</span>
+          </div>
+        ` : `
+          <button class="btn btn-sm btn-ghost quiz-hint-btn" onclick="Alphabet.revealHint()">💡 Show hint</button>
+        `}
+
         <p class="quiz-prompt">What sound does this character make?</p>
 
         <div class="quiz-options">
@@ -174,6 +197,11 @@ const Alphabet = (() => {
         </div>
       </div>
     `);
+  }
+
+  function revealHint() {
+    showHint = true;
+    renderQuiz();
   }
 
   function quizAnswer(index) {
@@ -210,12 +238,14 @@ const Alphabet = (() => {
   function finishQuiz() {
     State.addXP(50);
     const accuracy = quizTotal > 0 ? Math.round((quizCorrect / quizTotal) * 100) : 0;
+    const streakMaintained = State.hasPlayedToday();
 
     UI.render(`
       <div class="round-complete">
         <div class="round-complete-card">
           <div class="round-complete-icon">🧠</div>
           <h2>Quiz Complete!</h2>
+          ${streakMaintained ? '<div class="streak-maintained">🔥 Streak maintained!</div>' : ''}
           <div class="round-stats">
             <div class="round-stat">
               <span class="round-stat-value">${accuracy}%</span>
@@ -239,5 +269,5 @@ const Alphabet = (() => {
     `);
   }
 
-  return { show, setType, setFilter, startQuiz, quizAnswer };
+  return { show, setType, setFilter, setDisplay, startQuiz, quizAnswer, revealHint };
 })();

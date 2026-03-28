@@ -1,5 +1,6 @@
 /**
  * Tone Trainer — learn Thai's 5 tones with visual pitch contours, examples, and quizzes.
+ * Includes tone reference card and diacritic guide.
  */
 const ToneTrainer = (() => {
 
@@ -7,26 +8,26 @@ const ToneTrainer = (() => {
     {
       id: "mid",
       nameThai: "สามัญ",
-      nameRom: "saa-man",
+      nameRom: "sǎa-man",
       nameEng: "Mid Tone",
       mark: "—",
       markChar: "",
+      diacritic: "(unmarked)",
       description: "Flat, level pitch — your normal speaking voice. No rise, no fall. Like saying 'duh' in a monotone.",
       example: { thai: "กา", rom: "gaa", english: "crow" },
       mnemonic: "Imagine a flat road stretching straight ahead",
-      // SVG pitch contour: flat line in the middle. endX/endY = arrow tip position.
       contour: "M 10 50 L 90 50", endX: 90, endY: 50
     },
     {
       id: "low",
       nameThai: "เอก",
-      nameRom: "eek",
+      nameRom: "èek",
       nameEng: "Low Tone",
       mark: " ่",
       markChar: "่",
+      diacritic: "à è ì ò ù (grave `)",
       description: "Start low and stay low — like a disappointed sigh. Pitch is below your normal voice.",
-      example: { thai: "ก่า", rom: "gàa", english: "(example)" },
-      exampleReal: { thai: "เด่น", rom: "dèn", english: "outstanding" },
+      example: { thai: "เด่น", rom: "dèn", english: "outstanding" },
       mnemonic: "Your voice drops like stepping down a stair",
       contour: "M 10 40 Q 30 55 50 60 Q 70 62 90 65", endX: 90, endY: 65
     },
@@ -37,6 +38,7 @@ const ToneTrainer = (() => {
       nameEng: "Falling Tone",
       mark: " ้",
       markChar: "้",
+      diacritic: "â ê î ô û (circumflex ^)",
       description: "Start high and fall down sharply — like saying 'NO!' in an emphatic way. Dramatic drop.",
       example: { thai: "บ้าน", rom: "bâan", english: "house" },
       mnemonic: "Like a ball thrown up that falls back down — whooomp",
@@ -49,6 +51,7 @@ const ToneTrainer = (() => {
       nameEng: "High Tone",
       mark: " ๊",
       markChar: "๊",
+      diacritic: "á é í ó ú (acute ´)",
       description: "Start high and stay high — bright and elevated, like asking a surprised question. Higher than your normal voice.",
       example: { thai: "โต๊ะ", rom: "dtó", english: "table" },
       mnemonic: "Imagine reaching up to a high shelf — voice goes up and stays",
@@ -61,9 +64,9 @@ const ToneTrainer = (() => {
       nameEng: "Rising Tone",
       mark: " ๋",
       markChar: "๋",
+      diacritic: "ǎ ě ǐ ǒ ǔ (caron ˇ)",
       description: "Start low then rise up — like asking a yes/no question in English: 'Really?' The pitch climbs.",
-      example: { thai: "หม๋อ", rom: "mǒo", english: "pot (rare)" },
-      exampleReal: { thai: "สวย", rom: "sǔay", english: "beautiful" },
+      example: { thai: "สวย", rom: "sǔay", english: "beautiful" },
       mnemonic: "Like an airplane taking off — vroom, pitch rises!",
       contour: "M 10 65 Q 30 60 50 50 Q 70 35 90 25", endX: 90, endY: 25
     }
@@ -91,14 +94,26 @@ const ToneTrainer = (() => {
 
   function renderBrowse() {
     const stats = State.get().alphabetStats;
+    const showScript = State.get().showScript;
 
     UI.render(`
       <div class="tone-screen">
-        ${UI.navBar("tones")}
+        ${UI.navBar("alphabet")}
 
         <div class="section-header">
           <h1>🎵 Thai Tones</h1>
           <p>Thai has 5 tones — the same syllable means different things depending on tone</p>
+        </div>
+
+        <div class="tone-ref-card">
+          <h3>Romanization Diacritics</h3>
+          <div class="tone-ref-grid">
+            <div class="tone-ref-item"><span class="tone-ref-mark">unmarked</span><span class="tone-ref-label">Mid</span></div>
+            <div class="tone-ref-item"><span class="tone-ref-mark">à (grave \`)</span><span class="tone-ref-label">Low</span></div>
+            <div class="tone-ref-item"><span class="tone-ref-mark">â (circumflex ^)</span><span class="tone-ref-label">Falling</span></div>
+            <div class="tone-ref-item"><span class="tone-ref-mark">á (acute ´)</span><span class="tone-ref-label">High</span></div>
+            <div class="tone-ref-item"><span class="tone-ref-mark">ǎ (caron ˇ)</span><span class="tone-ref-label">Rising</span></div>
+          </div>
         </div>
 
         <div class="tone-quiz-cta">
@@ -109,7 +124,6 @@ const ToneTrainer = (() => {
           ${TONES.map(t => {
             const s = stats[`tone_${t.id}`];
             const mastery = s ? Math.round((s.correct / Math.max(s.seen, 1)) * 100) : 0;
-            const ex = t.exampleReal || t.example;
             return `
               <div class="tone-card tone-${t.id}">
                 <div class="tone-card-header">
@@ -133,10 +147,12 @@ const ToneTrainer = (() => {
 
                 <p class="tone-description">${t.description}</p>
 
+                <div class="tone-diacritic-info">${t.diacritic}</div>
+
                 <div class="tone-example">
-                  <span class="tone-ex-thai">${ex.thai}</span>
-                  <span class="tone-ex-rom">${ex.rom}</span>
-                  <span class="tone-ex-eng">= ${ex.english}</span>
+                  <span class="tone-ex-thai">${t.example.thai}</span>
+                  <span class="tone-ex-rom">${t.example.rom}</span>
+                  <span class="tone-ex-eng">= ${t.example.english}</span>
                 </div>
 
                 <p class="tone-mnemonic">💡 ${t.mnemonic}</p>

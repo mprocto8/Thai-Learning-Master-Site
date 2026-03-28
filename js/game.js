@@ -1,6 +1,7 @@
 /**
  * Vocabulary matching game — two-column tap-to-match.
  * Shows note tooltips on correct matches when a pair has a note field.
+ * matchPulse animation on correct matches.
  */
 const Game = (() => {
   let currentTopic = null;
@@ -110,9 +111,9 @@ const Game = (() => {
       else if (streak >= 3) xp += 5;
       xpEarned += xp;
 
-      // Animate
-      thaiCard.classList.add("correct");
-      engCard.classList.add("correct");
+      // Animate with matchPulse
+      thaiCard.classList.add("correct", "match-pulse");
+      engCard.classList.add("correct", "match-pulse");
 
       // Show XP popup
       const rect = engCard.getBoundingClientRect();
@@ -137,7 +138,6 @@ const Game = (() => {
         if (matchedPairs.size === pairs.length) {
           finishRound();
         } else {
-          // Update streak display
           updateStreakDisplay();
         }
 
@@ -211,12 +211,14 @@ const Game = (() => {
     State.recordTopicRound(currentTopic.id, roundCorrect, roundCorrect + roundWrong);
 
     const accuracy = Math.round((roundCorrect / (roundCorrect + roundWrong)) * 100);
+    const streakMaintained = State.hasPlayedToday();
 
     UI.render(`
       <div class="round-complete">
         <div class="round-complete-card">
           <div class="round-complete-icon">🎉</div>
           <h2>Round Complete!</h2>
+          ${streakMaintained ? '<div class="streak-maintained">🔥 Streak maintained!</div>' : ''}
           <div class="round-stats">
             <div class="round-stat">
               <span class="round-stat-value">${accuracy}%</span>

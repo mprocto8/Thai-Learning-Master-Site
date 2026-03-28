@@ -1,5 +1,6 @@
 /**
  * Live Thai clock — analog face + digital display in 3 formats + Thai date.
+ * Always shows both Thai script and romanized for the time formats.
  */
 const Clock = (() => {
   let intervalId = null;
@@ -20,7 +21,7 @@ const Clock = (() => {
 
     UI.render(`
       <div class="clock-screen">
-        ${UI.navBar("clock")}
+        ${UI.navBar("dashboard")}
 
         <div class="section-header">
           <h1>🕐 Thai Clock</h1>
@@ -138,7 +139,7 @@ const Clock = (() => {
       `;
     }
 
-    // Time formats
+    // Time formats — always show both Thai script and romanized
     const formats = document.getElementById("clock-formats");
     if (formats) {
       const formalTime = ThaiTime.formal(h, m);
@@ -166,7 +167,6 @@ const Clock = (() => {
   function setHandAngle(id, degrees, length, tailLength = 0) {
     const el = document.getElementById(id);
     if (!el) return;
-    const rad = (degrees - 180) * Math.PI / 180;
     const cx = 100, cy = 100;
     const x2 = cx + length * Math.sin(degrees * Math.PI / 180);
     const y2 = cy - length * Math.cos(degrees * Math.PI / 180);

@@ -1,5 +1,6 @@
 /**
  * Speed round — 60-second timed matching blitz.
+ * Respects romanized/script toggle.
  */
 const Speed = (() => {
   let topic = null;
@@ -12,6 +13,7 @@ const Speed = (() => {
   let timer = null;
   let answered = 0;
   let correct = 0;
+  let gameOver = false;
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
@@ -22,6 +24,7 @@ const Speed = (() => {
     timeLeft = 60;
     answered = 0;
     correct = 0;
+    gameOver = false;
     if (timer) clearInterval(timer);
     nextQuestion();
     startTimer();
@@ -50,6 +53,7 @@ const Speed = (() => {
   }
 
   function nextQuestion() {
+    if (gameOver) return;
     currentPair = allPairs[Math.floor(Math.random() * allPairs.length)];
 
     // Generate 3 wrong options + 1 correct
@@ -84,6 +88,11 @@ const Speed = (() => {
           <span class="speed-best">🏆 Best: ${best}</span>
         </div>
 
+        <div class="script-toggle">
+          <button class="btn btn-sm ${!showScript ? 'btn-active' : ''}" onclick="Speed.toggleScript(false)">Romanized</button>
+          <button class="btn btn-sm ${showScript ? 'btn-active' : ''}" onclick="Speed.toggleScript(true)">Thai Script</button>
+        </div>
+
         <div class="speed-prompt">
           <div class="speed-thai">${showScript ? currentPair.script : currentPair.romanized}</div>
           <div class="speed-thai-sub">${showScript ? currentPair.romanized : currentPair.script}</div>
@@ -99,6 +108,7 @@ const Speed = (() => {
   }
 
   function answer(index) {
+    if (gameOver) return;
     answered++;
     const chosen = options[index];
     const btn = document.querySelectorAll(".speed-option")[index];
@@ -127,13 +137,20 @@ const Speed = (() => {
     setTimeout(() => nextQuestion(), 350);
   }
 
+  function toggleScript(useScript) {
+    State.set("showScript", useScript);
+    renderQuestion();
+  }
+
   function finishRound() {
+    gameOver = true;
     State.setSpeedBest(topic.id, score);
     State.addXP(score);
     State.checkStreak();
     State.recordTopicRound(topic.id, correct, answered);
     const best = State.getSpeedBest(topic.id);
     const isNewBest = score >= best;
+    const streakMaintained = State.hasPlayedToday();
 
     UI.render(`
       <div class="round-complete">
@@ -141,6 +158,7 @@ const Speed = (() => {
           <div class="round-complete-icon">⚡</div>
           <h2>Time's Up!</h2>
           ${isNewBest ? '<div class="new-best">🏆 New Personal Best!</div>' : ''}
+          ${streakMaintained ? '<div class="streak-maintained">🔥 Streak maintained!</div>' : ''}
           <div class="round-stats">
             <div class="round-stat">
               <span class="round-stat-value">${score}</span>
@@ -157,7 +175,7 @@ const Speed = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="Speed.start('${topic.id}')">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back</button>
           </div>
         </div>
       </div>
@@ -165,10 +183,11 @@ const Speed = (() => {
   }
 
   function quit() {
+    gameOver = true;
     if (timer) clearInterval(timer);
     timer = null;
     UI.navigate("#dashboard");
   }
 
-  return { start, answer, quit };
+  return { start, answer, quit, toggleScript };
 })();

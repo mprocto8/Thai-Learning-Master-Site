@@ -1,427 +1,465 @@
 /**
- * Vocabulary topic data.
- * To add a new topic, just push another object to this array.
- * Each pair needs: romanized, script, english. Optional: example { thai, romanized, english }, note.
- * Topics with situation: true get a "SITUATION" badge on the dashboard.
+ * All vocabulary topics — 25 topics, ~230 pairs.
+ * Every pair: romanized (with tone diacritics), script, english, example.
+ * Tone diacritics: ` low, ^ falling, ´ high, ˇ rising, unmarked = mid.
  */
 const TOPICS = [
+
+  // ─── 1. Days of the Week ───
   {
-    id: "days",
-    label: "Days of the Week",
-    emoji: "📅",
+    id: "days", emoji: "📅", label: "Days of the Week",
     pairs: [
-      { romanized: "Wan Jan", script: "วันจันทร์", english: "Monday",
-        example: { thai: "วันนี้คือวันจันทร์", romanized: "Wan nee khue Wan Jan", english: "Today is Monday" } },
-      { romanized: "Wan Ang-kaan", script: "วันอังคาร", english: "Tuesday",
-        example: { thai: "พรุ่งนี้คือวันอังคาร", romanized: "Phrung nee khue Wan Ang-kaan", english: "Tomorrow is Tuesday" } },
-      { romanized: "Wan Phut", script: "วันพุธ", english: "Wednesday",
-        example: { thai: "วันพุธฉันไปทำงาน", romanized: "Wan Phut chan bpai tham-ngaan", english: "On Wednesday I go to work" } },
-      { romanized: "Wan Pha-rue-hat", script: "วันพฤหัสบดี", english: "Thursday",
-        example: { thai: "เมื่อวานคือวันพฤหัสบดี", romanized: "Meuua wan khue Wan Pha-rue-hat", english: "Yesterday was Thursday" } },
-      { romanized: "Wan Suk", script: "วันศุกร์", english: "Friday",
-        example: { thai: "วันศุกร์เราไปเที่ยว", romanized: "Wan Suk rao bpai thiao", english: "On Friday we go out" } },
-      { romanized: "Wan Sao", script: "วันเสาร์", english: "Saturday",
-        example: { thai: "วันเสาร์ฉันพักผ่อน", romanized: "Wan Sao chan phak-phawn", english: "On Saturday I relax" } },
-      { romanized: "Wan Aa-thit", script: "วันอาทิตย์", english: "Sunday",
-        example: { thai: "วันอาทิตย์ร้านปิด", romanized: "Wan Aa-thit raan bpit", english: "On Sunday the shop is closed" } }
-    ]
-  },
-  {
-    id: "time-expressions",
-    label: "Time Expressions",
-    emoji: "⏰",
-    pairs: [
-      { romanized: "Wan nee", script: "วันนี้", english: "Today",
-        example: { thai: "วันนี้อากาศดี", romanized: "Wan nee aa-gaat dee", english: "Today the weather is nice" } },
-      { romanized: "Phrung nee", script: "พรุ่งนี้", english: "Tomorrow",
-        example: { thai: "พรุ่งนี้ฉันไปกรุงเทพ", romanized: "Phrung nee chan bpai Grung-thep", english: "Tomorrow I go to Bangkok" } },
-      { romanized: "Meuua wan", script: "เมื่อวาน", english: "Yesterday",
-        example: { thai: "เมื่อวานฝนตก", romanized: "Meuua wan fon tok", english: "Yesterday it rained" } },
-      { romanized: "Aa-thit nee", script: "อาทิตย์นี้", english: "This week",
-        example: { thai: "อาทิตย์นี้ฉันยุ่งมาก", romanized: "Aa-thit nee chan yung maak", english: "This week I am very busy" } },
-      { romanized: "Aa-thit naa", script: "อาทิตย์หน้า", english: "Next week",
-        example: { thai: "อาทิตย์หน้าเราเจอกัน", romanized: "Aa-thit naa rao joe gan", english: "Next week we will meet" } },
-      { romanized: "Aa-thit thee laew", script: "อาทิตย์ที่แล้ว", english: "Last week",
-        example: { thai: "อาทิตย์ที่แล้วฉันป่วย", romanized: "Aa-thit thee laew chan bpuay", english: "Last week I was sick" } },
-      { romanized: "Bpee nee", script: "ปีนี้", english: "This year",
-        example: { thai: "ปีนี้คือปี 2569", romanized: "Bpee nee khue bpee sawng-phan haa-roi hok-sip gaao", english: "This year is 2569 (Buddhist Era)" } },
-      { romanized: "Bpee naa", script: "ปีหน้า", english: "Next year",
-        example: { thai: "ปีหน้าฉันจะเรียนภาษาไทย", romanized: "Bpee naa chan ja rian phaa-saa Thai", english: "Next year I will study Thai" } }
-    ]
-  },
-  {
-    id: "months-1-6",
-    label: "Months (Jan–Jun)",
-    emoji: "🌸",
-    pairs: [
-      { romanized: "Mok-ka-raa-khom", script: "มกราคม", english: "January",
-        example: { thai: "เดือนมกราคมอากาศเย็น", romanized: "Duean Mok-ka-raa-khom aa-gaat yen", english: "In January the weather is cool" } },
-      { romanized: "Kum-phaa-phan", script: "กุมภาพันธ์", english: "February",
-        example: { thai: "เดือนกุมภาพันธ์มีวันวาเลนไทน์", romanized: "Duean Kum-phaa-phan mee Wan Waa-len-thai", english: "February has Valentine's Day" } },
-      { romanized: "Mee-naa-khom", script: "มีนาคม", english: "March",
-        example: { thai: "เดือนนี้คือเดือนมีนาคม", romanized: "Duean nee khue Duean Mee-naa-khom", english: "This month is March" } },
-      { romanized: "May-saa-yon", script: "เมษายน", english: "April",
-        example: { thai: "เดือนเมษายนมีสงกรานต์", romanized: "Duean May-saa-yon mee Song-graan", english: "April has Songkran festival" } },
-      { romanized: "Phruet-sa-phaa-khom", script: "พฤษภาคม", english: "May",
-        example: { thai: "เดือนพฤษภาคมฝนเริ่มตก", romanized: "Duean Phruet-sa-phaa-khom fon roem tok", english: "In May the rain starts" } },
-      { romanized: "Mi-thu-naa-yon", script: "มิถุนายน", english: "June",
-        example: { thai: "เดือนมิถุนายนฉันมีวันหยุด", romanized: "Duean Mi-thu-naa-yon chan mee wan-yut", english: "In June I have a holiday" } }
-    ]
-  },
-  {
-    id: "months-7-12",
-    label: "Months (Jul–Dec)",
-    emoji: "🍂",
-    pairs: [
-      { romanized: "Ka-rak-ka-daa-khom", script: "กรกฎาคม", english: "July",
-        example: { thai: "เดือนกรกฎาคมร้อนมาก", romanized: "Duean Ka-rak-ka-daa-khom rawn maak", english: "July is very hot" } },
-      { romanized: "Sing-haa-khom", script: "สิงหาคม", english: "August",
-        example: { thai: "เดือนสิงหาคมเป็นวันแม่", romanized: "Duean Sing-haa-khom bpen Wan Mae", english: "Mother's Day is in August" } },
-      { romanized: "Kan-yaa-yon", script: "กันยายน", english: "September",
-        example: { thai: "เดือนกันยายนฝนตกมาก", romanized: "Duean Kan-yaa-yon fon tok maak", english: "It rains a lot in September" } },
-      { romanized: "Tu-laa-khom", script: "ตุลาคม", english: "October",
-        example: { thai: "เดือนตุลาคมอากาศเริ่มเย็น", romanized: "Duean Tu-laa-khom aa-gaat roem yen", english: "The weather starts cooling in October" } },
-      { romanized: "Phruet-sa-ji-kaa-yon", script: "พฤศจิกายน", english: "November",
-        example: { thai: "เดือนพฤศจิกายนมีลอยกระทง", romanized: "Duean Phruet-sa-ji-kaa-yon mee Loi Gra-thong", english: "November has Loy Krathong festival" } },
-      { romanized: "Than-waa-khom", script: "ธันวาคม", english: "December",
-        example: { thai: "เดือนธันวาคมเป็นสิ้นปี", romanized: "Duean Than-waa-khom bpen sin bpee", english: "December is the end of the year" } }
-    ]
-  },
-  {
-    id: "time-of-day",
-    label: "Time of Day",
-    emoji: "🌅",
-    pairs: [
-      { romanized: "Dtorn chao", script: "ตอนเช้า", english: "Morning",
-        example: { thai: "ตอนเช้าฉันกินข้าว", romanized: "Dtorn chao chan gin khaao", english: "In the morning I eat rice" } },
-      { romanized: "Dtorn baai", script: "ตอนบ่าย", english: "Afternoon",
-        example: { thai: "ตอนบ่ายอากาศร้อน", romanized: "Dtorn baai aa-gaat rawn", english: "In the afternoon it is hot" } },
-      { romanized: "Dtorn yen", script: "ตอนเย็น", english: "Evening",
-        example: { thai: "ตอนเย็นเราไปวิ่ง", romanized: "Dtorn yen rao bpai wing", english: "In the evening we go running" } },
-      { romanized: "Dtorn glang kheun", script: "ตอนกลางคืน", english: "Night",
-        example: { thai: "ตอนกลางคืนดาวสวย", romanized: "Dtorn glang kheun daao suay", english: "At night the stars are beautiful" } },
-      { romanized: "Dton nee", script: "ตอนนี้", english: "Now",
-        example: { thai: "ตอนนี้กี่โมง", romanized: "Dton nee gii moong", english: "What time is it now?" } },
-      { romanized: "Chua-mohng", script: "ชั่วโมง", english: "Hour",
-        example: { thai: "รอสองชั่วโมง", romanized: "Raw sawng chua-mohng", english: "Wait two hours" } },
-      { romanized: "Naa-thee", script: "นาที", english: "Minute",
-        example: { thai: "อีกห้านาที", romanized: "Eek haa naa-thee", english: "Five more minutes" } }
-    ]
-  },
-  {
-    id: "numbers",
-    label: "Numbers 1–10",
-    emoji: "🔢",
-    pairs: [
-      { romanized: "Nueng", script: "หนึ่ง", english: "One (1)",
-        example: { thai: "ขอน้ำหนึ่งแก้ว", romanized: "Khaaw naam nueng gaew", english: "One glass of water please" } },
-      { romanized: "Sawng", script: "สอง", english: "Two (2)",
-        example: { thai: "ฉันมีแมวสองตัว", romanized: "Chan mee maew sawng dtua", english: "I have two cats" } },
-      { romanized: "Saam", script: "สาม", english: "Three (3)",
-        example: { thai: "สามคนไปด้วยกัน", romanized: "Saam khon bpai duay gan", english: "Three people go together" } },
-      { romanized: "See", script: "สี่", english: "Four (4)",
-        example: { thai: "หนึ่งเดือนมีสี่อาทิตย์", romanized: "Nueng duean mee see aa-thit", english: "One month has four weeks" } },
-      { romanized: "Haa", script: "ห้า", english: "Five (5)",
-        example: { thai: "ทำงานห้าวัน", romanized: "Tham-ngaan haa wan", english: "Work five days" } },
-      { romanized: "Hok", script: "หก", english: "Six (6)",
-        example: { thai: "ตื่นหกโมงเช้า", romanized: "Dtuen hok moong chao", english: "Wake up at six in the morning" } },
-      { romanized: "Jet", script: "เจ็ด", english: "Seven (7)",
-        example: { thai: "หนึ่งอาทิตย์มีเจ็ดวัน", romanized: "Nueng aa-thit mee jet wan", english: "One week has seven days" } },
-      { romanized: "Bpaet", script: "แปด", english: "Eight (8)",
-        example: { thai: "นอนแปดชั่วโมง", romanized: "Nawn bpaet chua-mohng", english: "Sleep eight hours" } },
-      { romanized: "Gaao", script: "เก้า", english: "Nine (9)",
-        example: { thai: "เก้าโมงเช้า", romanized: "Gaao moong chao", english: "Nine o'clock in the morning" } },
-      { romanized: "Sip", script: "สิบ", english: "Ten (10)",
-        example: { thai: "นับหนึ่งถึงสิบ", romanized: "Nap nueng thueng sip", english: "Count from one to ten" } }
+      { romanized: "Wan Jan", script: "วันจันทร์", english: "Monday", example: { thai: "วันนี้คือวันจันทร์", romanized: "Wan níi khue Wan Jan", english: "Today is Monday" } },
+      { romanized: "Wan Ang-khaan", script: "วันอังคาร", english: "Tuesday", example: { thai: "วันอังคารฉันไปทำงาน", romanized: "Wan Ang-khaan chǎn pai tham-ngaan", english: "On Tuesday I go to work" } },
+      { romanized: "Wan Phút", script: "วันพุธ", english: "Wednesday", example: { thai: "วันพุธเราไปตลาด", romanized: "Wan Phút rao pai dtà-làat", english: "On Wednesday we go to the market" } },
+      { romanized: "Wan Phá-rúe-hàt", script: "วันพฤหัสบดี", english: "Thursday", example: { thai: "วันพฤหัสบดีมีประชุม", romanized: "Wan Phá-rúe-hàt mii bprà-chum", english: "Thursday there is a meeting" } },
+      { romanized: "Wan Sùk", script: "วันศุกร์", english: "Friday", example: { thai: "วันศุกร์สนุกมาก", romanized: "Wan Sùk sà-nùk mâak", english: "Friday is very fun" } },
+      { romanized: "Wan Sǎo", script: "วันเสาร์", english: "Saturday", example: { thai: "วันเสาร์ฉันพักผ่อน", romanized: "Wan Sǎo chǎn phák-phàwn", english: "Saturday I relax" } },
+      { romanized: "Wan Aa-thít", script: "วันอาทิตย์", english: "Sunday", example: { thai: "วันอาทิตย์ไปวัด", romanized: "Wan Aa-thít pai wát", english: "On Sunday go to the temple" } }
     ]
   },
 
-  /* ── NEW TOPICS ── */
+  // ─── 2. Time Expressions ───
+  {
+    id: "time-expressions", emoji: "⏰", label: "Time Expressions",
+    pairs: [
+      { romanized: "Wan níi", script: "วันนี้", english: "Today", example: { thai: "วันนี้อากาศดี", romanized: "Wan níi aa-gàat dii", english: "Today the weather is good" } },
+      { romanized: "Phrûng níi", script: "พรุ่งนี้", english: "Tomorrow", example: { thai: "พรุ่งนี้ไปเที่ยว", romanized: "Phrûng níi pai thîao", english: "Tomorrow let's go out" } },
+      { romanized: "Mêua-waan", script: "เมื่อวาน", english: "Yesterday", example: { thai: "เมื่อวานฝนตก", romanized: "Mêua-waan fǒn dtòk", english: "Yesterday it rained" } },
+      { romanized: "Aa-thít níi", script: "อาทิตย์นี้", english: "This week", example: { thai: "อาทิตย์นี้ยุ่งมาก", romanized: "Aa-thít níi yûng mâak", english: "This week is very busy" } },
+      { romanized: "Aa-thít nâa", script: "อาทิตย์หน้า", english: "Next week", example: { thai: "อาทิตย์หน้าไปเชียงใหม่", romanized: "Aa-thít nâa pai Chiang-mài", english: "Next week going to Chiang Mai" } },
+      { romanized: "Aa-thít thîi-láew", script: "อาทิตย์ที่แล้ว", english: "Last week", example: { thai: "อาทิตย์ที่แล้วสนุกมาก", romanized: "Aa-thít thîi-láew sà-nùk mâak", english: "Last week was very fun" } },
+      { romanized: "Bpii níi", script: "ปีนี้", english: "This year", example: { thai: "ปีนี้ไปเมืองไทย", romanized: "Bpii níi pai meuang Thai", english: "This year going to Thailand" } },
+      { romanized: "Bpii nâa", script: "ปีหน้า", english: "Next year", example: { thai: "ปีหน้าจะเรียนภาษาไทย", romanized: "Bpii nâa jà rian phaa-sǎa Thai", english: "Next year will study Thai" } }
+    ]
+  },
 
+  // ─── 3. Months (Jan–Jun) ───
   {
-    id: "family",
-    label: "Family",
-    emoji: "👨‍👩‍👧",
+    id: "months-1-6", emoji: "🌸", label: "Months (Jan–Jun)",
     pairs: [
-      { romanized: "Phaw", script: "พ่อ", english: "Father",
-        example: { thai: "พ่ออยู่ที่บ้าน", romanized: "Phaw yuu tee baan", english: "Dad is at home" } },
-      { romanized: "Mae", script: "แม่", english: "Mother",
-        example: { thai: "แม่ทำอาหารอร่อย", romanized: "Mae tham aa-haan aroy", english: "Mom cooks delicious food" } },
-      { romanized: "Phaw-Phaw", script: "ปู่", english: "Paternal grandfather",
-        example: { thai: "ปู่อายุแปดสิบปี", romanized: "Phaw-Phaw aa-yu bpaet-sip bpee", english: "Grandpa is eighty years old" } },
-      { romanized: "Yaa", script: "ย่า", english: "Paternal grandmother",
-        example: { thai: "ย่าชอบปลูกต้นไม้", romanized: "Yaa chawp bplook dton-maai", english: "Grandma likes to grow plants" } },
-      { romanized: "Dtaa", script: "ตา", english: "Maternal grandfather",
-        example: { thai: "ตาพาไปตลาด", romanized: "Dtaa phaa bpai dta-laat", english: "Grandpa takes me to the market" } },
-      { romanized: "Yaai", script: "ยาย", english: "Maternal grandmother",
-        example: { thai: "ยายอยู่ต่างจังหวัด", romanized: "Yaai yuu dtaang jang-wat", english: "Grandma lives in the provinces" } },
-      { romanized: "Phii-chaai", script: "พี่ชาย", english: "Older brother",
-        example: { thai: "พี่ชายทำงานที่กรุงเทพ", romanized: "Phii-chaai tham-ngaan tee Grung-thep", english: "My older brother works in Bangkok" } },
-      { romanized: "Nawng-chaai", script: "น้องชาย", english: "Younger brother",
-        example: { thai: "น้องชายยังเรียนอยู่", romanized: "Nawng-chaai yang rian yuu", english: "My younger brother is still studying" } },
-      { romanized: "Phii-sao", script: "พี่สาว", english: "Older sister",
-        example: { thai: "พี่สาวของฉันสวยมาก", romanized: "Phii-sao khawng chan suay maak", english: "My older sister is very beautiful" } },
-      { romanized: "Nawng-sao", script: "น้องสาว", english: "Younger sister",
-        example: { thai: "น้องสาวชอบร้องเพลง", romanized: "Nawng-sao chawp rawng phleng", english: "My younger sister likes to sing" } },
-      { romanized: "Luk", script: "ลูก", english: "Child / children",
-        example: { thai: "เขามีลูกสองคน", romanized: "Khao mee luk sawng khon", english: "He has two children" } },
-      { romanized: "Phua", script: "ผัว", english: "Husband (informal)",
-        example: { thai: "ผัวฉันชอบกินส้มตำ", romanized: "Phua chan chawp gin som-dtam", english: "My husband likes papaya salad" } },
-      { romanized: "Mia", script: "เมีย", english: "Wife (informal)",
-        example: { thai: "เมียผมเก่งมาก", romanized: "Mia phom geng maak", english: "My wife is very talented" } },
-      { romanized: "Pheuan", script: "เพื่อน", english: "Friend",
-        example: { thai: "เพื่อนชวนไปกินข้าว", romanized: "Pheuan chuan bpai gin khaao", english: "My friend invites me to eat" } }
+      { romanized: "Mòk-kà-raa-khom", script: "มกราคม", english: "January", example: { thai: "เดือนมกราคมอากาศเย็น", romanized: "Deuan Mòk-kà-raa-khom aa-gàat yen", english: "January the weather is cool" } },
+      { romanized: "Kum-phaa-phan", script: "กุมภาพันธ์", english: "February", example: { thai: "กุมภาพันธ์มีวันวาเลนไทน์", romanized: "Kum-phaa-phan mii Wan Waa-len-thai", english: "February has Valentine's Day" } },
+      { romanized: "Mii-naa-khom", script: "มีนาคม", english: "March", example: { thai: "มีนาคมเริ่มร้อน", romanized: "Mii-naa-khom rôem rón", english: "March starts getting hot" } },
+      { romanized: "Meh-sǎa-yon", script: "เมษายน", english: "April", example: { thai: "เมษายนมีสงกรานต์", romanized: "Meh-sǎa-yon mii Sǒng-graan", english: "April has Songkran" } },
+      { romanized: "Phruét-sà-phaa-khom", script: "พฤษภาคม", english: "May", example: { thai: "พฤษภาคมฝนเริ่มตก", romanized: "Phruét-sà-phaa-khom fǒn rôem dtòk", english: "May the rain starts" } },
+      { romanized: "Mí-thù-naa-yon", script: "มิถุนายน", english: "June", example: { thai: "มิถุนายนฝนตกเยอะ", romanized: "Mí-thù-naa-yon fǒn dtòk yóe", english: "June has lots of rain" } }
     ]
   },
+
+  // ─── 4. Months (Jul–Dec) ───
   {
-    id: "basic-verbs",
-    label: "Basic Verbs",
-    emoji: "💬",
+    id: "months-7-12", emoji: "🍂", label: "Months (Jul–Dec)",
     pairs: [
-      { romanized: "Gin", script: "กิน", english: "To eat",
-        example: { thai: "ฉันกินข้าวแล้ว", romanized: "Chan gin khaao laew", english: "I already ate rice" } },
-      { romanized: "Deum", script: "ดื่ม", english: "To drink",
-        example: { thai: "คุณดื่มน้ำไหม", romanized: "Khun deum naam mai", english: "Do you drink water?" } },
-      { romanized: "Rian", script: "เรียน", english: "To study / learn",
-        example: { thai: "ฉันเรียนภาษาไทย", romanized: "Chan rian phaa-saa Thai", english: "I study Thai language" } },
-      { romanized: "Tham-ngaan", script: "ทำงาน", english: "To work",
-        example: { thai: "เขาทำงานทุกวัน", romanized: "Khao tham-ngaan thuk wan", english: "He works every day" } },
-      { romanized: "Nawn", script: "นอน", english: "To sleep",
-        example: { thai: "ฉันนอนแปดชั่วโมง", romanized: "Chan nawn bpaet chua-mohng", english: "I sleep eight hours" } },
-      { romanized: "Pai", script: "ไป", english: "To go",
-        example: { thai: "เราไปตลาดกัน", romanized: "Rao bpai dta-laat gan", english: "Let's go to the market" } },
-      { romanized: "Maa", script: "มา", english: "To come",
-        example: { thai: "มาที่นี่เลย", romanized: "Maa tee nee loei", english: "Come here!" } },
-      { romanized: "Phoot", script: "พูด", english: "To speak / talk",
-        example: { thai: "คุณพูดไทยได้ไหม", romanized: "Khun phoot Thai dai mai", english: "Can you speak Thai?" } },
-      { romanized: "Seu", script: "ซื้อ", english: "To buy",
-        example: { thai: "ฉันซื้อผลไม้ที่ตลาด", romanized: "Chan seu phon-la-maai tee dta-laat", english: "I buy fruit at the market" } },
-      { romanized: "Khai", script: "ขาย", english: "To sell",
-        example: { thai: "เขาขายอาหารที่ร้าน", romanized: "Khao khai aa-haan tee raan", english: "He sells food at the shop" } }
+      { romanized: "Kà-rák-kà-daa-khom", script: "กรกฎาคม", english: "July", example: { thai: "กรกฎาคมไปทะเล", romanized: "Kà-rák-kà-daa-khom pai thá-lee", english: "July go to the beach" } },
+      { romanized: "Sǐng-hǎa-khom", script: "สิงหาคม", english: "August", example: { thai: "สิงหาคมเป็นวันแม่", romanized: "Sǐng-hǎa-khom pen Wan Mâae", english: "August is Mother's Day" } },
+      { romanized: "Kan-yaa-yon", script: "กันยายน", english: "September", example: { thai: "กันยายนยังมีฝน", romanized: "Kan-yaa-yon yang mii fǒn", english: "September still has rain" } },
+      { romanized: "Tù-laa-khom", script: "ตุลาคม", english: "October", example: { thai: "ตุลาคมอากาศเริ่มเย็น", romanized: "Tù-laa-khom aa-gàat rôem yen", english: "October weather starts cooling" } },
+      { romanized: "Phruét-sà-jì-kaa-yon", script: "พฤศจิกายน", english: "November", example: { thai: "พฤศจิกายนมีลอยกระทง", romanized: "Phruét-sà-jì-kaa-yon mii Loi Grà-thong", english: "November has Loy Krathong" } },
+      { romanized: "Than-waa-khom", script: "ธันวาคม", english: "December", example: { thai: "ธันวาคมเป็นปีใหม่", romanized: "Than-waa-khom pen Bpii Mài", english: "December is New Year" } }
     ]
   },
+
+  // ─── 5. Time of Day ───
   {
-    id: "numbers-extended",
-    label: "Numbers — Extended",
-    emoji: "🔢",
+    id: "time-of-day", emoji: "🌅", label: "Time of Day",
     pairs: [
-      { romanized: "Nueng", script: "หนึ่ง", english: "One (1)",
-        example: { thai: "ฉันมีแมวหนึ่งตัว", romanized: "Chan mee maew nueng dtua", english: "I have one cat" } },
-      { romanized: "Sip", script: "สิบ", english: "Ten (10)",
-        example: { thai: "สิบบาทซื้ออะไรได้", romanized: "Sip baht seu a-rai dai", english: "What can ten baht buy?" } },
-      { romanized: "Sip-et", script: "สิบเอ็ด", english: "Eleven (11)",
-        note: "เอ็ด (et) replaces หนึ่ง (nueng) in the ones position after 10",
-        example: { thai: "สิบเอ็ดโมงแล้ว", romanized: "Sip-et moong laew", english: "It's already eleven o'clock" } },
-      { romanized: "Yee-sip", script: "ยี่สิบ", english: "Twenty (20)",
-        note: "ยี่ (yii) replaces สอง (sawng) specifically for the tens digit 20",
-        example: { thai: "เขาอายุยี่สิบปี", romanized: "Khao aa-yu yee-sip bpee", english: "He is twenty years old" } },
-      { romanized: "Yee-sip-et", script: "ยี่สิบเอ็ด", english: "Twenty-one (21)",
-        note: "Combines both special rules: yii for 20s, et for 1s",
-        example: { thai: "ยี่สิบเอ็ดวัน", romanized: "Yee-sip-et wan", english: "Twenty-one days" } },
-      { romanized: "Saam-sip", script: "สามสิบ", english: "Thirty (30)",
-        example: { thai: "สามสิบนาที", romanized: "Saam-sip naa-thee", english: "Thirty minutes" } },
-      { romanized: "Roi", script: "ร้อย", english: "One hundred (100)",
-        example: { thai: "ราคาร้อยบาท", romanized: "Raakhaa roi baht", english: "The price is one hundred baht" } },
-      { romanized: "Sawng-roi", script: "สองร้อย", english: "Two hundred (200)",
-        example: { thai: "สองร้อยบาทแพงไป", romanized: "Sawng-roi baht phaeng bpai", english: "Two hundred baht is too expensive" } },
-      { romanized: "Nueng-phan", script: "หนึ่งพัน", english: "One thousand (1,000)",
-        example: { thai: "ราคาหนึ่งพันบาท", romanized: "Raakhaa nueng-phan baht", english: "The price is one thousand baht" } },
-      { romanized: "Haa-phan", script: "ห้าพัน", english: "Five thousand (5,000)",
-        example: { thai: "ค่าเช่าห้าพันบาท", romanized: "Khaa-chao haa-phan baht", english: "Rent is five thousand baht" } },
-      { romanized: "Nueng-muen", script: "หนึ่งหมื่น", english: "Ten thousand (10,000)",
-        note: "Thai uses หมื่น (muen) for 10,000 — a unique place value with no English equivalent",
-        example: { thai: "เงินเดือนหนึ่งหมื่นบาท", romanized: "Ngoen-duean nueng-muen baht", english: "Monthly salary is ten thousand baht" } },
-      { romanized: "Nueng-saen", script: "หนึ่งแสน", english: "One hundred thousand (100,000)",
-        note: "Thai uses แสน (saen) for 100,000 — another unique place value",
-        example: { thai: "รถราคาหนึ่งแสนบาท", romanized: "Rot raakhaa nueng-saen baht", english: "The car costs one hundred thousand baht" } },
-      { romanized: "Nueng-laan", script: "หนึ่งล้าน", english: "One million (1,000,000)",
-        example: { thai: "เงินหนึ่งล้านบาท", romanized: "Ngoen nueng-laan baht", english: "One million baht" } },
-      { romanized: "Sawng-laan", script: "สองล้าน", english: "Two million (2,000,000)",
-        example: { thai: "บ้านราคาสองล้านบาท", romanized: "Baan raakhaa sawng-laan baht", english: "The house costs two million baht" } },
-      { romanized: "Sip-laan", script: "สิบล้าน", english: "Ten million (10,000,000)",
-        example: { thai: "ล็อตเตอรี่สิบล้านบาท", romanized: "Lot-toe-rii sip-laan baht", english: "Lottery is ten million baht" } },
-      { romanized: "Sip-phan", script: "สิบพัน", english: "Ten thousand (10,000)",
-        note: "สิบพัน is understood but หนึ่งหมื่น (muen) is the standard Thai way",
-        example: { thai: "ราคาสิบพันบาท", romanized: "Raakhaa sip-phan baht", english: "The price is ten thousand baht" } }
+      { romanized: "Cháo", script: "เช้า", english: "Morning", example: { thai: "ตอนเช้ากินกาแฟ", romanized: "Dtawn cháo gin gaa-fae", english: "In the morning drink coffee" } },
+      { romanized: "Bàai", script: "บ่าย", english: "Afternoon", example: { thai: "ตอนบ่ายอากาศร้อน", romanized: "Dtawn bàai aa-gàat rón", english: "In the afternoon it's hot" } },
+      { romanized: "Yen", script: "เย็น", english: "Evening", example: { thai: "ตอนเย็นไปวิ่ง", romanized: "Dtawn yen pai wîng", english: "In the evening go running" } },
+      { romanized: "Glang-kheun", script: "กลางคืน", english: "Nighttime", example: { thai: "กลางคืนเงียบมาก", romanized: "Glang-kheun ngîap mâak", english: "At night it's very quiet" } },
+      { romanized: "Chuâ-mohng", script: "ชั่วโมง", english: "Hour", example: { thai: "รอหนึ่งชั่วโมง", romanized: "Raw nùeng chuâ-mohng", english: "Wait one hour" } },
+      { romanized: "Naa-thii", script: "นาที", english: "Minute", example: { thai: "รอห้านาที", romanized: "Raw hâa naa-thii", english: "Wait five minutes" } },
+      { romanized: "Wi-naa-thii", script: "วินาที", english: "Second", example: { thai: "แค่สามสิบวินาที", romanized: "Khâe sǎam-sìp wi-naa-thii", english: "Just thirty seconds" } }
     ]
   },
+
+  // ─── 6. Numbers 1–10 ───
   {
-    id: "kitchenware",
-    label: "Kitchenware",
-    emoji: "🍽️",
+    id: "numbers", emoji: "🔢", label: "Numbers 1–10",
     pairs: [
-      { romanized: "Gaew", script: "แก้ว", english: "Glass / cup (for drinks)",
-        example: { thai: "ขอน้ำหนึ่งแก้ว", romanized: "Khaaw naam nueng gaew", english: "One glass of water please" } },
-      { romanized: "Jaan", script: "จาน", english: "Plate",
-        example: { thai: "วางอาหารบนจาน", romanized: "Waang aa-haan bon jaan", english: "Put food on the plate" } },
-      { romanized: "Thuay", script: "ถ้วย", english: "Bowl / cup (small)",
-        example: { thai: "ขอกาแฟหนึ่งถ้วย", romanized: "Khaaw gaa-fae nueng thuay", english: "One cup of coffee please" } },
-      { romanized: "Dtakiap", script: "ตะเกียบ", english: "Chopsticks",
-        example: { thai: "คนไทยใช้ตะเกียบกินก๋วยเตี๋ยว", romanized: "Khon Thai chai dtakiap gin guay-dtiao", english: "Thai people use chopsticks for noodles" } },
-      { romanized: "Chawn", script: "ช้อน", english: "Spoon",
-        example: { thai: "กินข้าวด้วยช้อน", romanized: "Gin khaao duay chawn", english: "Eat rice with a spoon" } },
-      { romanized: "Sawm", script: "ส้อม", english: "Fork",
-        example: { thai: "ช้อนกับส้อมอยู่บนโต๊ะ", romanized: "Chawn gap sawm yuu bon dto", english: "Spoon and fork are on the table" } },
-      { romanized: "Meet", script: "มีด", english: "Knife",
-        example: { thai: "ใช้มีดหั่นผัก", romanized: "Chai meet han phak", english: "Use a knife to cut vegetables" } },
-      { romanized: "Maw", script: "หม้อ", english: "Pot",
-        example: { thai: "ต้มน้ำในหม้อ", romanized: "Dtom naam nai maw", english: "Boil water in the pot" } },
-      { romanized: "Kratan", script: "กระทะ", english: "Wok / frying pan",
-        example: { thai: "ผัดผักในกระทะ", romanized: "Phat phak nai kratan", english: "Stir-fry vegetables in the wok" } },
-      { romanized: "Chin", script: "ชิ้น", english: "Piece / slice (classifier)",
-        note: "ชิ้น (chin) is a classifier for pieces of food — e.g. หนึ่งชิ้น (nueng chin) = one piece",
-        example: { thai: "ขอเค้กหนึ่งชิ้น", romanized: "Khaaw cake nueng chin", english: "One piece of cake please" } }
+      { romanized: "Nùeng", script: "หนึ่ง", english: "One (1)", example: { thai: "ฉันมีแมวหนึ่งตัว", romanized: "Chǎn mii maew nùeng dtuua", english: "I have one cat" } },
+      { romanized: "Sǎawng", script: "สอง", english: "Two (2)", example: { thai: "มีสองคน", romanized: "Mii sǎawng khon", english: "There are two people" } },
+      { romanized: "Sǎam", script: "สาม", english: "Three (3)", example: { thai: "ขอน้ำสามแก้ว", romanized: "Khǎaw náam sǎam gâew", english: "Three glasses of water please" } },
+      { romanized: "Sìi", script: "สี่", english: "Four (4)", example: { thai: "โต๊ะมีสี่ขา", romanized: "Dtó mii sìi khǎa", english: "A table has four legs" } },
+      { romanized: "Hâa", script: "ห้า", english: "Five (5)", example: { thai: "มีห้านิ้ว", romanized: "Mii hâa níu", english: "There are five fingers" } },
+      { romanized: "Hòk", script: "หก", english: "Six (6)", example: { thai: "หกโมงเช้าตื่นนอน", romanized: "Hòk mohng cháo dtèun nawn", english: "Wake up at 6 AM" } },
+      { romanized: "Jèt", script: "เจ็ด", english: "Seven (7)", example: { thai: "อาทิตย์มีเจ็ดวัน", romanized: "Aa-thít mii jèt wan", english: "A week has seven days" } },
+      { romanized: "Bpàet", script: "แปด", english: "Eight (8)", example: { thai: "เริ่มงานแปดโมง", romanized: "Rôem ngaan bpàet mohng", english: "Work starts at eight" } },
+      { romanized: "Gâo", script: "เก้า", english: "Nine (9)", example: { thai: "เลขเก้าเป็นเลขมงคล", romanized: "Lêek gâo pen lêek mong-khon", english: "Nine is a lucky number" } },
+      { romanized: "Sìp", script: "สิบ", english: "Ten (10)", example: { thai: "นับหนึ่งถึงสิบ", romanized: "Náp nùeng thǔeng sìp", english: "Count from one to ten" } }
     ]
   },
+
+  // ─── 7. Pronouns & Questions ───
   {
-    id: "fruits",
-    label: "Fruits",
-    emoji: "🍉",
+    id: "pronouns-questions", emoji: "👤", label: "Pronouns & Questions", essential: true,
     pairs: [
-      { romanized: "Ma-muang", script: "มะม่วง", english: "Mango",
-        example: { thai: "มะม่วงสุกหวานมาก", romanized: "Ma-muang suk waan maak", english: "Ripe mango is very sweet" } },
-      { romanized: "Ma-laaw", script: "มะละกอ", english: "Papaya",
-        example: { thai: "ส้มตำใช้มะละกอ", romanized: "Som-dtam chai ma-laaw", english: "Papaya salad uses papaya" } },
-      { romanized: "Kluay", script: "กล้วย", english: "Banana",
-        example: { thai: "กล้วยราคาถูก", romanized: "Kluay raakhaa thuuk", english: "Bananas are cheap" } },
-      { romanized: "Sapparot", script: "สับปะรด", english: "Pineapple",
-        example: { thai: "สับปะรดเปรี้ยวนิดหน่อย", romanized: "Sapparot bpriao nit-noi", english: "Pineapple is a little sour" } },
-      { romanized: "Taeng-mo", script: "แตงโม", english: "Watermelon",
-        example: { thai: "หน้าร้อนกินแตงโมอร่อย", romanized: "Naa rawn gin taeng-mo aroy", english: "Watermelon is delicious in summer" } },
-      { romanized: "Som", script: "ส้ม", english: "Orange",
-        example: { thai: "น้ำส้มสดอร่อยมาก", romanized: "Naam som sot aroy maak", english: "Fresh orange juice is very delicious" } },
-      { romanized: "Linjee", script: "ลิ้นจี่", english: "Lychee",
-        example: { thai: "ลิ้นจี่มีแค่ฤดูเดียว", romanized: "Linjee mee khae rue-duu diao", english: "Lychee is available only one season" } },
-      { romanized: "Thurian", script: "ทุเรียน", english: "Durian",
-        example: { thai: "ทุเรียนเป็นราชาผลไม้", romanized: "Thurian bpen raa-chaa phon-la-maai", english: "Durian is the king of fruits" } },
-      { romanized: "Mangkut", script: "มังคุด", english: "Mangosteen",
-        example: { thai: "มังคุดเป็นราชินีผลไม้", romanized: "Mangkut bpen raa-chi-nee phon-la-maai", english: "Mangosteen is the queen of fruits" } },
-      { romanized: "Farang", script: "ฝรั่ง", english: "Guava",
-        note: "ฝรั่ง (farang) also means 'foreigner' or 'Western person' — same word, same tone! Context tells you which meaning.",
-        example: { thai: "ฝรั่งชอบกินฝรั่ง", romanized: "Farang chawp gin farang", english: "The foreigner likes to eat guava" } }
+      { romanized: "Chǎn / Phǒm", script: "ฉัน / ผม", english: "I / me", example: { thai: "ฉันชื่อมะลิ", romanized: "Chǎn chêu Má-lí", english: "My name is Mali" }, note: "chǎn = female/casual, phǒm = male/formal" },
+      { romanized: "Khun", script: "คุณ", english: "You (polite)", example: { thai: "คุณชื่ออะไร?", romanized: "Khun chêu à-rai?", english: "What is your name?" } },
+      { romanized: "Khǎo", script: "เขา", english: "He / She / They", example: { thai: "เขาเป็นคนไทย", romanized: "Khǎo pen khon Thai", english: "He/she is Thai" } },
+      { romanized: "Rao", script: "เรา", english: "We / us", example: { thai: "เราไปด้วยกัน", romanized: "Rao pai dûay-gan", english: "Let's go together" } },
+      { romanized: "Phûak-khǎo", script: "พวกเขา", english: "They / them (group)", example: { thai: "พวกเขาอยู่ที่ไหน?", romanized: "Phûak-khǎo yùu thîi-nǎi?", english: "Where are they?" } },
+      { romanized: "Khrai?", script: "ใคร?", english: "Who?", example: { thai: "คนนั้นคือใคร?", romanized: "Khon nán khue khrai?", english: "Who is that person?" } },
+      { romanized: "À-rai?", script: "อะไร?", english: "What?", example: { thai: "คุณทำอะไร?", romanized: "Khun tham à-rai?", english: "What are you doing?" } },
+      { romanized: "Tîi-nǎi?", script: "ที่ไหน?", english: "Where?", example: { thai: "ห้องน้ำอยู่ที่ไหน?", romanized: "Hâwng-náam yùu thîi-nǎi?", english: "Where is the bathroom?" } },
+      { romanized: "Tham-mai?", script: "ทำไม?", english: "Why?", example: { thai: "ทำไมมาสาย?", romanized: "Tham-mai maa sǎai?", english: "Why are you late?" } },
+      { romanized: "Yang-ngai?", script: "ยังไง?", english: "How?", example: { thai: "ไปยังไง?", romanized: "Pai yang-ngai?", english: "How do I get there?" } },
+      { romanized: "Gìi?", script: "กี่?", english: "How many?", example: { thai: "คุณมีพี่น้องกี่คน?", romanized: "Khun mii phîi-náwng gìi khon?", english: "How many siblings do you have?" } },
+      { romanized: "Tâo-rai?", script: "เท่าไร?", english: "How much?", example: { thai: "อันนี้เท่าไร?", romanized: "An níi tâo-rai?", english: "How much is this?" } }
     ]
   },
+
+  // ─── 8. Connectors & Particles ───
   {
-    id: "meats",
-    label: "Meats & Proteins",
-    emoji: "🍖",
+    id: "connectors-particles", emoji: "🔗", label: "Connectors & Particles", essential: true,
     pairs: [
-      { romanized: "Neua", script: "เนื้อ", english: "Beef / meat (general)",
-        example: { thai: "ผัดเนื้ออร่อยมาก", romanized: "Phat neua aroy maak", english: "Stir-fried beef is very delicious" } },
-      { romanized: "Muu", script: "หมู", english: "Pork",
-        example: { thai: "ข้าวหมูแดงจานนี้อร่อย", romanized: "Khaao muu daeng jaan nee aroy", english: "This red pork rice is delicious" } },
-      { romanized: "Gai", script: "ไก่", english: "Chicken",
-        example: { thai: "ข้าวมันไก่อร่อย", romanized: "Khaao man gai aroy", english: "Chicken rice is delicious" } },
-      { romanized: "Bplaa", script: "ปลา", english: "Fish",
-        example: { thai: "ปลาทอดกรอบมาก", romanized: "Bplaa thawt grawp maak", english: "The fried fish is very crispy" } },
-      { romanized: "Goong", script: "กุ้ง", english: "Shrimp / prawn",
-        example: { thai: "ต้มยำกุ้งเผ็ดมาก", romanized: "Dtom-yam goong phet maak", english: "Tom yum shrimp is very spicy" } },
-      { romanized: "Hoi", script: "หอย", english: "Shellfish / clam",
-        example: { thai: "หอยทอดกินกับซอส", romanized: "Hoi thawt gin gap sauce", english: "Eat fried mussels with sauce" } },
-      { romanized: "Khai", script: "ไข่", english: "Egg",
-        note: "ไข่ (khai) means egg — same romanization as ขาย (khai, to sell) but different Thai script and tone!",
-        example: { thai: "ขอไข่ดาวสองฟอง", romanized: "Khaaw khai daao sawng fawng", english: "Two fried eggs please" } },
-      { romanized: "Tao-huu", script: "เต้าหู้", english: "Tofu",
-        example: { thai: "เต้าหู้ทอดอร่อยนะ", romanized: "Tao-huu thawt aroy na", english: "Fried tofu is delicious" } }
+      { romanized: "Khâ / Khráp", script: "ค่ะ / ครับ", english: "Polite particle", example: { thai: "ขอบคุณค่ะ", romanized: "Khàawp-khun khâ", english: "Thank you (female)" }, note: "khâ = female, khráp = male — add to end of sentences for politeness" },
+      { romanized: "Mâi", script: "ไม่", english: "No / not", example: { thai: "ฉันไม่ชอบ", romanized: "Chǎn mâi châwp", english: "I don't like it" } },
+      { romanized: "Mǎi?", script: "ไหม?", english: "Question particle", example: { thai: "อร่อยไหม?", romanized: "À-ròi mǎi?", english: "Is it delicious?" }, note: "Add mǎi to end of any statement to make it a yes/no question" },
+      { romanized: "Láew", script: "แล้ว", english: "Already / then / done", example: { thai: "กินข้าวแล้ว", romanized: "Gin khâao láew", english: "Already ate" } },
+      { romanized: "Yang", script: "ยัง", english: "Still / yet", example: { thai: "ยังไม่ได้กิน", romanized: "Yang mâi dâi gin", english: "Haven't eaten yet" } },
+      { romanized: "Gâw", script: "ก็", english: "Also / then / so", example: { thai: "ฉันก็ชอบ", romanized: "Chǎn gâw châwp", english: "I also like it" } },
+      { romanized: "Dtàe", script: "แต่", english: "But", example: { thai: "อร่อยแต่แพง", romanized: "À-ròi dtàe phaeng", english: "Delicious but expensive" } },
+      { romanized: "Láe", script: "และ", english: "And", example: { thai: "พ่อและแม่", romanized: "Phâaw láe mâae", english: "Father and mother" } },
+      { romanized: "Rěu", script: "หรือ", english: "Or", example: { thai: "ชาหรือกาแฟ?", romanized: "Chaa rěu gaa-fae?", english: "Tea or coffee?" } },
+      { romanized: "Khǎawng", script: "ของ", english: "Of / belonging to", example: { thai: "นี่ของฉัน", romanized: "Nîi khǎawng chǎn", english: "This is mine" } },
+      { romanized: "Thîi", script: "ที่", english: "At / which / that", example: { thai: "ร้านที่อร่อย", romanized: "Ráan thîi à-ròi", english: "The restaurant that is delicious" } },
+      { romanized: "Gàp", script: "กับ", english: "With / and", example: { thai: "ไปกับเพื่อน", romanized: "Pai gàp phêuan", english: "Go with a friend" } },
+      { romanized: "Jà", script: "จะ", english: "Will (future)", example: { thai: "ฉันจะไป", romanized: "Chǎn jà pai", english: "I will go" } },
+      { romanized: "Khuan", script: "ควร", english: "Should", example: { thai: "คุณควรพักผ่อน", romanized: "Khun khuan phák-phàwn", english: "You should rest" } }
     ]
   },
+
+  // ─── 9. Adjectives ───
   {
-    id: "ingredients",
-    label: "Ingredients",
-    emoji: "🧄",
+    id: "adjectives", emoji: "✨", label: "Adjectives",
     pairs: [
-      { romanized: "Naam-dtaan", script: "น้ำตาล", english: "Sugar",
-        example: { thai: "ใส่น้ำตาลนิดหน่อย", romanized: "Sai naam-dtaan nit-noi", english: "Add a little sugar" } },
-      { romanized: "Glua", script: "เกลือ", english: "Salt",
-        example: { thai: "อาหารนี้เค็มไปใส่เกลือเยอะ", romanized: "Aa-haan nee khem bpai sai glua yoe", english: "This food is too salty, too much salt" } },
-      { romanized: "Nam-man", script: "น้ำมัน", english: "Oil",
-        example: { thai: "ใส่น้ำมันในกระทะ", romanized: "Sai nam-man nai kratan", english: "Put oil in the wok" } },
-      { romanized: "Phrik", script: "พริก", english: "Chili",
-        example: { thai: "อาหารไทยใส่พริกเยอะ", romanized: "Aa-haan Thai sai phrik yoe", english: "Thai food uses a lot of chili" } },
-      { romanized: "Kratiam", script: "กระเทียม", english: "Garlic",
-        example: { thai: "ผัดกระเทียมหอมมาก", romanized: "Phat kratiam hawm maak", english: "Stir-fried garlic smells great" } },
-      { romanized: "Hua-hom", script: "หัวหอม", english: "Onion",
-        example: { thai: "หั่นหัวหอมทำให้ร้องไห้", romanized: "Han hua-hom tham hai rawng-hai", english: "Cutting onions makes you cry" } },
-      { romanized: "Manao", script: "มะนาว", english: "Lime",
-        example: { thai: "บีบมะนาวใส่ต้มยำ", romanized: "Beep manao sai dtom-yam", english: "Squeeze lime into tom yum" } },
-      { romanized: "Nam-bplaa", script: "น้ำปลา", english: "Fish sauce",
-        example: { thai: "น้ำปลาคือเครื่องปรุงสำคัญ", romanized: "Nam-bplaa khue khreuang-bprung sam-khan", english: "Fish sauce is an important seasoning" } },
-      { romanized: "Khing", script: "ขิง", english: "Ginger",
-        example: { thai: "ชาขิงร้อนอร่อย", romanized: "Chaa khing rawn aroy", english: "Hot ginger tea is delicious" } },
-      { romanized: "Bai-grapao", script: "ใบกะเพรา", english: "Thai basil",
-        example: { thai: "ผัดกะเพราใส่ใบกะเพราเยอะ", romanized: "Phat grapao sai bai-grapao yoe", english: "Pad krapao uses lots of basil" } }
+      { romanized: "Dii", script: "ดี", english: "Good", example: { thai: "อาหารร้านนี้ดี", romanized: "Aa-hǎan ráan níi dii", english: "This restaurant's food is good" } },
+      { romanized: "Mâi dii", script: "ไม่ดี", english: "Not good / bad", example: { thai: "อากาศไม่ดี", romanized: "Aa-gàat mâi dii", english: "The weather is bad" } },
+      { romanized: "À-ròi", script: "อร่อย", english: "Delicious", example: { thai: "ส้มตำอร่อยมาก", romanized: "Sôm-dtam à-ròi mâak", english: "Som tam is very delicious" } },
+      { romanized: "Sǔay", script: "สวย", english: "Beautiful", example: { thai: "ดอกไม้สวยจัง", romanized: "Dàwk-máai sǔay jang", english: "The flowers are so beautiful" } },
+      { romanized: "Nâa-rák", script: "น่ารัก", english: "Cute / adorable", example: { thai: "ลูกแมวน่ารักมาก", romanized: "Lûuk-maew nâa-rák mâak", english: "The kitten is very cute" } },
+      { romanized: "Yài", script: "ใหญ่", english: "Big / large", example: { thai: "บ้านนี้ใหญ่มาก", romanized: "Bâan níi yài mâak", english: "This house is very big" } },
+      { romanized: "Lék", script: "เล็ก", english: "Small / little", example: { thai: "ห้องเล็กแต่น่ารัก", romanized: "Hâwng lék dtàe nâa-rák", english: "The room is small but cute" } },
+      { romanized: "Raeng", script: "แรง", english: "Strong / intense", example: { thai: "ลมแรงมาก", romanized: "Lom raeng mâak", english: "The wind is very strong" } },
+      { romanized: "Nǎao", script: "หนาว", english: "Cold (weather)", example: { thai: "วันนี้หนาวมาก", romanized: "Wan níi nǎao mâak", english: "Today is very cold" } },
+      { romanized: "Rón", script: "ร้อน", english: "Hot (weather)", example: { thai: "เมืองไทยร้อนมาก", romanized: "Meuang Thai rón mâak", english: "Thailand is very hot" } },
+      { romanized: "Yen", script: "เย็น", english: "Cool / cold", example: { thai: "น้ำเย็นอร่อย", romanized: "Náam yen à-ròi", english: "Cold water is refreshing" } },
+      { romanized: "Glaang", script: "กลาง", english: "Middle / medium", example: { thai: "ขอไซส์กลาง", romanized: "Khǎaw sái glaang", english: "Medium size please" } },
+      { romanized: "Phaeng", script: "แพง", english: "Expensive", example: { thai: "กรุงเทพแพงมาก", romanized: "Grung-thêep phaeng mâak", english: "Bangkok is very expensive" } },
+      { romanized: "Thùuk", script: "ถูก", english: "Cheap / correct", example: { thai: "ร้านนี้ถูกมาก", romanized: "Ráan níi thùuk mâak", english: "This shop is very cheap" }, note: "ถูก means both 'cheap' AND 'correct' — context tells you which" },
+      { romanized: "Mài", script: "ใหม่", english: "New", example: { thai: "ซื้อรถใหม่", romanized: "Séu rót mài", english: "Buy a new car" }, note: "mài (new) vs mâi (not) — the diacritic is the only difference!" },
+      { romanized: "Gào", script: "เก่า", english: "Old (objects)", example: { thai: "โทรศัพท์เก่าแล้ว", romanized: "Thoo-rá-sàp gào láew", english: "The phone is old now" } }
     ]
   },
+
+  // ─── 10. Feelings & States ───
   {
-    id: "ordering-food",
-    label: "Ordering Food",
-    emoji: "🍜",
-    situation: true,
+    id: "feelings", emoji: "😊", label: "Feelings",
     pairs: [
-      { romanized: "Khaw...", script: "ขอ...", english: "I'd like... / Can I have...",
-        example: { thai: "ขอผัดไทยหนึ่งจาน", romanized: "Khaw phat-Thai nueng jaan", english: "I'd like one pad Thai please" } },
-      { romanized: "Arai dee?", script: "อะไรดี?", english: "What's good? / What do you recommend?",
-        example: { thai: "วันนี้อะไรดีครับ", romanized: "Wan nee arai dee khrap", english: "What's good today?" } },
-      { romanized: "Phet nit-noi", script: "เผ็ดนิดหน่อย", english: "A little spicy",
-        example: { thai: "ขอเผ็ดนิดหน่อยครับ", romanized: "Khaw phet nit-noi khrap", english: "A little spicy please" } },
-      { romanized: "Mai phet", script: "ไม่เผ็ด", english: "Not spicy",
-        example: { thai: "ขอไม่เผ็ดได้ไหม", romanized: "Khaw mai phet dai mai", english: "Can I have it not spicy?" } },
-      { romanized: "Aroy maak", script: "อร่อยมาก", english: "Very delicious",
-        example: { thai: "อาหารร้านนี้อร่อยมาก", romanized: "Aa-haan raan nee aroy maak", english: "This restaurant's food is very delicious" } },
-      { romanized: "Kep tang duay", script: "เก็บตังด้วย", english: "Bill please",
-        example: { thai: "เก็บตังด้วยครับ", romanized: "Kep tang duay khrap", english: "Check please!" } },
-      { romanized: "Tao-rai?", script: "เท่าไร?", english: "How much?",
-        example: { thai: "ทั้งหมดเท่าไรครับ", romanized: "Thang-mot tao-rai khrap", english: "How much is the total?" } },
-      { romanized: "Mai sai phak", script: "ไม่ใส่ผัก", english: "No vegetables please",
-        example: { thai: "ขอไม่ใส่ผักครับ", romanized: "Khaw mai sai phak khrap", english: "No vegetables please" } }
+      { romanized: "Dii-jai", script: "ดีใจ", english: "Happy / glad", example: { thai: "ฉันดีใจที่เจอคุณ", romanized: "Chǎn dii-jai thîi jur khun", english: "I'm glad to meet you" } },
+      { romanized: "Sǐa-jai", script: "เสียใจ", english: "Sad / sorry", example: { thai: "เสียใจด้วยนะ", romanized: "Sǐa-jai dûay ná", english: "I'm sorry about that" } },
+      { romanized: "Glua", script: "กลัว", english: "Scared / afraid", example: { thai: "ฉันกลัวงู", romanized: "Chǎn glua nguu", english: "I'm afraid of snakes" } },
+      { romanized: "Ngong", script: "งง", english: "Confused", example: { thai: "ฉันงงมาก", romanized: "Chǎn ngong mâak", english: "I'm very confused" } },
+      { romanized: "Nèuay", script: "เหนื่อย", english: "Tired", example: { thai: "วันนี้เหนื่อยมาก", romanized: "Wan níi nèuay mâak", english: "Today I'm very tired" } },
+      { romanized: "Hǐw-khâao", script: "หิวข้าว", english: "Hungry", example: { thai: "หิวข้าวจังเลย", romanized: "Hǐw-khâao jang loei", english: "So hungry!" }, note: "Literally 'hungry for rice' — rice is the Thai word for food/meal" },
+      { romanized: "Hǐw-náam", script: "หิวน้ำ", english: "Thirsty", example: { thai: "หิวน้ำมากเลย", romanized: "Hǐw-náam mâak loei", english: "Very thirsty!" }, note: "Literally 'hungry for water'" },
+      { romanized: "Ngîap", script: "เงียบ", english: "Quiet / silent", example: { thai: "เงียบหน่อยได้ไหม?", romanized: "Ngîap nòi dâi mǎi?", english: "Can you be quiet please?" } },
+      { romanized: "Sà-baai", script: "สบาย", english: "Comfortable / well", example: { thai: "สบายดีครับ", romanized: "Sà-baai dii khráp", english: "I'm well (male)" } },
+      { romanized: "Mâi sà-baai", script: "ไม่สบาย", english: "Unwell / sick", example: { thai: "วันนี้ไม่สบาย", romanized: "Wan níi mâi sà-baai", english: "Not feeling well today" } },
+      { romanized: "Sà-nùk", script: "สนุก", english: "Fun / enjoyable", example: { thai: "ปาร์ตี้สนุกมาก", romanized: "Bpaa-dtîi sà-nùk mâak", english: "The party is very fun" } },
+      { romanized: "Bèua", script: "เบื่อ", english: "Bored / fed up", example: { thai: "เบื่อแล้ว", romanized: "Bèua láew", english: "Bored already" } }
     ]
   },
+
+  // ─── 11. Locations & Directions ───
   {
-    id: "getting-around",
-    label: "Getting Around",
-    emoji: "🛺",
-    situation: true,
+    id: "locations-directions", emoji: "🧭", label: "Locations & Directions",
     pairs: [
-      { romanized: "Pai...dai mai?", script: "ไป...ได้ไหม?", english: "Can you take me to...?",
-        example: { thai: "ไปสยามได้ไหมครับ", romanized: "Pai Siam dai mai khrap", english: "Can you take me to Siam?" } },
-      { romanized: "Yut tee nee", script: "หยุดที่นี่", english: "Stop here",
-        example: { thai: "หยุดที่นี่ครับขอบคุณ", romanized: "Yut tee nee khrap khawp-khun", english: "Stop here please, thank you" } },
-      { romanized: "Glai tao-rai?", script: "ไกลเท่าไร?", english: "How far is it?",
-        example: { thai: "สนามบินไกลเท่าไร", romanized: "Sa-naam-bin glai tao-rai", english: "How far is the airport?" } },
-      { romanized: "Taek-see", script: "แท็กซี่", english: "Taxi",
-        example: { thai: "เรียกแท็กซี่ให้หน่อย", romanized: "Riak taek-see hai noi", english: "Please call a taxi" } },
-      { romanized: "Rot-tuk", script: "รถตุ๊กตุ๊ก", english: "Tuk-tuk",
-        example: { thai: "นั่งรถตุ๊กตุ๊กสนุกดี", romanized: "Nang rot-tuk sa-nuk dee", english: "Riding a tuk-tuk is fun" } },
-      { romanized: "Rot-fai-faa", script: "รถไฟฟ้า", english: "BTS Skytrain",
-        example: { thai: "ไปรถไฟฟ้าเร็วกว่า", romanized: "Pai rot-fai-faa rew gwaa", english: "Taking the BTS is faster" } },
-      { romanized: "Soi", script: "ซอย", english: "Side street / alley",
-        example: { thai: "ร้านอยู่ซอยสามครับ", romanized: "Raan yuu soi saam khrap", english: "The shop is on Soi 3" } },
-      { romanized: "Trong-pai", script: "ตรงไป", english: "Go straight",
-        example: { thai: "ตรงไปแล้วเลี้ยวซ้าย", romanized: "Trong-pai laew liao saai", english: "Go straight then turn left" } }
+      { romanized: "Tîi-nǎi?", script: "ที่ไหน?", english: "Where?", example: { thai: "คุณจะไปที่ไหน?", romanized: "Khun jà pai thîi-nǎi?", english: "Where are you going?" } },
+      { romanized: "Yùu thîi-nǎi?", script: "อยู่ที่ไหน?", english: "Where is it?", example: { thai: "สถานีรถไฟอยู่ที่ไหน?", romanized: "Sà-thǎa-nii rót-fai yùu thîi-nǎi?", english: "Where is the train station?" } },
+      { romanized: "Glai", script: "ไกล", english: "Far", example: { thai: "ไกลไหม?", romanized: "Glai mǎi?", english: "Is it far?" }, note: "glai (mid=far) vs glâi (falling=near) — same sounds, different tones!" },
+      { romanized: "Glâi", script: "ใกล้", english: "Near / close", example: { thai: "ร้านอยู่ใกล้", romanized: "Ráan yùu glâi", english: "The shop is nearby" } },
+      { romanized: "Khâang-nâa", script: "ข้างหน้า", english: "In front / ahead", example: { thai: "อยู่ข้างหน้าครับ", romanized: "Yùu khâang-nâa khráp", english: "It's up ahead" } },
+      { romanized: "Khâang-lǎng", script: "ข้างหลัง", english: "Behind", example: { thai: "ห้องน้ำอยู่ข้างหลัง", romanized: "Hâwng-náam yùu khâang-lǎng", english: "The bathroom is in the back" } },
+      { romanized: "Khâang-sáai", script: "ข้างซ้าย", english: "On the left", example: { thai: "อยู่ข้างซ้ายมือ", romanized: "Yùu khâang-sáai mue", english: "It's on the left side" } },
+      { romanized: "Khâang-khwǎa", script: "ข้างขวา", english: "On the right", example: { thai: "เลี้ยวข้างขวา", romanized: "Líeo khâang-khwǎa", english: "Turn to the right" } },
+      { romanized: "Trong-pai", script: "ตรงไป", english: "Go straight", example: { thai: "ตรงไปข้างหน้า", romanized: "Trong-pai khâang-nâa", english: "Go straight ahead" } },
+      { romanized: "Líeo-sáai", script: "เลี้ยวซ้าย", english: "Turn left", example: { thai: "เลี้ยวซ้ายตรงนั้น", romanized: "Líeo-sáai trong nán", english: "Turn left over there" } },
+      { romanized: "Líeo-khwǎa", script: "เลี้ยวขวา", english: "Turn right", example: { thai: "เลี้ยวขวาแล้วตรงไป", romanized: "Líeo-khwǎa láew trong-pai", english: "Turn right then go straight" } },
+      { romanized: "Bon", script: "บน", english: "On / above / upstairs", example: { thai: "อยู่ชั้นบน", romanized: "Yùu chán bon", english: "It's upstairs" } },
+      { romanized: "Lâang", script: "ล่าง", english: "Below / downstairs", example: { thai: "ร้านอยู่ข้างล่าง", romanized: "Ráan yùu khâang lâang", english: "The shop is downstairs" } },
+      { romanized: "Nai", script: "ใน", english: "Inside / in", example: { thai: "อยู่ในกระเป๋า", romanized: "Yùu nai grà-bpǎo", english: "It's in the bag" } }
     ]
   },
+
+  // ─── 12. Essential Verbs ───
   {
-    id: "seven-eleven",
-    label: "7-Eleven",
-    emoji: "🏪",
-    situation: true,
+    id: "essential-verbs", emoji: "💬", label: "Essential Verbs",
     pairs: [
-      { romanized: "Mee...mai?", script: "มี...ไหม?", english: "Do you have...?",
-        example: { thai: "มีน้ำเปล่าไหมครับ", romanized: "Mee naam bplao mai khrap", english: "Do you have plain water?" } },
-      { romanized: "Bai-set", script: "ใบเสร็จ", english: "Receipt",
-        example: { thai: "ขอใบเสร็จด้วยครับ", romanized: "Khaw bai-set duay khrap", english: "Can I have a receipt please?" } },
-      { romanized: "Thuung", script: "ถุง", english: "Bag",
-        example: { thai: "ไม่เอาถุงครับ", romanized: "Mai ao thuung khrap", english: "No bag please" } },
-      { romanized: "Raakhaa?", script: "ราคา?", english: "Price? / How much?",
-        example: { thai: "อันนี้ราคาเท่าไร", romanized: "An nee raakhaa tao-rai", english: "How much is this one?" } },
-      { romanized: "Jet-eleven", script: "เซเว่น", english: "7-Eleven",
-        example: { thai: "เซเว่นอยู่ทุกซอย", romanized: "Jet-eleven yuu thuk soi", english: "There's a 7-Eleven on every soi" } },
-      { romanized: "Baet-mee", script: "แบตหมี", english: "Battery low / charge",
-        example: { thai: "แบตหมีมีที่ชาร์จไหม", romanized: "Baet-mee mee tee charge mai", english: "Battery is dead, is there a charger?" } },
-      { romanized: "Jaai ngoen", script: "จ่ายเงิน", english: "Pay / make payment",
-        example: { thai: "จ่ายเงินตรงนี้ครับ", romanized: "Jaai ngoen dtrong nee khrap", english: "Pay here please" } },
-      { romanized: "Raap", script: "รับ", english: "Receive / I'll take it",
-        example: { thai: "รับอันนี้ครับ", romanized: "Raap an nee khrap", english: "I'll take this one" } }
+      { romanized: "Ao", script: "เอา", english: "To want / take", example: { thai: "เอาอันนี้", romanized: "Ao an níi", english: "I'll take this one" } },
+      { romanized: "Dtâwng-gaan", script: "ต้องการ", english: "To need / require", example: { thai: "ฉันต้องการความช่วยเหลือ", romanized: "Chǎn dtâwng-gaan khwaam-chûay-lěua", english: "I need help" } },
+      { romanized: "Mii", script: "มี", english: "To have / there is", example: { thai: "มีห้องว่างไหม?", romanized: "Mii hâwng wâang mǎi?", english: "Do you have a room?" } },
+      { romanized: "Mâi mii", script: "ไม่มี", english: "Don't have / there isn't", example: { thai: "ไม่มีปัญหา", romanized: "Mâi mii bpan-hǎa", english: "No problem" } },
+      { romanized: "Pen", script: "เป็น", english: "To be / able to", example: { thai: "เขาเป็นหมอ", romanized: "Khǎo pen mǎw", english: "He/she is a doctor" } },
+      { romanized: "Mâi pen rai", script: "ไม่เป็นไร", english: "Never mind / it's okay", example: { thai: "ไม่เป็นไรครับ", romanized: "Mâi pen rai khráp", english: "It's okay (male)" } },
+      { romanized: "Chái", script: "ใช้", english: "To use", example: { thai: "ใช้โทรศัพท์ได้ไหม?", romanized: "Chái thoo-rá-sàp dâi mǎi?", english: "Can I use the phone?" } },
+      { romanized: "Dâi", script: "ได้", english: "Can / able to", example: { thai: "พูดไทยได้ไหม?", romanized: "Phûut Thai dâi mǎi?", english: "Can you speak Thai?" } },
+      { romanized: "Dâi mǎi?", script: "ได้ไหม?", english: "Can you? / Is it possible?", example: { thai: "ลดราคาได้ไหม?", romanized: "Lót raa-khaa dâi mǎi?", english: "Can you reduce the price?" } },
+      { romanized: "Rúu", script: "รู้", english: "To know (a fact)", example: { thai: "ฉันไม่รู้", romanized: "Chǎn mâi rúu", english: "I don't know" } },
+      { romanized: "Rúu-jàk", script: "รู้จัก", english: "To know (a person)", example: { thai: "คุณรู้จักเขาไหม?", romanized: "Khun rúu-jàk khǎo mǎi?", english: "Do you know him/her?" } },
+      { romanized: "Khâo-jai", script: "เข้าใจ", english: "To understand", example: { thai: "คุณเข้าใจไหม?", romanized: "Khun khâo-jai mǎi?", english: "Do you understand?" } },
+      { romanized: "Mâi khâo-jai", script: "ไม่เข้าใจ", english: "Don't understand", example: { thai: "ฉันไม่เข้าใจ", romanized: "Chǎn mâi khâo-jai", english: "I don't understand" } },
+      { romanized: "Fang", script: "ฟัง", english: "To listen", example: { thai: "ฟังเพลงไทย", romanized: "Fang phleng Thai", english: "Listen to Thai music" } },
+      { romanized: "Duu", script: "ดู", english: "To watch / look at", example: { thai: "ดูหนังด้วยกัน", romanized: "Duu nǎng dûay-gan", english: "Watch a movie together" } },
+      { romanized: "Hâi", script: "ให้", english: "To give", example: { thai: "ให้เงินเขา", romanized: "Hâi ngoen khǎo", english: "Give money to him/her" } },
+      { romanized: "Bàwk", script: "บอก", english: "To tell / say", example: { thai: "บอกฉันหน่อย", romanized: "Bàwk chǎn nòi", english: "Tell me please" } },
+      { romanized: "Thǎam", script: "ถาม", english: "To ask", example: { thai: "ขอถามหน่อย", romanized: "Khǎaw thǎam nòi", english: "May I ask something?" } },
+      { romanized: "Gin", script: "กิน", english: "To eat", example: { thai: "กินข้าวหรือยัง?", romanized: "Gin khâao rěu yang?", english: "Have you eaten yet?" } },
+      { romanized: "Dèum", script: "ดื่ม", english: "To drink", example: { thai: "ดื่มน้ำเยอะๆ", romanized: "Dèum náam yóe yóe", english: "Drink lots of water" } }
+    ]
+  },
+
+  // ─── 13. Greetings & Phrases ───
+  {
+    id: "greetings-phrases", emoji: "🙏", label: "Greetings & Phrases", essential: true,
+    pairs: [
+      { romanized: "Sà-wàt-dii", script: "สวัสดี", english: "Hello / goodbye", example: { thai: "สวัสดีครับ", romanized: "Sà-wàt-dii khráp", english: "Hello (male)" } },
+      { romanized: "Khàawp-khun", script: "ขอบคุณ", english: "Thank you", example: { thai: "ขอบคุณมากค่ะ", romanized: "Khàawp-khun mâak khâ", english: "Thank you very much (female)" } },
+      { romanized: "Khàawp-khun mâak", script: "ขอบคุณมาก", english: "Thank you very much", example: { thai: "ขอบคุณมากครับ", romanized: "Khàawp-khun mâak khráp", english: "Thank you very much (male)" } },
+      { romanized: "Mâi pen rai", script: "ไม่เป็นไร", english: "You're welcome / no problem", example: { thai: "ไม่เป็นไรค่ะ", romanized: "Mâi pen rai khâ", english: "No problem (female)" } },
+      { romanized: "Khǎaw-thôot", script: "ขอโทษ", english: "Sorry / excuse me", example: { thai: "ขอโทษครับ ขอถามหน่อย", romanized: "Khǎaw-thôot khráp khǎaw thǎam nòi", english: "Excuse me, may I ask?" } },
+      { romanized: "Pen yang-ngai?", script: "เป็นยังไง?", english: "How are you?", example: { thai: "วันนี้เป็นยังไงบ้าง?", romanized: "Wan níi pen yang-ngai bâang?", english: "How are you doing today?" } },
+      { romanized: "Sà-baai dii mǎi?", script: "สบายดีไหม?", english: "Are you well?", example: { thai: "คุณสบายดีไหม?", romanized: "Khun sà-baai dii mǎi?", english: "Are you well?" } },
+      { romanized: "Sà-baai dii", script: "สบายดี", english: "I'm well / fine", example: { thai: "สบายดีครับ ขอบคุณ", romanized: "Sà-baai dii khráp khàawp-khun", english: "I'm fine, thank you (male)" } },
+      { romanized: "Yin-dii", script: "ยินดี", english: "Pleased to meet you", example: { thai: "ยินดีที่ได้รู้จัก", romanized: "Yin-dii thîi dâi rúu-jàk", english: "Pleased to meet you" } },
+      { romanized: "Laa-gàwn", script: "ลาก่อน", english: "Goodbye (informal)", example: { thai: "ลาก่อนนะ!", romanized: "Laa-gàwn ná!", english: "Bye bye!" } },
+      { romanized: "Jur-gan mǎi?", script: "เจอกันไหม?", english: "Shall we meet?", example: { thai: "พรุ่งนี้เจอกันไหม?", romanized: "Phrûng níi jur-gan mǎi?", english: "Shall we meet tomorrow?" } },
+      { romanized: "Jur-gan", script: "เจอกัน", english: "See you", example: { thai: "เจอกันพรุ่งนี้", romanized: "Jur-gan phrûng níi", english: "See you tomorrow" } },
+      { romanized: "Châi mǎi?", script: "ใช่ไหม?", english: "Right? / Isn't it?", example: { thai: "อร่อยใช่ไหม?", romanized: "À-ròi châi mǎi?", english: "Delicious, right?" } },
+      { romanized: "Châi", script: "ใช่", english: "Yes / correct", example: { thai: "ใช่ครับ ถูกต้อง", romanized: "Châi khráp thùuk-dtâwng", english: "Yes, that's correct (male)" } }
+    ]
+  },
+
+  // ─── 14. Family ───
+  {
+    id: "family", emoji: "👨‍👩‍👧", label: "Family",
+    pairs: [
+      { romanized: "Phâaw", script: "พ่อ", english: "Father", example: { thai: "พ่อทำงานทุกวัน", romanized: "Phâaw tham-ngaan thúk wan", english: "Father works every day" } },
+      { romanized: "Mâae", script: "แม่", english: "Mother", example: { thai: "แม่ทำอาหารอร่อย", romanized: "Mâae tham aa-hǎan à-ròi", english: "Mother cooks delicious food" } },
+      { romanized: "Bpùu", script: "ปู่", english: "Paternal grandfather", example: { thai: "ปู่อายุแปดสิบปี", romanized: "Bpùu aa-yú bpàet-sìp bpii", english: "Grandfather is 80 years old" } },
+      { romanized: "Yâa", script: "ย่า", english: "Paternal grandmother", example: { thai: "ย่าอยู่ต่างจังหวัด", romanized: "Yâa yùu dtàang-jang-wàt", english: "Grandmother lives upcountry" } },
+      { romanized: "Dtaa", script: "ตา", english: "Maternal grandfather", example: { thai: "ตาพาไปตกปลา", romanized: "Dtaa phaa pai dtòk bplaa", english: "Grandpa takes me fishing" } },
+      { romanized: "Yaai", script: "ยาย", english: "Maternal grandmother", example: { thai: "ยายปลูกผัก", romanized: "Yaai bplùuk phàk", english: "Grandma grows vegetables" } },
+      { romanized: "Phîi-chaai", script: "พี่ชาย", english: "Older brother", example: { thai: "พี่ชายอายุมากกว่า", romanized: "Phîi-chaai aa-yú mâak gwàa", english: "Older brother is older" } },
+      { romanized: "Náwng-chaai", script: "น้องชาย", english: "Younger brother", example: { thai: "น้องชายเรียนหนังสือ", romanized: "Náwng-chaai rian nǎng-sěu", english: "Younger brother is studying" } },
+      { romanized: "Phîi-sǎao", script: "พี่สาว", english: "Older sister", example: { thai: "พี่สาวทำงานที่กรุงเทพ", romanized: "Phîi-sǎao tham-ngaan thîi Grung-thêep", english: "Older sister works in Bangkok" } },
+      { romanized: "Náwng-sǎao", script: "น้องสาว", english: "Younger sister", example: { thai: "น้องสาวอายุสิบห้า", romanized: "Náwng-sǎao aa-yú sìp-hâa", english: "Younger sister is 15" } },
+      { romanized: "Lûuk", script: "ลูก", english: "Child / children", example: { thai: "มีลูกกี่คน?", romanized: "Mii lûuk gìi khon?", english: "How many children?" } },
+      { romanized: "Lûuk-chaai", script: "ลูกชาย", english: "Son", example: { thai: "ลูกชายเรียนเก่ง", romanized: "Lûuk-chaai rian gèng", english: "My son studies well" } },
+      { romanized: "Lûuk-sǎao", script: "ลูกสาว", english: "Daughter", example: { thai: "ลูกสาวน่ารักมาก", romanized: "Lûuk-sǎao nâa-rák mâak", english: "My daughter is very cute" } },
+      { romanized: "Phǔa", script: "ผัว", english: "Husband (informal)", example: { thai: "ผัวทำงานที่ไหน?", romanized: "Phǔa tham-ngaan thîi-nǎi?", english: "Where does your husband work?" } },
+      { romanized: "Mia", script: "เมีย", english: "Wife (informal)", example: { thai: "เมียทำกับข้าวอร่อย", romanized: "Mia tham gàp-khâao à-ròi", english: "Wife cooks delicious food" } },
+      { romanized: "Lung", script: "ลุง", english: "Uncle (older)", example: { thai: "ลุงมาเยี่ยม", romanized: "Lung maa yîam", english: "Uncle came to visit" } },
+      { romanized: "Bpâa", script: "ป้า", english: "Aunt (older)", example: { thai: "ป้าขายของที่ตลาด", romanized: "Bpâa khǎai khǎawng thîi dtà-làat", english: "Aunt sells things at the market" } },
+      { romanized: "Náa", script: "น้า", english: "Aunt/uncle (younger sibling of parent)", example: { thai: "น้าอยู่เชียงใหม่", romanized: "Náa yùu Chiang-mài", english: "Aunt/uncle lives in Chiang Mai" } },
+      { romanized: "Phêuan", script: "เพื่อน", english: "Friend", example: { thai: "เพื่อนดีมีค่ามาก", romanized: "Phêuan dii mii khâa mâak", english: "A good friend is very valuable" } }
+    ]
+  },
+
+  // ─── 15. Numbers — Extended ───
+  {
+    id: "numbers-extended", emoji: "🔢", label: "Numbers — Extended",
+    pairs: [
+      { romanized: "Nùeng", script: "หนึ่ง", english: "One (1)", example: { thai: "ขอหนึ่งอัน", romanized: "Khǎaw nùeng an", english: "One piece please" } },
+      { romanized: "Sìp", script: "สิบ", english: "Ten (10)", example: { thai: "สิบบาท", romanized: "Sìp bàat", english: "Ten baht" } },
+      { romanized: "Sìp-èt", script: "สิบเอ็ด", english: "Eleven (11)", example: { thai: "สิบเอ็ดโมง", romanized: "Sìp-èt mohng", english: "Eleven o'clock" }, note: "èt replaces nùeng in the ones place after 10" },
+      { romanized: "Yîi-sìp", script: "ยี่สิบ", english: "Twenty (20)", example: { thai: "ยี่สิบบาท", romanized: "Yîi-sìp bàat", english: "Twenty baht" }, note: "yîi replaces sǎawng for the tens digit in 20" },
+      { romanized: "Yîi-sìp-èt", script: "ยี่สิบเอ็ด", english: "Twenty-one (21)", example: { thai: "อายุยี่สิบเอ็ดปี", romanized: "Aa-yú yîi-sìp-èt bpii", english: "21 years old" } },
+      { romanized: "Sǎam-sìp", script: "สามสิบ", english: "Thirty (30)", example: { thai: "สามสิบนาที", romanized: "Sǎam-sìp naa-thii", english: "Thirty minutes" } },
+      { romanized: "Rói", script: "ร้อย", english: "One hundred (100)", example: { thai: "ร้อยบาท", romanized: "Rói bàat", english: "One hundred baht" } },
+      { romanized: "Sǎawng-rói", script: "สองร้อย", english: "Two hundred (200)", example: { thai: "สองร้อยห้าสิบบาท", romanized: "Sǎawng-rói hâa-sìp bàat", english: "250 baht" } },
+      { romanized: "Nùeng-phan", script: "หนึ่งพัน", english: "One thousand (1,000)", example: { thai: "หนึ่งพันบาท", romanized: "Nùeng-phan bàat", english: "One thousand baht" } },
+      { romanized: "Hâa-phan", script: "ห้าพัน", english: "Five thousand (5,000)", example: { thai: "ค่าเช่าห้าพันบาท", romanized: "Khâa-châo hâa-phan bàat", english: "Rent is 5,000 baht" } },
+      { romanized: "Nùeng-mèun", script: "หนึ่งหมื่น", english: "Ten thousand (10,000)", example: { thai: "เงินเดือนหนึ่งหมื่น", romanized: "Ngoen-deuan nùeng-mèun", english: "Salary 10,000" }, note: "Thais use mèun (หมื่น) not sìp-phan" },
+      { romanized: "Nùeng-sǎaen", script: "หนึ่งแสน", english: "100,000", example: { thai: "รถราคาแสนบาท", romanized: "Rót raa-khaa sǎaen bàat", english: "Car costs 100,000 baht" }, note: "sǎaen (แสน) = unique Thai word for 100,000" },
+      { romanized: "Nùeng-láan", script: "หนึ่งล้าน", english: "One million", example: { thai: "ล้านบาท!", romanized: "Láan bàat!", english: "One million baht!" } },
+      { romanized: "Sǎawng-láan", script: "สองล้าน", english: "Two million", example: { thai: "บ้านราคาสองล้าน", romanized: "Bâan raa-khaa sǎawng-láan", english: "House costs two million" } },
+      { romanized: "Khrûeng", script: "ครึ่ง", english: "Half", example: { thai: "ครึ่งชั่วโมง", romanized: "Khrûeng chuâ-mohng", english: "Half an hour" } },
+      { romanized: "Gìi?", script: "กี่?", english: "How many?", example: { thai: "กี่บาท?", romanized: "Gìi bàat?", english: "How many baht?" } }
+    ]
+  },
+
+  // ─── 16. Kitchenware ───
+  {
+    id: "kitchenware", emoji: "🍽️", label: "Kitchenware",
+    pairs: [
+      { romanized: "Gâew", script: "แก้ว", english: "Glass / cup", example: { thai: "ขอน้ำหนึ่งแก้ว", romanized: "Khǎaw náam nùeng gâew", english: "One glass of water please" } },
+      { romanized: "Jaan", script: "จาน", english: "Plate", example: { thai: "ล้างจานด้วย", romanized: "Láang jaan dûay", english: "Wash the plates too" } },
+      { romanized: "Thûay", script: "ถ้วย", english: "Bowl / small cup", example: { thai: "ก๋วยเตี๋ยวหนึ่งถ้วย", romanized: "Gǔay-dtǐao nùeng thûay", english: "One bowl of noodles" } },
+      { romanized: "Dtà-gìap", script: "ตะเกียบ", english: "Chopsticks", example: { thai: "ใช้ตะเกียบเป็นไหม?", romanized: "Chái dtà-gìap pen mǎi?", english: "Can you use chopsticks?" } },
+      { romanized: "Cháwn", script: "ช้อน", english: "Spoon", example: { thai: "ขอช้อนอีกอัน", romanized: "Khǎaw cháwn ìik an", english: "Another spoon please" } },
+      { romanized: "Sâwm", script: "ส้อม", english: "Fork", example: { thai: "ช้อนกับส้อม", romanized: "Cháwn gàp sâwm", english: "Spoon and fork" } },
+      { romanized: "Mîit", script: "มีด", english: "Knife", example: { thai: "มีดคมมาก", romanized: "Mîit khom mâak", english: "The knife is very sharp" } },
+      { romanized: "Mâw", script: "หม้อ", english: "Pot", example: { thai: "ต้มน้ำในหม้อ", romanized: "Dtôm náam nai mâw", english: "Boil water in a pot" } },
+      { romanized: "Grà-thá", script: "กระทะ", english: "Wok / frying pan", example: { thai: "ผัดในกระทะ", romanized: "Phàt nai grà-thá", english: "Stir-fry in the wok" } },
+      { romanized: "Chín", script: "ชิ้น", english: "Piece / slice", example: { thai: "ขอเค้กหนึ่งชิ้น", romanized: "Khǎaw khéek nùeng chín", english: "One piece of cake please" }, note: "Food classifier — nùeng chín = one piece" }
+    ]
+  },
+
+  // ─── 17. Fruits ───
+  {
+    id: "fruits", emoji: "🍉", label: "Fruits",
+    pairs: [
+      { romanized: "Mà-mûang", script: "มะม่วง", english: "Mango", example: { thai: "มะม่วงหวานมาก", romanized: "Mà-mûang wǎan mâak", english: "The mango is very sweet" } },
+      { romanized: "Mà-lá-gaw", script: "มะละกอ", english: "Papaya", example: { thai: "ส้มตำใส่มะละกอ", romanized: "Sôm-dtam sài mà-lá-gaw", english: "Som tam uses papaya" } },
+      { romanized: "Glûay", script: "กล้วย", english: "Banana", example: { thai: "กล้วยหอมอร่อย", romanized: "Glûay hǎawm à-ròi", english: "Banana is delicious" } },
+      { romanized: "Sàp-bpà-rót", script: "สับปะรด", english: "Pineapple", example: { thai: "สับปะรดเปรี้ยวนิดหน่อย", romanized: "Sàp-bpà-rót bprîao nít-nòi", english: "Pineapple is a bit sour" } },
+      { romanized: "Dtaeng-mo", script: "แตงโม", english: "Watermelon", example: { thai: "แตงโมเย็นๆ อร่อย", romanized: "Dtaeng-mo yen yen à-ròi", english: "Cold watermelon is delicious" } },
+      { romanized: "Sôm", script: "ส้ม", english: "Orange", example: { thai: "น้ำส้มสดหนึ่งแก้ว", romanized: "Náam sôm sòt nùeng gâew", english: "One glass of fresh OJ" } },
+      { romanized: "Lín-jîi", script: "ลิ้นจี่", english: "Lychee", example: { thai: "ลิ้นจี่หวานมาก", romanized: "Lín-jîi wǎan mâak", english: "Lychee is very sweet" } },
+      { romanized: "Thú-rian", script: "ทุเรียน", english: "Durian", example: { thai: "ทุเรียนราคาแพง", romanized: "Thú-rian raa-khaa phaeng", english: "Durian is expensive" } },
+      { romanized: "Mang-khút", script: "มังคุด", english: "Mangosteen", example: { thai: "มังคุดเป็นราชินีของผลไม้", romanized: "Mang-khút pen raa-chí-nii khǎawng phǒn-lá-máai", english: "Mangosteen is the queen of fruits" } },
+      { romanized: "Fà-ràng", script: "ฝรั่ง", english: "Guava", example: { thai: "ฝรั่งจิ้มพริกเกลือ", romanized: "Fà-ràng jîm phrík glua", english: "Guava dipped in chili salt" }, note: "ฝรั่ง means both 'guava' AND 'foreigner/Westerner' — famous double meaning!" }
+    ]
+  },
+
+  // ─── 18. Meats & Proteins ───
+  {
+    id: "meats-proteins", emoji: "🍖", label: "Meats & Proteins",
+    pairs: [
+      { romanized: "Néua", script: "เนื้อ", english: "Beef / meat", example: { thai: "ข้าวผัดเนื้อ", romanized: "Khâao-phàt néua", english: "Beef fried rice" } },
+      { romanized: "Mǔu", script: "หมู", english: "Pork", example: { thai: "หมูกรอบอร่อย", romanized: "Mǔu gràwp à-ròi", english: "Crispy pork is delicious" } },
+      { romanized: "Gài", script: "ไก่", english: "Chicken", example: { thai: "ข้าวมันไก่จานหนึ่ง", romanized: "Khâao man gài jaan nùeng", english: "One plate of chicken rice" } },
+      { romanized: "Bplaa", script: "ปลา", english: "Fish", example: { thai: "ปลาทอดกรอบ", romanized: "Bplaa thâwt gràwp", english: "Crispy fried fish" } },
+      { romanized: "Gûng", script: "กุ้ง", english: "Shrimp / prawn", example: { thai: "ต้มยำกุ้งอร่อยมาก", romanized: "Dtôm-yam gûng à-ròi mâak", english: "Tom yum shrimp is delicious" } },
+      { romanized: "Hǎwy", script: "หอย", english: "Shellfish / clam", example: { thai: "หอยลายผัดพริก", romanized: "Hǎwy laai phàt phrík", english: "Stir-fried clams with chili" } },
+      { romanized: "Khài", script: "ไข่", english: "Egg", example: { thai: "ไข่เจียวหนึ่งจาน", romanized: "Khài jiao nùeng jaan", english: "One omelet please" }, note: "khài (egg) vs khǎai (to sell) — different tones!" },
+      { romanized: "Dtâo-hûu", script: "เต้าหู้", english: "Tofu", example: { thai: "เต้าหู้ทอด", romanized: "Dtâo-hûu thâwt", english: "Fried tofu" } }
+    ]
+  },
+
+  // ─── 19. Ingredients ───
+  {
+    id: "ingredients", emoji: "🧄", label: "Ingredients",
+    pairs: [
+      { romanized: "Náam-dtaan", script: "น้ำตาล", english: "Sugar", example: { thai: "ไม่ใส่น้ำตาล", romanized: "Mâi sài náam-dtaan", english: "No sugar please" } },
+      { romanized: "Glua", script: "เกลือ", english: "Salt", example: { thai: "ใส่เกลือนิดหน่อย", romanized: "Sài glua nít-nòi", english: "Add a little salt" } },
+      { romanized: "Nám-man", script: "น้ำมัน", english: "Oil", example: { thai: "ผัดด้วยน้ำมัน", romanized: "Phàt dûay nám-man", english: "Stir-fry with oil" } },
+      { romanized: "Phrík", script: "พริก", english: "Chili", example: { thai: "เผ็ดมาก ใส่พริกเยอะ", romanized: "Phèt mâak sài phrík yóe", english: "Very spicy, lots of chili" } },
+      { romanized: "Grà-thiam", script: "กระเทียม", english: "Garlic", example: { thai: "ผัดกระเทียมพริกไทย", romanized: "Phàt grà-thiam phrík-thai", english: "Stir-fried with garlic and pepper" } },
+      { romanized: "Hǔa-hǎwm", script: "หัวหอม", english: "Onion", example: { thai: "หั่นหัวหอม", romanized: "Hàn hǔa-hǎwm", english: "Chop the onion" } },
+      { romanized: "Má-nao", script: "มะนาว", english: "Lime", example: { thai: "บีบมะนาวใส่", romanized: "Bìip má-nao sài", english: "Squeeze lime in" } },
+      { romanized: "Nám-bplaa", script: "น้ำปลา", english: "Fish sauce", example: { thai: "น้ำปลาเป็นเครื่องปรุงหลัก", romanized: "Nám-bplaa pen khrêuang-bprung làk", english: "Fish sauce is the main condiment" } },
+      { romanized: "Khǐng", script: "ขิง", english: "Ginger", example: { thai: "ชาขิงร้อนๆ", romanized: "Chaa khǐng rón rón", english: "Hot ginger tea" } },
+      { romanized: "Bai-grà-phao", script: "ใบกะเพรา", english: "Thai basil", example: { thai: "ผัดกะเพราหมู", romanized: "Phàt grà-phao mǔu", english: "Stir-fried basil with pork" } }
+    ]
+  },
+
+  // ─── 20. Food & Eating ───
+  {
+    id: "food-eating", emoji: "🍜", label: "Food & Eating",
+    pairs: [
+      { romanized: "Khâao", script: "ข้าว", english: "Rice", example: { thai: "ขอข้าวเพิ่ม", romanized: "Khǎaw khâao phôem", english: "More rice please" } },
+      { romanized: "Khâao-phàt", script: "ข้าวผัด", english: "Fried rice", example: { thai: "ข้าวผัดหมูหนึ่งจาน", romanized: "Khâao-phàt mǔu nùeng jaan", english: "One pork fried rice" } },
+      { romanized: "Phàt-thai", script: "ผัดไทย", english: "Pad Thai", example: { thai: "ผัดไทยกุ้งอร่อยมาก", romanized: "Phàt-thai gûng à-ròi mâak", english: "Shrimp pad Thai is delicious" } },
+      { romanized: "Dtôm-yam", script: "ต้มยำ", english: "Tom yum soup", example: { thai: "ต้มยำเผ็ดมาก", romanized: "Dtôm-yam phèt mâak", english: "Tom yum is very spicy" } },
+      { romanized: "Gaeng-khǐao-wǎan", script: "แกงเขียวหวาน", english: "Green curry", example: { thai: "แกงเขียวหวานอร่อย", romanized: "Gaeng-khǐao-wǎan à-ròi", english: "Green curry is delicious" } },
+      { romanized: "Náam", script: "น้ำ", english: "Water / liquid", example: { thai: "ขอน้ำเปล่าหนึ่งขวด", romanized: "Khǎaw náam bplào nùeng khùat", english: "One bottle of water please" } },
+      { romanized: "Náam-yen", script: "น้ำเย็น", english: "Cold water", example: { thai: "ขอน้ำเย็น", romanized: "Khǎaw náam-yen", english: "Cold water please" } },
+      { romanized: "Bia", script: "เบียร์", english: "Beer", example: { thai: "ขอเบียร์หนึ่งขวด", romanized: "Khǎaw bia nùeng khùat", english: "One beer please" } },
+      { romanized: "Gaa-fae", script: "กาแฟ", english: "Coffee", example: { thai: "กาแฟร้อนหนึ่งแก้ว", romanized: "Gaa-fae rón nùeng gâew", english: "One hot coffee" } },
+      { romanized: "Chaa", script: "ชา", english: "Tea", example: { thai: "ชาเย็นหวานมาก", romanized: "Chaa yen wǎan mâak", english: "Thai iced tea is very sweet" } },
+      { romanized: "Aa-hǎan", script: "อาหาร", english: "Food / meal", example: { thai: "อาหารไทยอร่อย", romanized: "Aa-hǎan Thai à-ròi", english: "Thai food is delicious" } },
+      { romanized: "Aa-hǎan-cháo", script: "อาหารเช้า", english: "Breakfast", example: { thai: "กินอาหารเช้าแล้ว", romanized: "Gin aa-hǎan-cháo láew", english: "Already had breakfast" } },
+      { romanized: "Aa-hǎan-glaang-wan", script: "อาหารกลางวัน", english: "Lunch", example: { thai: "กินอาหารกลางวันกัน", romanized: "Gin aa-hǎan-glaang-wan gan", english: "Let's have lunch" } },
+      { romanized: "Aa-hǎan-yen", script: "อาหารเย็น", english: "Dinner", example: { thai: "อาหารเย็นกินอะไร?", romanized: "Aa-hǎan-yen gin à-rai?", english: "What's for dinner?" } },
+      { romanized: "Gin-khâao", script: "กินข้าว", english: "To eat", example: { thai: "กินข้าวหรือยัง?", romanized: "Gin-khâao rěu yang?", english: "Have you eaten yet?" }, note: "Literally 'eat rice' — the most common way to say 'eat' in Thai" },
+      { romanized: "Pai gin khâao?", script: "ไปกินข้าว?", english: "Want to grab food?", example: { thai: "ไปกินข้าวด้วยกันไหม?", romanized: "Pai gin khâao dûay-gan mǎi?", english: "Want to go eat together?" }, note: "Extremely common social phrase — basically 'want to hang out?'" }
+    ]
+  },
+
+  // ─── 21. Shopping & Money ───
+  {
+    id: "shopping-money", emoji: "🛍️", label: "Shopping & Money",
+    pairs: [
+      { romanized: "Bàat", script: "บาท", english: "Thai Baht", example: { thai: "ราคาห้าสิบบาท", romanized: "Raa-khaa hâa-sìp bàat", english: "The price is 50 baht" } },
+      { romanized: "Raa-khaa", script: "ราคา", english: "Price", example: { thai: "ราคาเท่าไร?", romanized: "Raa-khaa tâo-rai?", english: "What's the price?" } },
+      { romanized: "Phaeng pai", script: "แพงไป", english: "Too expensive", example: { thai: "แพงไปครับ ลดได้ไหม?", romanized: "Phaeng pai khráp lót dâi mǎi?", english: "Too expensive, can you discount?" } },
+      { romanized: "Lót dâi mǎi?", script: "ลดได้ไหม?", english: "Can you discount?", example: { thai: "ซื้อสองอัน ลดได้ไหม?", romanized: "Séu sǎawng an lót dâi mǎi?", english: "Buy two, can you discount?" } },
+      { romanized: "Séu", script: "ซื้อ", english: "To buy", example: { thai: "ซื้อของที่ตลาด", romanized: "Séu khǎawng thîi dtà-làat", english: "Buy things at the market" } },
+      { romanized: "Khǎai", script: "ขาย", english: "To sell", example: { thai: "ร้านนี้ขายอะไร?", romanized: "Ráan níi khǎai à-rai?", english: "What does this shop sell?" } },
+      { romanized: "Jàai-ngoen", script: "จ่ายเงิน", english: "To pay", example: { thai: "จ่ายเงินที่ไหน?", romanized: "Jàai-ngoen thîi-nǎi?", english: "Where do I pay?" } },
+      { romanized: "Thawn", script: "ทอน", english: "Change (money)", example: { thai: "ทอนไม่ต้อง", romanized: "Thawn mâi dtâwng", english: "Keep the change" } },
+      { romanized: "Bai-sèt", script: "ใบเสร็จ", english: "Receipt", example: { thai: "ขอใบเสร็จด้วย", romanized: "Khǎaw bai-sèt dûay", english: "Receipt please" } },
+      { romanized: "Proo-moo-chân", script: "โปรโมชั่น", english: "Promotion / sale", example: { thai: "มีโปรโมชั่นไหม?", romanized: "Mii proo-moo-chân mǎi?", english: "Is there a promotion?" } },
+      { romanized: "Frii", script: "ฟรี", english: "Free", example: { thai: "น้ำฟรี", romanized: "Náam frii", english: "Water is free" } },
+      { romanized: "Bàet-tòe-rîi", script: "แบตเตอรี่", english: "Battery", example: { thai: "แบตโทรศัพท์หมด", romanized: "Bàet thoo-rá-sàp mòt", english: "Phone battery is dead" } }
+    ]
+  },
+
+  // ─── 22. Health & Emergencies (Situation) ───
+  {
+    id: "health-emergencies", emoji: "🏥", label: "Health & Emergencies", situation: true,
+    pairs: [
+      { romanized: "Jèp", script: "เจ็บ", english: "Hurt / painful", example: { thai: "เจ็บตรงนี้", romanized: "Jèp trong níi", english: "It hurts here" } },
+      { romanized: "Jèp thîi-nǎi?", script: "เจ็บที่ไหน?", english: "Where does it hurt?", example: { thai: "เจ็บที่ไหนบอกหมอ", romanized: "Jèp thîi-nǎi bàwk mǎw", english: "Tell the doctor where it hurts" } },
+      { romanized: "Pùat", script: "ปวด", english: "Ache / pain (dull)", example: { thai: "ปวดมาก", romanized: "Pùat mâak", english: "It aches a lot" } },
+      { romanized: "Pùat-hǔa", script: "ปวดหัว", english: "Headache", example: { thai: "ปวดหัวมากเลย", romanized: "Pùat-hǔa mâak loei", english: "Bad headache" } },
+      { romanized: "Pùat-tháwng", script: "ปวดท้อง", english: "Stomachache", example: { thai: "ปวดท้องตั้งแต่เช้า", romanized: "Pùat-tháwng dtâng-dtàe cháo", english: "Stomachache since morning" } },
+      { romanized: "Mâi sà-baai", script: "ไม่สบาย", english: "Sick / unwell", example: { thai: "ไม่สบาย ต้องพักผ่อน", romanized: "Mâi sà-baai dtâwng phák-phàwn", english: "Sick, need to rest" } },
+      { romanized: "Roong-phá-yaa-baan", script: "โรงพยาบาล", english: "Hospital", example: { thai: "โรงพยาบาลอยู่ที่ไหน?", romanized: "Roong-phá-yaa-baan yùu thîi-nǎi?", english: "Where is the hospital?" } },
+      { romanized: "Mǎw", script: "หมอ", english: "Doctor", example: { thai: "ต้องไปหาหมอ", romanized: "Dtâwng pai hǎa mǎw", english: "Need to see a doctor" } },
+      { romanized: "Yaa", script: "ยา", english: "Medicine", example: { thai: "กินยาแล้วหรือยัง?", romanized: "Gin yaa láew rěu yang?", english: "Have you taken medicine?" } },
+      { romanized: "Chûay dûay!", script: "ช่วยด้วย!", english: "Help!", example: { thai: "ช่วยด้วย! เรียกหมอ!", romanized: "Chûay dûay! Rîak mǎw!", english: "Help! Call a doctor!" } },
+      { romanized: "Thoo-rá-sàp", script: "โทรศัพท์", english: "Phone", example: { thai: "โทรศัพท์หายแล้ว", romanized: "Thoo-rá-sàp hǎai láew", english: "Phone is lost" } },
+      { romanized: "Rîak rót-phá-yaa-baan", script: "เรียกรถพยาบาล", english: "Call an ambulance", example: { thai: "เรียกรถพยาบาลเร็ว!", romanized: "Rîak rót-phá-yaa-baan reo!", english: "Call an ambulance quickly!" } }
+    ]
+  },
+
+  // ─── 23. Ordering Food (Situation) ───
+  {
+    id: "ordering-food", emoji: "🍜", label: "Ordering Food", situation: true,
+    pairs: [
+      { romanized: "Khǎaw...", script: "ขอ...", english: "I'd like... / Can I have...", example: { thai: "ขอเมนูหน่อยครับ", romanized: "Khǎaw mee-nuu nòi khráp", english: "Can I have the menu?" } },
+      { romanized: "À-rai dii?", script: "อะไรดี?", english: "What's good?", example: { thai: "ร้านนี้อะไรดี?", romanized: "Ráan níi à-rai dii?", english: "What's good here?" } },
+      { romanized: "Phèt nít-nòi", script: "เผ็ดนิดหน่อย", english: "A little spicy", example: { thai: "ขอเผ็ดนิดหน่อย", romanized: "Khǎaw phèt nít-nòi", english: "A little spicy please" } },
+      { romanized: "Mâi phèt", script: "ไม่เผ็ด", english: "Not spicy", example: { thai: "ขอไม่เผ็ดครับ", romanized: "Khǎaw mâi phèt khráp", english: "Not spicy please" } },
+      { romanized: "À-ròi mâak", script: "อร่อยมาก", english: "Very delicious", example: { thai: "อาหารอร่อยมากเลย", romanized: "Aa-hǎan à-ròi mâak loei", english: "The food is really delicious" } },
+      { romanized: "Gèp dtang dûay", script: "เก็บตังด้วย", english: "Bill please", example: { thai: "เก็บตังด้วยครับ", romanized: "Gèp dtang dûay khráp", english: "Bill please (male)" } },
+      { romanized: "Tâo-rai?", script: "เท่าไร?", english: "How much?", example: { thai: "ทั้งหมดเท่าไร?", romanized: "Tháng-mòt tâo-rai?", english: "How much total?" } },
+      { romanized: "Mâi sài phàk", script: "ไม่ใส่ผัก", english: "No vegetables", example: { thai: "ขอไม่ใส่ผักครับ", romanized: "Khǎaw mâi sài phàk khráp", english: "No vegetables please" } }
+    ]
+  },
+
+  // ─── 24. Getting Around (Situation) ───
+  {
+    id: "getting-around", emoji: "🛺", label: "Getting Around", situation: true,
+    pairs: [
+      { romanized: "Pai...dâi mǎi?", script: "ไป...ได้ไหม?", english: "Can you take me to...?", example: { thai: "ไปสยามได้ไหม?", romanized: "Pai Sà-yǎam dâi mǎi?", english: "Can you take me to Siam?" } },
+      { romanized: "Yùt thîi-nîi", script: "หยุดที่นี่", english: "Stop here", example: { thai: "หยุดที่นี่ครับ", romanized: "Yùt thîi-nîi khráp", english: "Stop here please" } },
+      { romanized: "Glai tâo-rai?", script: "ไกลเท่าไร?", english: "How far?", example: { thai: "จากที่นี่ไกลเท่าไร?", romanized: "Jàak thîi-nîi glai tâo-rai?", english: "How far from here?" } },
+      { romanized: "Tháek-sîi", script: "แท็กซี่", english: "Taxi", example: { thai: "เรียกแท็กซี่หน่อย", romanized: "Rîak tháek-sîi nòi", english: "Call a taxi please" } },
+      { romanized: "Rót-dtúk-dtúk", script: "รถตุ๊กตุ๊ก", english: "Tuk-tuk", example: { thai: "นั่งตุ๊กตุ๊กสนุก", romanized: "Nâng dtúk-dtúk sà-nùk", english: "Riding a tuk-tuk is fun" } },
+      { romanized: "Rót-fai-fáa", script: "รถไฟฟ้า", english: "BTS Skytrain", example: { thai: "นั่งรถไฟฟ้าเร็วกว่า", romanized: "Nâng rót-fai-fáa reo gwàa", english: "Taking the BTS is faster" } },
+      { romanized: "Soi", script: "ซอย", english: "Side street / alley", example: { thai: "ร้านอยู่ซอยสาม", romanized: "Ráan yùu soi sǎam", english: "The shop is on Soi 3" } },
+      { romanized: "Trong-pai", script: "ตรงไป", english: "Go straight", example: { thai: "ตรงไปแล้วเลี้ยวซ้าย", romanized: "Trong-pai láew líeo-sáai", english: "Go straight then turn left" } }
+    ]
+  },
+
+  // ─── 25. 7-Eleven (Situation) ───
+  {
+    id: "seven-eleven", emoji: "🏪", label: "7-Eleven", situation: true,
+    pairs: [
+      { romanized: "Mii...mǎi?", script: "มี...ไหม?", english: "Do you have...?", example: { thai: "มีน้ำเปล่าไหม?", romanized: "Mii náam bplào mǎi?", english: "Do you have water?" } },
+      { romanized: "Bai-sèt", script: "ใบเสร็จ", english: "Receipt", example: { thai: "ไม่ต้องใบเสร็จ", romanized: "Mâi dtâwng bai-sèt", english: "No receipt needed" } },
+      { romanized: "Thǔng", script: "ถุง", english: "Bag", example: { thai: "ไม่ต้องถุง", romanized: "Mâi dtâwng thǔng", english: "No bag needed" } },
+      { romanized: "Raa-khaa?", script: "ราคา?", english: "Price?", example: { thai: "อันนี้ราคาเท่าไร?", romanized: "An níi raa-khaa tâo-rai?", english: "What's the price?" } },
+      { romanized: "Seh-wen", script: "เซเว่น", english: "7-Eleven", example: { thai: "เซเว่นอยู่ใกล้", romanized: "Seh-wen yùu glâi", english: "7-Eleven is nearby" } },
+      { romanized: "Châat bàet", script: "ชาร์จแบต", english: "Charge battery", example: { thai: "ชาร์จแบตได้ไหม?", romanized: "Châat bàet dâi mǎi?", english: "Can I charge my phone?" } },
+      { romanized: "Jàai-ngoen", script: "จ่ายเงิน", english: "Pay", example: { thai: "จ่ายเงินตรงนี้ครับ", romanized: "Jàai-ngoen trong níi khráp", english: "Pay here please" } },
+      { romanized: "Ráp", script: "รับ", english: "Receive / I'll take it", example: { thai: "รับอันนี้ค่ะ", romanized: "Ráp an níi khâ", english: "I'll take this one (female)" } }
     ]
   }
 ];

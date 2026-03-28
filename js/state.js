@@ -24,7 +24,9 @@ const State = (() => {
     alphabetStats: {},   // { [char]: { seen, correct, wrong, lastSeen } }
     flashcardStats: {},  // { [topicId]: { [index]: { bucket, lastSeen } } }
     speedBests: {},      // { [topicId]: score }
-    onboarded: false
+    onboarded: false,
+    badges: [],          // earned pathway badge IDs
+    tutorialsSeen: {}    // { sectionId: true }
   });
 
   let _state = null;
@@ -116,6 +118,14 @@ const State = (() => {
     const today = new Date().toDateString();
     if (s.lastPlayedDate === today) return false;
     const hour = new Date().getHours();
+    return hour >= 17 && s.streak > 0;
+  }
+
+  function isStreakUrgent() {
+    const s = get();
+    const today = new Date().toDateString();
+    if (s.lastPlayedDate === today) return false;
+    const hour = new Date().getHours();
     return hour >= 20 && s.streak > 0;
   }
 
@@ -183,6 +193,71 @@ const State = (() => {
     });
   }
 
+  /* Pathway progress */
+  function getPathwayProgress(pathwayId) {
+    const pathway = typeof PATHWAYS !== "undefined" ? PATHWAYS.find(p => p.id === pathwayId) : null;
+    if (!pathway) return { mastered: 0, total: 0, percentComplete: 0, isComplete: false, nextTopic: null };
+
+    if (pathway.usesAlphabet) {
+      const stats = get().alphabetStats;
+      const totalChars = (typeof THAI_CONSONANTS !== "undefined" ? THAI_CONSONANTS.length : 44) +
+                         (typeof THAI_VOWELS !== "undefined" ? THAI_VOWELS.length : 21);
+      let mastered = 0;
+      for (const key in stats) {
+        if (stats[key].seen > 0 && stats[key].correct / stats[key].seen >= 0.7) mastered++;
+      }
+      return {
+        mastered, total: totalChars,
+        percentComplete: totalChars > 0 ? mastered / totalChars : 0,
+        isComplete: mastered >= totalChars,
+        nextTopic: null
+      };
+    }
+
+    const topics = pathway.topics;
+    let mastered = 0;
+    let nextTopic = null;
+    for (const topicId of topics) {
+      if (getTopicMastery(topicId) >= 0.7) {
+        mastered++;
+      } else if (!nextTopic) {
+        nextTopic = topicId;
+      }
+    }
+    return {
+      mastered, total: topics.length,
+      percentComplete: topics.length > 0 ? mastered / topics.length : 0,
+      isComplete: mastered === topics.length,
+      nextTopic
+    };
+  }
+
+  function earnBadge(pathwayId) {
+    update(s => {
+      if (!s.badges) s.badges = [];
+      if (!s.badges.includes(pathwayId)) {
+        s.badges.push(pathwayId);
+      }
+    });
+  }
+
+  function hasBadge(pathwayId) {
+    const s = get();
+    return s.badges && s.badges.includes(pathwayId);
+  }
+
+  function markTutorialSeen(sectionId) {
+    update(s => {
+      if (!s.tutorialsSeen) s.tutorialsSeen = {};
+      s.tutorialsSeen[sectionId] = true;
+    });
+  }
+
+  function isTutorialSeen(sectionId) {
+    const s = get();
+    return s.tutorialsSeen && s.tutorialsSeen[sectionId];
+  }
+
   /* Reset */
   function resetAll() {
     _state = defaults();
@@ -191,9 +266,12 @@ const State = (() => {
 
   return {
     get, set, update, load, save, addXP, getLevel, getNextLevel, getLevelProgress,
-    checkStreak, isStreakAtRisk, hasPlayedToday,
+    checkStreak, isStreakAtRisk, isStreakUrgent, hasPlayedToday,
     recordTopicRound, getTopicMastery,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,
-    getSpeedBest, setSpeedBest, resetAll, LEVELS
+    getSpeedBest, setSpeedBest,
+    getPathwayProgress, earnBadge, hasBadge,
+    markTutorialSeen, isTutorialSeen,
+    resetAll, LEVELS
   };
 })();
