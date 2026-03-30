@@ -13,7 +13,13 @@
       "Bash(powershell.exe -Command \"Get-Command npx -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
       "Bash(where winget:*)",
       "Bash(winget install:*)",
-      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")"
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
+      "Bash(node -c js/game.js)",
+      "Bash(node -c js/flashcard.js)",
+      "Bash(node -c js/speed.js)",
+      "Bash(node -c js/pathways.js)",
+      "Bash(node -c js/state.js)",
+      "Bash(node -c js/sentence-builder.js)"
     ]
   }
 }
