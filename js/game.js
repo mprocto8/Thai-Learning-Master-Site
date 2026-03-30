@@ -6,23 +6,27 @@
 const Game = (() => {
   let currentTopic = null;
   let pairs = [];
-  let selectedThai = null;
+  let selectedLeft = null;   // Thai column selection
+  let selectedRight = null;  // English column selection
   let matchedPairs = new Set();
   let streak = 0;
   let roundCorrect = 0;
   let roundWrong = 0;
   let xpEarned = 0;
+  let isActive = false;
 
   function start(topicId) {
     currentTopic = TOPICS.find(t => t.id === topicId);
     if (!currentTopic) return;
     pairs = [...currentTopic.pairs].sort(() => Math.random() - 0.5);
-    selectedThai = null;
+    selectedLeft = null;
+    selectedRight = null;
     matchedPairs = new Set();
     streak = 0;
     roundCorrect = 0;
     roundWrong = 0;
     xpEarned = 0;
+    isActive = true;
     renderGame();
   }
 
@@ -54,7 +58,7 @@ const Game = (() => {
         <div class="match-columns">
           <div class="match-col thai-col">
             ${pairs.map((p, i) => `
-              <button class="match-card thai-card ${matchedPairs.has(i) ? 'matched' : ''} ${selectedThai === i ? 'selected' : ''}"
+              <button class="match-card thai-card ${matchedPairs.has(i) ? 'matched' : ''} ${selectedLeft === i ? 'selected' : ''}"
                 data-index="${i}" onclick="Game.selectThai(${i})" ${matchedPairs.has(i) ? 'disabled' : ''}>
                 ${showScript ? p.script : p.romanized}
               </button>
@@ -64,7 +68,7 @@ const Game = (() => {
             ${shuffledEnglish.map((p) => {
               const origIdx = pairs.indexOf(p);
               return `
-                <button class="match-card eng-card ${matchedPairs.has(origIdx) ? 'matched' : ''}"
+                <button class="match-card eng-card ${matchedPairs.has(origIdx) ? 'matched' : ''} ${selectedRight === origIdx ? 'selected' : ''}"
                   data-index="${origIdx}" onclick="Game.selectEnglish(${origIdx})" ${matchedPairs.has(origIdx) ? 'disabled' : ''}>
                   ${p.english}
                 </button>
@@ -84,22 +88,45 @@ const Game = (() => {
 
   function selectThai(index) {
     if (matchedPairs.has(index)) return;
-    selectedThai = index;
-    // Highlight selected
+    // Deselect if already selected
+    if (selectedLeft === index) {
+      selectedLeft = null;
+      document.querySelectorAll(".thai-card").forEach(el => el.classList.remove("selected"));
+      return;
+    }
+    // Replace selection on same side
+    selectedLeft = index;
     document.querySelectorAll(".thai-card").forEach(el => el.classList.remove("selected"));
     const card = document.querySelector(`.thai-card[data-index="${index}"]`);
     if (card) card.classList.add("selected");
+    // Check if both sides selected
+    if (selectedRight !== null) checkMatch();
   }
 
   function selectEnglish(index) {
-    if (selectedThai === null || matchedPairs.has(index)) return;
+    if (matchedPairs.has(index)) return;
+    // Deselect if already selected
+    if (selectedRight === index) {
+      selectedRight = null;
+      document.querySelectorAll(".eng-card").forEach(el => el.classList.remove("selected"));
+      return;
+    }
+    // Replace selection on same side
+    selectedRight = index;
+    document.querySelectorAll(".eng-card").forEach(el => el.classList.remove("selected"));
+    const card = document.querySelector(`.eng-card[data-index="${index}"]`);
+    if (card) card.classList.add("selected");
+    // Check if both sides selected
+    if (selectedLeft !== null) checkMatch();
+  }
 
-    const thaiCard = document.querySelector(`.thai-card[data-index="${selectedThai}"]`);
-    const engCard = document.querySelector(`.eng-card[data-index="${index}"]`);
+  function checkMatch() {
+    const thaiCard = document.querySelector(`.thai-card[data-index="${selectedLeft}"]`);
+    const engCard = document.querySelector(`.eng-card[data-index="${selectedRight}"]`);
 
-    if (selectedThai === index) {
+    if (selectedLeft === selectedRight) {
       // Correct match
-      const matchedIndex = index;
+      const matchedIndex = selectedLeft;
       matchedPairs.add(matchedIndex);
       streak++;
       roundCorrect++;
@@ -133,10 +160,13 @@ const Game = (() => {
         engCard.classList.add("matched");
         thaiCard.disabled = true;
         engCard.disabled = true;
-        selectedThai = null;
+        selectedLeft = null;
+        selectedRight = null;
 
         if (matchedPairs.size === pairs.length) {
-          finishRound();
+          // QOL 7: auto-advance after brief message
+          UI.toast("\u2713 All matched!", "info");
+          setTimeout(() => finishRound(), 1000);
         } else {
           updateStreakDisplay();
         }
@@ -155,10 +185,24 @@ const Game = (() => {
 
       setTimeout(() => {
         thaiCard.classList.remove("wrong", "selected");
-        engCard.classList.remove("wrong");
-        selectedThai = null;
+        engCard.classList.remove("wrong", "selected");
+        selectedLeft = null;
+        selectedRight = null;
         updateStreakDisplay();
       }, 500);
+    }
+  }
+
+  function deselectAll() {
+    if (selectedLeft !== null) {
+      const card = document.querySelector(`.thai-card[data-index="${selectedLeft}"]`);
+      if (card) card.classList.remove("selected");
+      selectedLeft = null;
+    }
+    if (selectedRight !== null) {
+      const card = document.querySelector(`.eng-card[data-index="${selectedRight}"]`);
+      if (card) card.classList.remove("selected");
+      selectedRight = null;
     }
   }
 
@@ -204,6 +248,7 @@ const Game = (() => {
   }
 
   function finishRound() {
+    isActive = false;
     // Completion bonus
     const bonus = 50;
     xpEarned += bonus;
@@ -212,6 +257,8 @@ const Game = (() => {
 
     const accuracy = Math.round((roundCorrect / (roundCorrect + roundWrong)) * 100);
     const streakMaintained = State.hasPlayedToday();
+    const fromPathways = window.location.hash.includes('from=pathways');
+    const s = State.get();
 
     UI.render(`
       <div class="round-complete">
@@ -233,8 +280,12 @@ const Game = (() => {
               <span class="round-stat-label">Correct</span>
             </div>
           </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:0.78rem;margin-top:0.5rem">
+            🔥 Streak: ${s.streak} days · ⚡ XP today: ${s.xpToday || 0} · Rounds today: ${s.roundsToday || 0}
+          </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="Game.start('${currentTopic.id}')">Play Again</button>
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
             <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
           </div>
         </div>
@@ -247,5 +298,13 @@ const Game = (() => {
     renderGame();
   }
 
-  return { start, selectThai, selectEnglish, toggleScript };
+  // Keyboard: Escape deselects
+  document.addEventListener("keydown", e => {
+    if (!isActive) return;
+    if (e.key === "Escape") {
+      deselectAll();
+    }
+  });
+
+  return { start, selectThai, selectEnglish, toggleScript, deselectAll };
 })();

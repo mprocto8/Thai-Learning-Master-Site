@@ -76,7 +76,7 @@ const Pathways = (() => {
                               <span class="pathway-topic-emoji">${t.emoji}</span>
                               <span class="pathway-topic-name">${t.label}</span>
                               <span class="pathway-topic-mastery">${Math.round(mastery * 100)}%</span>
-                              ${!done ? `<button class="btn btn-xs btn-primary" onclick="UI.navigate('#game/${topicId}')">Practice</button>` : ''}
+                              ${!done ? `<button class="btn btn-xs btn-primary" onclick="UI.navigate('#game/${topicId}?from=pathways')">Practice</button>` : ''}
                             </div>
                           `;
                         }).join("")}
@@ -100,7 +100,7 @@ const Pathways = (() => {
                     ` : ''}
 
                     ${prog.nextTopic && !p.usesAlphabet ? `
-                      <button class="btn btn-primary pathway-next" onclick="UI.navigate('#game/${prog.nextTopic}')">
+                      <button class="btn btn-primary pathway-next" onclick="UI.navigate('#game/${prog.nextTopic}?from=pathways')">
                         Continue: ${TOPICS.find(t => t.id === prog.nextTopic)?.label || prog.nextTopic} →
                       </button>
                     ` : ''}

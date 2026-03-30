@@ -12,6 +12,10 @@ const UI = (() => {
   }
 
   function navigate(hash) {
+    // QOL 6: save scroll position when leaving dashboard
+    if ((window.location.hash || "#dashboard") === "#dashboard" && typeof App !== "undefined") {
+      App.saveDashScroll();
+    }
     window.location.hash = hash;
   }
 
@@ -111,7 +115,8 @@ const UI = (() => {
     // Run cleanup from previous route
     if (_cleanupFn) { _cleanupFn(); _cleanupFn = null; }
     const hash = window.location.hash || "#dashboard";
-    const route = _routes[hash] || _routes[hash.split("/")[0]];
+    const baseHash = hash.split("/")[0].split("?")[0];
+    const route = _routes[hash] || _routes[baseHash];
     if (route) {
       route();
     } else {

@@ -26,7 +26,9 @@ const State = (() => {
     speedBests: {},      // { [topicId]: score }
     onboarded: false,
     badges: [],          // earned pathway badge IDs
-    tutorialsSeen: {}    // { sectionId: true }
+    tutorialsSeen: {},   // { sectionId: true }
+    xpToday: 0,
+    roundsToday: 0
   });
 
   let _state = null;
@@ -65,7 +67,15 @@ const State = (() => {
   /* XP & leveling */
   function addXP(amount) {
     const oldLevel = getLevel();
-    update(s => { s.xp += amount; });
+    update(s => {
+      s.xp += amount;
+      const today = new Date().toDateString();
+      if (s.lastPlayedDate === today) {
+        s.xpToday = (s.xpToday || 0) + amount;
+      } else {
+        s.xpToday = amount;
+      }
+    });
     const newLevel = getLevel();
     if (newLevel.name !== oldLevel.name) {
       return newLevel; // caller should celebrate
@@ -107,9 +117,9 @@ const State = (() => {
     if (s.lastPlayedDate === today) return; // already logged today
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     if (s.lastPlayedDate === yesterday) {
-      update(st => { st.streak += 1; st.lastPlayedDate = today; });
+      update(st => { st.xpToday = 0; st.roundsToday = 0; st.streak += 1; st.lastPlayedDate = today; });
     } else if (s.lastPlayedDate !== today) {
-      update(st => { st.streak = 1; st.lastPlayedDate = today; });
+      update(st => { st.xpToday = 0; st.roundsToday = 0; st.streak = 1; st.lastPlayedDate = today; });
     }
   }
 
@@ -144,6 +154,7 @@ const State = (() => {
       ts.correct += correct;
       ts.total += total;
       ts.lastPlayed = Date.now();
+      s.roundsToday = (s.roundsToday || 0) + 1;
     });
   }
 

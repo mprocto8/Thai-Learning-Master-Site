@@ -14,6 +14,7 @@ const Speed = (() => {
   let answered = 0;
   let correct = 0;
   let gameOver = false;
+  let isActive = false;
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
@@ -25,6 +26,7 @@ const Speed = (() => {
     answered = 0;
     correct = 0;
     gameOver = false;
+    isActive = true;
     if (timer) clearInterval(timer);
     nextQuestion();
     startTimer();
@@ -144,6 +146,7 @@ const Speed = (() => {
 
   function finishRound() {
     gameOver = true;
+    isActive = false;
     State.setSpeedBest(topic.id, score);
     State.addXP(score);
     State.checkStreak();
@@ -151,6 +154,8 @@ const Speed = (() => {
     const best = State.getSpeedBest(topic.id);
     const isNewBest = score >= best;
     const streakMaintained = State.hasPlayedToday();
+    const fromPathways = window.location.hash.includes('from=pathways');
+    const s = State.get();
 
     UI.render(`
       <div class="round-complete">
@@ -173,8 +178,12 @@ const Speed = (() => {
               <span class="round-stat-label">Best</span>
             </div>
           </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:0.78rem;margin-top:0.5rem">
+            🔥 Streak: ${s.streak} days · ⚡ XP today: ${s.xpToday || 0} · Rounds today: ${s.roundsToday || 0}
+          </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="Speed.start('${topic.id}')">Play Again</button>
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
             <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back</button>
           </div>
         </div>
@@ -184,10 +193,23 @@ const Speed = (() => {
 
   function quit() {
     gameOver = true;
+    isActive = false;
     if (timer) clearInterval(timer);
     timer = null;
     UI.navigate("#dashboard");
   }
+
+  // Keyboard: 1-4 select answer options
+  document.addEventListener("keydown", e => {
+    if (!isActive || gameOver) return;
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 4) {
+      const btns = document.querySelectorAll(".speed-option");
+      if (btns.length >= num && !btns[num - 1].disabled) {
+        answer(num - 1);
+      }
+    }
+  });
 
   return { start, answer, quit, toggleScript };
 })();

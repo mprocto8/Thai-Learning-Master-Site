@@ -100,13 +100,27 @@ const SentenceBuilder = (() => {
     renderSentence();
   }
 
+  function splitRomanized(sentence) {
+    // Split romanized string into chunks matching word count
+    const tokens = sentence.romanized.split(/\s+/);
+    const wordCount = sentence.words.length;
+    const result = [];
+    const base = Math.floor(tokens.length / wordCount);
+    let extra = tokens.length - base * wordCount;
+    let idx = 0;
+    for (let i = 0; i < wordCount; i++) {
+      const take = base + (extra > 0 ? 1 : 0);
+      if (extra > 0) extra--;
+      result.push(tokens.slice(idx, idx + take).join(' '));
+      idx += take;
+    }
+    return result;
+  }
+
   function renderSentence() {
     const slots = currentSentence.words.length;
     const showScript = State.get().showScript;
-
-    // Build display text based on toggle
-    const displayWords = showScript ? currentSentence.words : currentSentence.words;
-    // The words array contains Thai script; romanized is in the sentence's romanized field
+    const romWords = !showScript ? splitRomanized(currentSentence) : null;
 
     UI.render(`
       <div class="sb-active">
@@ -120,9 +134,14 @@ const SentenceBuilder = (() => {
           <div class="flashcard-progress-bar" style="width:${(roundIndex / roundSentences.length) * 100}%"></div>
         </div>
 
+        <div class="script-toggle">
+          <button class="btn btn-sm ${!showScript ? 'btn-active' : ''}" onclick="SentenceBuilder.setDisplay(false)">Romanized</button>
+          <button class="btn btn-sm ${showScript ? 'btn-active' : ''}" onclick="SentenceBuilder.setDisplay(true)">Thai Script</button>
+        </div>
+
         <div class="sb-prompt">
           <div class="sb-english">${currentSentence.english}</div>
-          ${hintRevealed ? `<div class="sb-hint-text">💡 ${currentSentence.romanized}</div>` : ''}
+          ${hintRevealed ? `<div class="sb-hint-text">💡 ${showScript ? currentSentence.romanized : currentSentence.words.join(' ')}</div>` : ''}
         </div>
 
         <div class="sb-answer-slots" id="sb-slots">
@@ -130,7 +149,10 @@ const SentenceBuilder = (() => {
             const placed = placedWords[i];
             return `
               <div class="sb-slot ${placed ? 'filled' : ''}" data-slot="${i}" onclick="SentenceBuilder.removeFromSlot(${i})">
-                ${placed ? `<span class="sb-slot-word">${placed.word}</span>` : `<span class="sb-slot-placeholder">${i + 1}</span>`}
+                ${placed ? (showScript
+                  ? `<span class="sb-slot-word">${placed.word}</span>`
+                  : `<span class="sb-slot-word"><span style="font-size:0.7em;opacity:0.6;display:block">${placed.word}</span><span>${romWords ? romWords[placed.origIdx] : ''}</span></span>`
+                ) : `<span class="sb-slot-placeholder">${i + 1}</span>`}
               </div>
             `;
           }).join("")}
@@ -141,7 +163,10 @@ const SentenceBuilder = (() => {
             <button class="btn sb-word ${w.placed ? 'used' : ''} ${selectedIndex === i ? 'selected' : ''}"
               data-idx="${i}" ${w.placed ? 'disabled' : ''}
               onclick="SentenceBuilder.selectWord(${i})">
-              ${w.word}
+              ${showScript
+                ? w.word
+                : `<span style="font-size:0.7em;opacity:0.6;display:block">${w.word}</span><span>${romWords ? romWords[w.origIdx] : ''}</span>`
+              }
             </button>
           `).join("")}
         </div>
@@ -265,6 +290,7 @@ const SentenceBuilder = (() => {
     State.addXP(50);
     const accuracy = roundTotal > 0 ? Math.round((roundCorrect / roundTotal) * 100) : 0;
     const streakMaintained = State.hasPlayedToday();
+    const s = State.get();
 
     UI.render(`
       <div class="round-complete">
@@ -285,6 +311,9 @@ const SentenceBuilder = (() => {
               <span class="round-stat-value">${score + 50}</span>
               <span class="round-stat-label">XP Earned</span>
             </div>
+          </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:0.78rem;margin-top:0.5rem">
+            🔥 Streak: ${s.streak} days · ⚡ XP today: ${s.xpToday || 0} · Rounds today: ${s.roundsToday || 0}
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="SentenceBuilder.startRound()">Play Again</button>

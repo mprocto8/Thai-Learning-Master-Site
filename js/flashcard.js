@@ -13,6 +13,28 @@ const Flashcard = (() => {
   let consecutiveGotIt = 0;
   let touchStartX = 0;
   let touchStartY = 0;
+  let isActive = false;
+  let customLabel = null;
+  let customDeck = null;
+
+  function startFromDeck(pairs, label) {
+    customLabel = label;
+    customDeck = pairs;
+    topic = { id: '_mistakes', emoji: '📚', label: label, pairs: pairs };
+    deck = pairs.map((p, i) => ({
+      ...p,
+      originalIndex: i,
+      bucket: 0
+    }));
+    deck.sort(() => Math.random() - 0.5);
+    currentIndex = 0;
+    flipped = false;
+    gotItCount = 0;
+    reviewCount = 0;
+    consecutiveGotIt = 0;
+    isActive = true;
+    renderCard();
+  }
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
@@ -36,6 +58,9 @@ const Flashcard = (() => {
     gotItCount = 0;
     reviewCount = 0;
     consecutiveGotIt = 0;
+    isActive = true;
+    customLabel = null;
+    customDeck = null;
     renderCard();
   }
 
@@ -176,16 +201,22 @@ const Flashcard = (() => {
   }
 
   function finishDeck() {
+    isActive = false;
     const total = gotItCount + reviewCount;
-    State.recordTopicRound(topic.id, gotItCount, total);
+    if (topic.id !== '_mistakes') {
+      State.recordTopicRound(topic.id, gotItCount, total);
+    }
     State.addXP(50); // completion bonus
     const streakMaintained = State.hasPlayedToday();
+    const fromPathways = window.location.hash.includes('from=pathways');
+    const isMistakeDeck = customLabel !== null;
+    const s = State.get();
 
     UI.render(`
       <div class="round-complete">
         <div class="round-complete-card">
           <div class="round-complete-icon">📚</div>
-          <h2>Deck Complete!</h2>
+          <h2>${isMistakeDeck ? customLabel + ' Complete!' : 'Deck Complete!'}</h2>
           ${streakMaintained ? '<div class="streak-maintained">🔥 Streak maintained!</div>' : ''}
           <div class="round-stats">
             <div class="round-stat">
@@ -201,14 +232,34 @@ const Flashcard = (() => {
               <span class="round-stat-label">XP Earned</span>
             </div>
           </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:0.78rem;margin-top:0.5rem">
+            🔥 Streak: ${s.streak} days · ⚡ XP today: ${s.xpToday || 0} · Rounds today: ${s.roundsToday || 0}
+          </div>
           <div class="round-actions">
-            <button class="btn btn-primary" onclick="Flashcard.start('${topic.id}')">Study Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back</button>
+            ${isMistakeDeck
+              ? '<button class="btn btn-primary" onclick="UI.navigate(\'#dashboard\')">Back to Dashboard</button>'
+              : `<button class="btn btn-primary" onclick="Flashcard.start('${topic.id}')">Study Again</button>`
+            }
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
+            ${!isMistakeDeck ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#dashboard\')">Back</button>' : ''}
           </div>
         </div>
       </div>
     `);
   }
 
-  return { start, flip, answer, toggleScript };
+  // Keyboard shortcuts
+  document.addEventListener("keydown", e => {
+    if (!isActive) return;
+    if (e.key === " " || e.code === "Space") {
+      e.preventDefault();
+      if (!flipped) flip();
+    } else if (e.key === "ArrowRight" && flipped && document.querySelector(".flashcard-actions.visible")) {
+      answer(true);
+    } else if (e.key === "ArrowLeft" && flipped && document.querySelector(".flashcard-actions.visible")) {
+      answer(false);
+    }
+  });
+
+  return { start, startFromDeck, flip, answer, toggleScript };
 })();
