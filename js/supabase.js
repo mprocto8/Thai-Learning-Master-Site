@@ -58,10 +58,19 @@ const SupabaseClient = (() => {
 
   async function signUp(email, password, displayName) {
     if (!isAvailable()) throw new Error("Supabase unavailable");
+    // Pin the redirect to the current page URL (minus hash/query) so email
+    // confirmation links preserve the subpath on GitHub Pages
+    // (/Thai-Learning-Master-Site/) and also work for local dev. Without
+    // this, Supabase falls back to the dashboard Site URL which has been
+    // observed to drop the subpath and 404.
+    const redirectUrl = window.location.href.split('#')[0].split('?')[0];
     const { data, error } = await _client.auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName || "" } }
+      options: {
+        data: { display_name: displayName || "" },
+        emailRedirectTo: redirectUrl
+      }
     });
     if (error) throw error;
     return data;

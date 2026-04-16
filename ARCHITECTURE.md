@@ -65,6 +65,8 @@
 - Supabase provides email/password auth + cross-device progress sync.
 - Guest mode is first-class — the app works identically without ever logging in.
 - Only `js/supabase.js` imports the SDK. `js/state.js` talks to `SupabaseClient`; no other module does.
+- `SupabaseClient` auth surface: `signUp`, `signIn`, `signOut`, `getSession`, `onAuthChange` (no Google OAuth or password-reset methods yet — `State.loginWithGoogle()` is a placeholder that throws).
+- `signUp` pins `emailRedirectTo` to the current page URL so email-confirm links preserve the GitHub Pages subpath.
 - Feature modules keep using `State.*` — they are unchanged and unaware of Supabase.
 - Writes go to localStorage immediately; Supabase sync is debounced 2s and non-blocking.
 - See `create_tables.sql` for schema + RLS policies.
