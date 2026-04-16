@@ -48,6 +48,7 @@ const State = (() => {
   let _syncTimer = null;  // debounce timer
   let _syncing = false;
   let _suspendSync = false; // true during a login merge to avoid echo writes
+  let _recoveryMode = false; // true when Supabase fires PASSWORD_RECOVERY event
 
   function load() {
     try {
@@ -299,6 +300,8 @@ const State = (() => {
   function isLoggedIn() { return !!_user; }
   function currentUser() { return _user; }
   function getProfile() { return _profile; }
+  function isRecoveryMode() { return _recoveryMode; }
+  function clearRecoveryMode() { _recoveryMode = false; }
 
   function getAccountTier() {
     if (!_profile) return "free";
@@ -318,23 +321,44 @@ const State = (() => {
    */
   async function restoreSession() {
     if (typeof SupabaseClient === "undefined" || !SupabaseClient.isAvailable()) return false;
-    const session = await SupabaseClient.getSession();
-    if (!session || !session.user) return false;
-    _user = session.user;
-    try {
-      await _pullAndMerge();
-    } catch (e) {
-      console.warn("[State] initial sync failed:", e);
-    }
-    // Listen for subsequent auth changes (e.g. token refresh, external logout)
+
+    // Detect recovery-mode landing early: Supabase puts `type=recovery` in the
+    // URL hash when the user clicks the reset link. We also listen for the
+    // PASSWORD_RECOVERY auth event — whichever fires first flips the flag.
+    const rawHash = (typeof window !== "undefined" ? window.location.hash : "") || "";
+    if (rawHash.includes("type=recovery")) _recoveryMode = true;
+
+    // Always register the auth listener FIRST so we don't miss the
+    // PASSWORD_RECOVERY event, which can fire during getSession() resolution.
     SupabaseClient.onAuthChange((event, newSession) => {
-      if (event === "SIGNED_OUT") {
+      if (event === "PASSWORD_RECOVERY") {
+        _recoveryMode = true;
+        if (newSession?.user) _user = newSession.user;
+        try {
+          window.dispatchEvent(new CustomEvent("thai-learner-recovery"));
+        } catch {}
+      } else if (event === "SIGNED_OUT") {
         _user = null;
         _profile = null;
       } else if (newSession?.user) {
         _user = newSession.user;
       }
     });
+
+    const session = await SupabaseClient.getSession();
+    if (!session || !session.user) return false;
+    _user = session.user;
+
+    // Skip the initial pull/merge if we're in a recovery session — the user
+    // hasn't actually authenticated yet, and we don't want to overwrite
+    // anything or trigger sync until they set a new password.
+    if (!_recoveryMode) {
+      try {
+        await _pullAndMerge();
+      } catch (e) {
+        console.warn("[State] initial sync failed:", e);
+      }
+    }
     return true;
   }
 
@@ -371,6 +395,28 @@ const State = (() => {
   async function loginWithGoogle() {
     // Placeholder — Google OAuth will be wired up later.
     throw new Error("Google sign-in is coming soon.");
+  }
+
+  async function resetPassword(email) {
+    if (typeof SupabaseClient === "undefined" || !SupabaseClient.isAvailable()) {
+      throw new Error("Password reset is unavailable right now.");
+    }
+    return await SupabaseClient.resetPassword(email);
+  }
+
+  async function updatePassword(newPassword) {
+    if (typeof SupabaseClient === "undefined" || !SupabaseClient.isAvailable()) {
+      throw new Error("Password update is unavailable right now.");
+    }
+    const data = await SupabaseClient.updatePassword(newPassword);
+    // After a successful password update during recovery, the session is the
+    // regular authenticated session — surface the user so the rest of the app
+    // sees a logged-in state and sync kicks in.
+    if (data && data.user) {
+      _user = data.user;
+      try { await _pullAndMerge(); } catch (e) { console.warn("[State] post-reset merge failed:", e); }
+    }
+    return data;
   }
 
   async function logout() {
@@ -640,6 +686,8 @@ const State = (() => {
     resetAll, LEVELS,
     // Auth
     restoreSession, signUp, login, loginWithGoogle, logout,
-    isLoggedIn, currentUser, getProfile, isPremium, getAccountTier
+    resetPassword, updatePassword,
+    isLoggedIn, currentUser, getProfile, isPremium, getAccountTier,
+    isRecoveryMode, clearRecoveryMode
   };
 })();

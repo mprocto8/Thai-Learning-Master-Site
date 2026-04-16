@@ -66,6 +66,10 @@ login(email, password) → Promise<data> — email/password sign-in. Pushes loca
 signUp(email, password, displayName) → Promise<data> — create account. If the Supabase project requires email confirmation, `data.session` will be null; prompt the user to check their inbox.
 loginWithGoogle() → Promise — placeholder. Throws "coming soon" until OAuth is wired up.
 logout() → Promise<void> — signs out of Supabase. localStorage is left intact so the device can continue in guest mode.
+resetPassword(email) → Promise — sends a password-reset email. The link redirects back to the current page URL; Supabase appends `type=recovery` to the hash.
+updatePassword(newPassword) → Promise<data> — sets a new password during a recovery session. On success, surfaces the user as logged in and runs the normal pull+merge.
+isRecoveryMode() → bool — true when Supabase has fired PASSWORD_RECOVERY or the URL hash contains `type=recovery`. Used by App.init() to route to `#reset-confirm` and skip the initial data merge.
+clearRecoveryMode() → void — resets the recovery flag after the password is successfully updated.
 isLoggedIn() → bool — true if a Supabase user is currently attached.
 currentUser() → auth.user | null — the raw Supabase user object.
 getProfile() → user_profiles row | null — cached profile from the last fetch.

@@ -22,14 +22,44 @@ const App = (() => {
     UI.registerRoute("#sentences", () => SentenceBuilder.show());
     UI.registerRoute("#settings", renderSettings);
     UI.registerRoute("#login", renderLogin);
+    UI.registerRoute("#reset-request", renderResetRequest);
+    UI.registerRoute("#reset-confirm", renderResetConfirm);
+    UI.registerRoute("#typing", routeTyping);
+    UI.registerRoute("#listen", routeListen);
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once
     // the session restore finishes.
     if (typeof SupabaseClient !== "undefined") {
       SupabaseClient.init();
+
+      // Detect password recovery links BEFORE starting the router. Supabase
+      // appends `type=recovery` + access_token to the URL hash when the user
+      // clicks the reset email — we route them straight to the confirm screen.
+      const hash = window.location.hash || "";
+      if (hash.includes("type=recovery")) {
+        // Replace the messy recovery hash with a clean route so the token
+        // doesn't sit in the URL. The Supabase SDK has already parsed it.
+        history.replaceState(null, "", window.location.pathname + "#reset-confirm");
+      }
+
+      // Also listen for the PASSWORD_RECOVERY auth event, which may fire
+      // later (depending on SDK timing) and should also force the confirm
+      // screen if the user isn't already there.
+      window.addEventListener("thai-learner-recovery", () => {
+        if (!window.location.hash.includes("reset-confirm")) {
+          UI.navigate("#reset-confirm");
+        }
+      });
+
       State.restoreSession().then(loggedIn => {
         if (loggedIn) {
+          // If we restored a recovery session, make sure we land on the
+          // confirm screen (the hash rewrite above may have been too early).
+          if (State.isRecoveryMode() && !window.location.hash.includes("reset-confirm")) {
+            UI.navigate("#reset-confirm");
+            return;
+          }
           // Re-render the current route so the header bar appears.
           UI.handleRoute();
         }
@@ -390,6 +420,18 @@ const App = (() => {
     else UI.navigate("#dashboard");
   }
 
+  function routeTyping() {
+    const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (topicId) TypingChallenge.start(topicId);
+    else UI.navigate("#dashboard");
+  }
+
+  function routeListen() {
+    const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (topicId) ListenChoose.start(topicId);
+    else UI.navigate("#dashboard");
+  }
+
   /* Settings */
   function renderSettings() {
     const s = State.get();
@@ -603,6 +645,12 @@ const App = (() => {
             </button>
           </form>
 
+          ${!isSignup ? `
+            <div class="login-forgot">
+              <a href="#reset-request" onclick="event.preventDefault();UI.navigate('#reset-request')">Forgot password?</a>
+            </div>
+          ` : ""}
+
           <div class="login-alt">
             ${isSignup
               ? `<span>Already have an account?</span> <a href="#login" onclick="event.preventDefault();App.switchLoginMode('login')">Sign in</a>`
@@ -656,6 +704,127 @@ const App = (() => {
     UI.navigate("#dashboard");
   }
 
+  /* ------------------------------------------------------------
+   *  Password reset — request + confirm screens
+   * ------------------------------------------------------------ */
+
+  function renderResetRequest() {
+    UI.render(`
+      <div class="login-screen">
+        <div class="login-card">
+          <div class="login-icon">🔑</div>
+          <h1>Reset password</h1>
+          <p class="login-sub">Enter your email and we'll send you a link to set a new password.</p>
+
+          <form class="login-form" onsubmit="App.submitResetRequest(event)">
+            <div class="login-field">
+              <label for="reset-email">Email</label>
+              <input id="reset-email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            </div>
+
+            <div id="reset-error" class="login-error" style="display:none"></div>
+            <div id="reset-success" class="login-success" style="display:none"></div>
+
+            <button class="btn btn-primary btn-lg login-submit" type="submit">Send reset link</button>
+          </form>
+
+          <div class="login-alt">
+            <a href="#login" onclick="event.preventDefault();UI.navigate('#login')">← Back to login</a>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  async function submitResetRequest(event) {
+    event.preventDefault();
+    const email = (document.getElementById("reset-email")?.value || "").trim();
+    const errEl = document.getElementById("reset-error");
+    const okEl = document.getElementById("reset-success");
+    const btn = document.querySelector(".login-submit");
+    if (errEl) { errEl.style.display = "none"; errEl.textContent = ""; }
+    if (okEl) { okEl.style.display = "none"; okEl.textContent = ""; }
+    if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+    try {
+      await State.resetPassword(email);
+      if (okEl) {
+        okEl.textContent = "Check your email for the reset link. It may take a minute to arrive.";
+        okEl.style.display = "block";
+      }
+      if (btn) { btn.disabled = false; btn.textContent = "Send again"; }
+    } catch (e) {
+      const msg = (e && e.message) ? e.message : "Something went wrong.";
+      if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
+      if (btn) { btn.disabled = false; btn.textContent = "Send reset link"; }
+    }
+  }
+
+  function renderResetConfirm() {
+    UI.render(`
+      <div class="login-screen">
+        <div class="login-card">
+          <div class="login-icon">🔐</div>
+          <h1>Set new password</h1>
+          <p class="login-sub">Choose a new password for your account.</p>
+
+          <form class="login-form" onsubmit="App.submitResetConfirm(event)">
+            <div class="login-field">
+              <label for="new-password">New password</label>
+              <input id="new-password" type="password" autocomplete="new-password" required minlength="6" placeholder="At least 6 characters" />
+            </div>
+
+            <div class="login-field">
+              <label for="new-password-confirm">Confirm password</label>
+              <input id="new-password-confirm" type="password" autocomplete="new-password" required minlength="6" placeholder="Repeat new password" />
+            </div>
+
+            <div id="reset-error" class="login-error" style="display:none"></div>
+
+            <button class="btn btn-primary btn-lg login-submit" type="submit">Update password</button>
+          </form>
+
+          <div class="login-alt">
+            <a href="#login" onclick="event.preventDefault();UI.navigate('#login')">← Back to login</a>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  async function submitResetConfirm(event) {
+    event.preventDefault();
+    const pw = document.getElementById("new-password")?.value || "";
+    const pw2 = document.getElementById("new-password-confirm")?.value || "";
+    const errEl = document.getElementById("reset-error");
+    const btn = document.querySelector(".login-submit");
+    if (errEl) { errEl.style.display = "none"; errEl.textContent = ""; }
+
+    if (pw.length < 6) {
+      if (errEl) { errEl.textContent = "Password must be at least 6 characters."; errEl.style.display = "block"; }
+      return;
+    }
+    if (pw !== pw2) {
+      if (errEl) { errEl.textContent = "Passwords don't match."; errEl.style.display = "block"; }
+      return;
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = "Updating…"; }
+    try {
+      await State.updatePassword(pw);
+      State.clearRecoveryMode();
+      UI.toast("Password updated!", "info");
+      UI.navigate("#dashboard");
+    } catch (e) {
+      const msg = (e && e.message) ? e.message : "Something went wrong.";
+      // Most common failure: the recovery link expired or was reused.
+      const friendly = /expired|invalid|token/i.test(msg)
+        ? "Your reset link has expired or is invalid. Please request a new one."
+        : msg;
+      if (errEl) { errEl.textContent = friendly; errEl.style.display = "block"; }
+      if (btn) { btn.disabled = false; btn.textContent = "Update password"; }
+    }
+  }
+
   async function confirmLogout() {
     if (!confirm("Sign out? Your progress will stay safe in your account, and this device will revert to guest mode.")) return;
     try { await State.logout(); } catch (e) { console.warn(e); }
@@ -667,7 +836,8 @@ const App = (() => {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
     // Auth
-    submitLogin, switchLoginMode, continueAsGuest, confirmLogout
+    submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
+    submitResetRequest, submitResetConfirm
   };
 })();
 

@@ -88,6 +88,25 @@ const SupabaseClient = (() => {
     try { await _client.auth.signOut(); } catch (e) { console.warn("[Supabase] signOut failed:", e); }
   }
 
+  async function resetPassword(email) {
+    if (!isAvailable()) throw new Error("Supabase unavailable");
+    // Same redirectTo pattern as signUp — preserve subpath on GitHub Pages
+    // and local dev. Supabase appends the recovery token to the URL hash.
+    const redirectUrl = window.location.href.split('#')[0].split('?')[0];
+    const { data, error } = await _client.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl
+    });
+    if (error) throw error;
+    return data;
+  }
+
+  async function updatePassword(newPassword) {
+    if (!isAvailable()) throw new Error("Supabase unavailable");
+    const { data, error } = await _client.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return data;
+  }
+
   /* --- Reads --- */
   async function fetchProfile(userId) {
     if (!isAvailable()) return null;
@@ -202,7 +221,7 @@ const SupabaseClient = (() => {
 
   return {
     init, isAvailable, client,
-    getSession, onAuthChange, signUp, signIn, signOut,
+    getSession, onAuthChange, signUp, signIn, signOut, resetPassword, updatePassword,
     fetchProfile, fetchProgress, fetchTopicProgress, fetchGameStats, fetchCardHistory, fetchAll,
     upsertProfile, upsertProgress, upsertGameStats, upsertTopicProgress, upsertCardHistory
   };

@@ -2798,3 +2798,353 @@ p { color: var(--text-1); }
   .user-header-logout { font-size: 0.68rem !important; }
   .sync-pill { top: 8px; right: 8px; font-size: 0.7rem; padding: 5px 10px; }
 }
+
+/* ============================================================
+   PASSWORD RESET — Forgot link, success message
+   ============================================================ */
+.login-forgot {
+  text-align: center;
+  font-size: 0.82rem;
+  margin: calc(-1 * var(--sp-3)) 0 var(--sp-4);
+}
+.login-forgot a {
+  color: var(--text-2);
+  text-decoration: none;
+  font-weight: 500;
+}
+.login-forgot a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.login-success {
+  background: var(--green-glow);
+  color: var(--green);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* ============================================================
+   TYPING CHALLENGE — Active-recall typed-input mode
+   ============================================================ */
+.typing-screen {
+  padding-top: var(--sp-3);
+}
+
+.typing-progress {
+  height: 6px;
+  background: var(--surface-1);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  margin-bottom: var(--sp-3);
+}
+.typing-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s var(--ease);
+}
+
+.typing-progress-count {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.typing-score-bar {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.85rem;
+  color: var(--text-1);
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-1);
+  border-radius: var(--r-md);
+}
+
+.typing-prompt-card {
+  background: var(--bg-1);
+  border: 1px solid var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  margin-bottom: var(--sp-4);
+  transition: background 0.3s, border-color 0.3s;
+}
+.typing-prompt-card.correct-flash {
+  background: var(--green-glow);
+  border-color: var(--green);
+}
+.typing-prompt-card.wrong-flash {
+  background: var(--coral-glow);
+  border-color: var(--coral);
+}
+.typing-prompt-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-2);
+  margin-bottom: var(--sp-2);
+}
+.typing-prompt-english {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-0);
+  line-height: 1.2;
+}
+
+.typing-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.typing-input {
+  width: 100%;
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  border: 2px solid var(--surface-2);
+  background: var(--bg-2);
+  color: var(--text-0);
+  font-size: 1.15rem;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 52px;
+  text-align: center;
+  font-family: inherit;
+}
+.typing-input:focus {
+  border-color: var(--accent);
+}
+.typing-input:disabled {
+  opacity: 0.6;
+}
+
+.typing-submit {
+  width: 100%;
+}
+
+.typing-feedback {
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  text-align: center;
+  animation: fadeInUp 0.25s var(--ease);
+}
+.typing-feedback.correct {
+  background: var(--green-glow);
+  color: var(--green);
+}
+.typing-feedback.wrong {
+  background: var(--coral-glow);
+  color: var(--coral);
+}
+.typing-feedback-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: var(--sp-2);
+}
+.typing-feedback-thai {
+  font-size: 1rem;
+  color: var(--text-0);
+  margin-bottom: var(--sp-2);
+}
+.typing-feedback-example {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-style: italic;
+}
+.typing-feedback-actions {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-top: var(--sp-3);
+}
+
+/* ============================================================
+   LISTEN & CHOOSE — TTS-driven listening comprehension
+   ============================================================ */
+.listen-screen {
+  padding-top: var(--sp-3);
+}
+
+.listen-progress {
+  height: 6px;
+  background: var(--surface-1);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  margin-bottom: var(--sp-3);
+}
+.listen-progress-bar {
+  height: 100%;
+  background: var(--blue);
+  transition: width 0.4s var(--ease);
+}
+.listen-progress-count {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.listen-score-bar {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.85rem;
+  color: var(--text-1);
+  margin-bottom: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-1);
+  border-radius: var(--r-md);
+}
+
+.listen-speed-pills {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.listen-speaker-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+
+.listen-speaker {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #0f1117;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s var(--ease), box-shadow 0.2s;
+  touch-action: manipulation;
+}
+.listen-speaker:active { transform: scale(0.95); }
+.listen-speaker:hover { box-shadow: var(--shadow-lg); }
+.listen-speaker.playing {
+  animation: listenPulse 0.9s var(--ease) infinite;
+}
+.listen-speaker-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+@keyframes listenPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-glow); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 18px rgba(245, 158, 11, 0); }
+}
+.listen-hint {
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.listen-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.listen-option {
+  background: var(--surface-1);
+  color: var(--text-0);
+  min-height: 64px;
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.listen-option:hover { background: var(--surface-2); }
+.listen-option.correct {
+  background: var(--green-glow);
+  color: var(--green);
+  border: 2px solid var(--green);
+}
+.listen-option.wrong {
+  background: var(--coral-glow);
+  color: var(--coral);
+  border: 2px solid var(--coral);
+}
+
+.listen-feedback {
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  text-align: center;
+  animation: fadeInUp 0.25s var(--ease);
+}
+.listen-feedback.correct {
+  background: var(--green-glow);
+  color: var(--green);
+}
+.listen-feedback.wrong {
+  background: var(--coral-glow);
+  color: var(--coral);
+}
+.listen-feedback-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: var(--sp-2);
+}
+.listen-feedback-thai {
+  font-size: 1rem;
+  color: var(--text-0);
+  margin-bottom: var(--sp-2);
+}
+.listen-feedback-actions {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-top: var(--sp-3);
+}
+
+.listen-unavailable {
+  background: var(--bg-1);
+  border: 1px solid var(--surface-1);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  margin-top: var(--sp-4);
+}
+.listen-unavailable-icon {
+  font-size: 3rem;
+  margin-bottom: var(--sp-3);
+}
+.listen-unavailable h3 {
+  margin-bottom: var(--sp-3);
+  color: var(--text-0);
+}
+.listen-unavailable p {
+  font-size: 0.88rem;
+  margin-bottom: var(--sp-4);
+}
+.listen-unavailable-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--sp-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  text-align: left;
+}
+.listen-unavailable-steps li {
+  font-size: 0.82rem;
+  color: var(--text-1);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-2);
+  border-radius: var(--r-sm);
+}
+
+@media (max-width: 380px) {
+  .listen-speaker { width: 100px; height: 100px; }
+  .listen-speaker-icon { font-size: 2.5rem; }
+  .typing-prompt-english { font-size: 1.5rem; }
+}

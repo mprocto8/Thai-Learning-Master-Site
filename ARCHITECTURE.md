@@ -40,6 +40,8 @@
 | js/sentence-builder.js — word arrangement game | SentenceBuilder | State, UI, SENTENCES |
 | js/pathways.js — guided learning paths + badges | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — practice mode launcher | PracticeHub | State, UI, TOPICS |
+| js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
+| js/listen-choose.js — TTS listening comprehension, 4-option MCQ | ListenChoose | State, UI, TOPICS, window.speechSynthesis |
 
 ### App Shell
 | File | Globals | Depends on |
@@ -65,8 +67,9 @@
 - Supabase provides email/password auth + cross-device progress sync.
 - Guest mode is first-class — the app works identically without ever logging in.
 - Only `js/supabase.js` imports the SDK. `js/state.js` talks to `SupabaseClient`; no other module does.
-- `SupabaseClient` auth surface: `signUp`, `signIn`, `signOut`, `getSession`, `onAuthChange` (no Google OAuth or password-reset methods yet — `State.loginWithGoogle()` is a placeholder that throws).
-- `signUp` pins `emailRedirectTo` to the current page URL so email-confirm links preserve the GitHub Pages subpath.
+- `SupabaseClient` auth surface: `signUp`, `signIn`, `signOut`, `getSession`, `onAuthChange`, `resetPassword`, `updatePassword` (no Google OAuth yet — `State.loginWithGoogle()` is a placeholder that throws).
+- `signUp` and `resetPassword` both pin redirect URLs to the current page URL so email links preserve the GitHub Pages subpath.
+- Password recovery: Supabase fires a `PASSWORD_RECOVERY` auth event (and puts `type=recovery` in the URL hash) when the user clicks the reset email. `State.restoreSession()` flips `_recoveryMode` on that signal, and `App.init()` routes to `#reset-confirm` instead of pulling/merging progress.
 - Feature modules keep using `State.*` — they are unchanged and unaware of Supabase.
 - Writes go to localStorage immediately; Supabase sync is debounced 2s and non-blocking.
 - See `create_tables.sql` for schema + RLS policies.
