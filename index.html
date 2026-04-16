@@ -13,6 +13,9 @@
 <body>
   <div id="app"></div>
 
+  <!-- Supabase SDK (must load before data scripts) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Data -->
   <script src="data/topics.js"></script>
   <script src="data/alphabet.js"></script>
@@ -20,6 +23,7 @@
   <script src="data/pathways.js"></script>
 
   <!-- Core -->
+  <script src="js/supabase.js"></script>
   <script src="js/state.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/thai-time.js"></script>

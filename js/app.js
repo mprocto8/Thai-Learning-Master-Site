@@ -21,6 +21,20 @@ const App = (() => {
     UI.registerRoute("#tones", () => ToneTrainer.show());
     UI.registerRoute("#sentences", () => SentenceBuilder.show());
     UI.registerRoute("#settings", renderSettings);
+    UI.registerRoute("#login", renderLogin);
+
+    // Initialize Supabase and attempt to restore a session. Non-blocking —
+    // the app boots immediately in guest mode; the header bar updates once
+    // the session restore finishes.
+    if (typeof SupabaseClient !== "undefined") {
+      SupabaseClient.init();
+      State.restoreSession().then(loggedIn => {
+        if (loggedIn) {
+          // Re-render the current route so the header bar appears.
+          UI.handleRoute();
+        }
+      }).catch(e => console.warn("[App] session restore failed:", e));
+    }
 
     // Check onboarding
     if (!State.get().onboarded) {
@@ -159,6 +173,17 @@ const App = (() => {
             <p class="dash-subtitle">${getGreeting()}</p>
           </div>
         </div>
+
+        ${!State.isLoggedIn() ? `
+          <div class="guest-nudge" onclick="UI.navigate('#login')">
+            <span class="guest-nudge-icon">☁️</span>
+            <div class="guest-nudge-text">
+              <strong>Sign in to save progress across devices</strong>
+              <span>Your streak, XP, and stats — everywhere.</span>
+            </div>
+            <span class="continue-arrow">→</span>
+          </div>
+        ` : ''}
 
         <div class="dash-stats">
           <div class="stat-card streak-card ${streakUrgent ? 'urgent' : streakAtRisk ? 'at-risk' : ''}">
@@ -401,6 +426,8 @@ const App = (() => {
             </div>
           </div>
 
+          ${renderAccountSection(s)}
+
           <div class="setting-item stats-section">
             <label>Your Stats</label>
             <div class="stats-grid">
@@ -482,7 +509,166 @@ const App = (() => {
     _dashScrollY = window.scrollY;
   }
 
-  return { init, completeOnboarding, updateName, setScript, setTheme, confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll };
+  /* ------------------------------------------------------------
+   *  Auth screens + account tier section
+   * ------------------------------------------------------------ */
+
+  function renderAccountSection(s) {
+    const loggedIn = State.isLoggedIn();
+    const tier = State.getAccountTier();
+    const premium = State.isPremium();
+    const tierBadge = premium
+      ? '<span class="tier-badge tier-premium">PREMIUM</span>'
+      : '<span class="tier-badge tier-free">FREE</span>';
+
+    if (!loggedIn) {
+      return `
+        <div class="setting-item pro-section">
+          <label>Thai Learner Pro</label>
+          <div class="pro-card">
+            <div class="pro-header">
+              <span class="pro-title">Thai Learner Pro</span>
+              ${tierBadge}
+            </div>
+            <p class="pro-teaser">Sign in to unlock upcoming premium features:</p>
+            <ul class="pro-features">
+              <li>📈 Advanced analytics &amp; learning insights</li>
+              <li>🎨 Custom themes</li>
+              <li>📦 Additional vocabulary &amp; sentence packs</li>
+            </ul>
+            <button class="btn btn-primary" onclick="UI.navigate('#login')">Sign in / Create account</button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="setting-item pro-section">
+        <label>Thai Learner Pro</label>
+        <div class="pro-card">
+          <div class="pro-header">
+            <span class="pro-title">Thai Learner Pro</span>
+            ${tierBadge}
+          </div>
+          ${premium ? `
+            <p class="pro-teaser">You're on the Premium tier — thanks for supporting the app!</p>
+          ` : `
+            <p class="pro-teaser">Premium features coming soon:</p>
+            <ul class="pro-features">
+              <li>📈 Advanced analytics &amp; learning insights</li>
+              <li>🎨 Custom themes</li>
+              <li>📦 Additional vocabulary &amp; sentence packs</li>
+            </ul>
+            <p class="pro-hint">No payment required yet — we'll announce when it launches.</p>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderLogin() {
+    const mode = (window.location.hash.includes("?signup")) ? "signup" : "login";
+    const isSignup = mode === "signup";
+    UI.render(`
+      <div class="login-screen">
+        <div class="login-card">
+          <div class="login-icon">🇹🇭</div>
+          <h1>${isSignup ? "Create account" : "Welcome back"}</h1>
+          <p class="login-sub">${isSignup
+            ? "Save your progress and sync across devices."
+            : "Sign in to pick up where you left off on any device."}</p>
+
+          <form class="login-form" onsubmit="App.submitLogin(event, '${mode}')">
+            ${isSignup ? `
+              <div class="login-field">
+                <label for="login-name">Display name</label>
+                <input id="login-name" type="text" maxlength="30" autocomplete="name" placeholder="Your name" />
+              </div>
+            ` : ""}
+
+            <div class="login-field">
+              <label for="login-email">Email</label>
+              <input id="login-email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            </div>
+
+            <div class="login-field">
+              <label for="login-password">Password</label>
+              <input id="login-password" type="password" autocomplete="${isSignup ? "new-password" : "current-password"}" required minlength="6" placeholder="At least 6 characters" />
+            </div>
+
+            <div id="login-error" class="login-error" style="display:none"></div>
+
+            <button class="btn btn-primary btn-lg login-submit" type="submit">
+              ${isSignup ? "Create account" : "Sign in"}
+            </button>
+          </form>
+
+          <div class="login-alt">
+            ${isSignup
+              ? `<span>Already have an account?</span> <a href="#login" onclick="event.preventDefault();App.switchLoginMode('login')">Sign in</a>`
+              : `<span>New here?</span> <a href="#login?signup" onclick="event.preventDefault();App.switchLoginMode('signup')">Create an account</a>`}
+          </div>
+
+          <div class="login-guest">
+            <a href="#dashboard" onclick="event.preventDefault();App.continueAsGuest()">Continue as guest →</a>
+            <p class="login-guest-hint">Guest progress stays on this device only.</p>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  function switchLoginMode(mode) {
+    window.location.hash = mode === "signup" ? "#login?signup" : "#login";
+  }
+
+  async function submitLogin(event, mode) {
+    event.preventDefault();
+    const email = (document.getElementById("login-email")?.value || "").trim();
+    const password = document.getElementById("login-password")?.value || "";
+    const displayName = (document.getElementById("login-name")?.value || "").trim();
+    const errEl = document.getElementById("login-error");
+    const btn = document.querySelector(".login-submit");
+    if (errEl) { errEl.style.display = "none"; errEl.textContent = ""; }
+    if (btn) { btn.disabled = true; btn.textContent = "Working…"; }
+    try {
+      if (mode === "signup") {
+        const result = await State.signUp(email, password, displayName);
+        if (result && !result.session) {
+          // Email confirmation is required — tell the user.
+          UI.toast("Check your email to confirm your account.", "info");
+          if (btn) { btn.disabled = false; btn.textContent = "Create account"; }
+          return;
+        }
+      } else {
+        await State.login(email, password);
+      }
+      UI.toast("Signed in!", "info");
+      UI.navigate("#dashboard");
+    } catch (e) {
+      const msg = (e && e.message) ? e.message : "Something went wrong.";
+      if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
+      if (btn) { btn.disabled = false; btn.textContent = mode === "signup" ? "Create account" : "Sign in"; }
+    }
+  }
+
+  function continueAsGuest() {
+    UI.navigate("#dashboard");
+  }
+
+  async function confirmLogout() {
+    if (!confirm("Sign out? Your progress will stay safe in your account, and this device will revert to guest mode.")) return;
+    try { await State.logout(); } catch (e) { console.warn(e); }
+    UI.toast("Signed out", "info");
+    UI.handleRoute();
+  }
+
+  return {
+    init, completeOnboarding, updateName, setScript, setTheme,
+    confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
+    // Auth
+    submitLogin, switchLoginMode, continueAsGuest, confirmLogout
+  };
 })();
 
 // Boot

@@ -42,6 +42,49 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 2. Open `index.html` in a browser
 3. That's it — no install, no build
 
+## Supabase Setup (optional — for cross-device sync)
+
+The app works fully offline as a guest. Add a Supabase backend to enable
+accounts and cross-device progress sync.
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In the Supabase dashboard, open **SQL editor** → **New query** and paste the
+   contents of `create_tables.sql`, then run it. This creates the 5 tables,
+   row-level security policies, and the `handle_new_user` trigger that
+   auto-creates profile/progress/stats rows on sign-up.
+3. In **Project Settings → API**, copy your project URL and your **publishable**
+   anon key (starts with `sb_publishable_`).
+4. Open `js/supabase.js` and update the `URL` and `KEY` constants at the top of
+   the file. The publishable key is safe to commit — RLS policies protect
+   user data on the server side.
+5. Refresh `index.html`. Guests now see a "Sign in to save progress across
+   devices" nudge on the dashboard. Sign in or create an account from the
+   settings screen or the dashboard nudge.
+
+### What syncs
+
+| Local state         | Supabase table / column                          |
+|---------------------|--------------------------------------------------|
+| `userName`          | `user_profiles.display_name`                     |
+| `xp`, `streak`, `badges`, `lastPlayedDate` | `users_progress`         |
+| `showScript`, `darkMode`, `topicView` | `user_profiles.settings_json` |
+| `topicStats`        | `topic_progress` (one row per topic, upsert)     |
+| `alphabetStats`     | `user_game_stats.alphabet_stats`                 |
+| `flashcardStats`    | `user_game_stats.flashcard_stats`                |
+| `speedBests`        | `user_game_stats.speed_bests`                    |
+| `tutorialsSeen`     | `user_game_stats.tutorials_seen`                 |
+| `onboarded`         | (device-local only)                              |
+
+Writes are debounced 2s into a single batch, go to localStorage
+immediately, and retry on the next `online` event if offline.
+
+### Account tier framework
+
+`user_profiles.account_tier` is either `'free'` or `'premium'`, with an
+optional `tier_expires_at`. `State.isPremium()` and `State.getAccountTier()`
+expose the value to feature code. No features are gated yet — the data
+model is ready for when premium tiers ship.
+
 ## Special Fields
 
 Topic pairs support several optional fields beyond the required `romanized`, `script`, and `english`:

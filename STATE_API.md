@@ -59,3 +59,20 @@ isTutorialSeen(sectionId) → bool
 
 ### Constants
 State.LEVELS — array of { name, emoji, minXP }
+
+### Auth & Sync (optional — guest mode ignores all of these)
+restoreSession() → Promise<bool> — called once on app init; restores any existing Supabase session and pulls/merges remote progress. Returns true if a session was restored.
+login(email, password) → Promise<data> — email/password sign-in. Pushes local guest progress, then pulls remote and merges.
+signUp(email, password, displayName) → Promise<data> — create account. If the Supabase project requires email confirmation, `data.session` will be null; prompt the user to check their inbox.
+loginWithGoogle() → Promise — placeholder. Throws "coming soon" until OAuth is wired up.
+logout() → Promise<void> — signs out of Supabase. localStorage is left intact so the device can continue in guest mode.
+isLoggedIn() → bool — true if a Supabase user is currently attached.
+currentUser() → auth.user | null — the raw Supabase user object.
+getProfile() → user_profiles row | null — cached profile from the last fetch.
+getAccountTier() → "free" | "premium" — reads user_profiles.account_tier; defaults to "free" for guests.
+isPremium() → bool — true only if tier is "premium" AND (tier_expires_at is null OR > now).
+
+### Sync behaviour
+- On every `save()`, if logged in, a 2-second debounced push batches all recent writes into one Supabase round-trip.
+- Offline: writes still go to localStorage; the `_syncQueue` flag in localStorage survives reloads; the `online` event flushes automatically.
+- Sync progress is broadcast via the `thai-learner-sync` window event (detail.status ∈ "syncing" | "saved" | "error"). UI listens and shows the sync pill.

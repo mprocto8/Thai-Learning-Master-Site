@@ -22,8 +22,9 @@
 ### Core (most tasks touch these)
 | File | Globals | Depends on |
 |------|---------|------------|
-| js/state.js — all persistence, XP, streaks, stats | State | nothing |
-| js/ui.js — routing, render(), navigate(), nav bar, toast | UI | State |
+| js/supabase.js — Supabase SDK wrapper (ONLY file that touches the SDK) | SupabaseClient | @supabase/supabase-js (CDN) |
+| js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
+| js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
 
 ### Feature Modules (self-contained, never depend on each other)
@@ -58,7 +59,15 @@
 5. CSS custom properties for theming — dark mode toggles a class on body
 
 ## Script Load Order
-data/* → js/state.js → js/ui.js → js/thai-time.js → feature modules → js/app.js
+@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → feature modules → js/app.js
+
+## Auth & Sync (optional layer)
+- Supabase provides email/password auth + cross-device progress sync.
+- Guest mode is first-class — the app works identically without ever logging in.
+- Only `js/supabase.js` imports the SDK. `js/state.js` talks to `SupabaseClient`; no other module does.
+- Feature modules keep using `State.*` — they are unchanged and unaware of Supabase.
+- Writes go to localStorage immediately; Supabase sync is debounced 2s and non-blocking.
+- See `create_tables.sql` for schema + RLS policies.
 
 ## When adding new features
 - New js/feature.js as revealing module IIFE

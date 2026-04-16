@@ -124,9 +124,11 @@ const UI = (() => {
     }
   }
 
-  /* Nav bar — 5 sections: Home, Pathways, Practice, Script, Settings */
+  /* Nav bar — 5 sections: Home, Pathways, Practice, Script, Settings.
+     When logged in, a compact header bar is rendered above. */
   function navBar(active = "") {
     return `
+      ${headerBar()}
       <nav class="nav-bar">
         <button class="nav-btn ${active === "dashboard" ? "active" : ""}" onclick="UI.navigate('#dashboard')">
           <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
@@ -145,6 +147,71 @@ const UI = (() => {
         </button>
       </nav>
     `;
+  }
+
+  /* Logged-in header bar — avatar, name, XP progress, streak, logout. */
+  function headerBar() {
+    if (!State.isLoggedIn()) return "";
+    const s = State.get();
+    const name = s.userName || "Learner";
+    const initial = (name.trim()[0] || "?").toUpperCase();
+    const progress = State.getLevelProgress();
+    const level = State.getLevel();
+    return `
+      <div class="user-header">
+        <div class="user-header-identity">
+          <div class="user-avatar" title="${level.name} — ${s.xp} XP">${initial}</div>
+          <div class="user-header-info">
+            <div class="user-header-name">${name}</div>
+            <div class="user-header-xp">
+              <div class="user-header-xp-fill" style="width:${progress * 100}%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="user-header-meta">
+          <span class="user-header-streak" title="${s.streak}-day streak">🔥 ${s.streak}</span>
+          <button class="btn btn-xs btn-ghost user-header-logout" onclick="App.confirmLogout()" title="Sign out">Sign out</button>
+        </div>
+      </div>
+    `;
+  }
+
+  /* Sync status pill — top-right. Fades after "saved". */
+  let _syncPillEl = null;
+  let _syncPillTimer = null;
+  function showSyncStatus(status) {
+    if (!_syncPillEl) {
+      _syncPillEl = document.createElement("div");
+      _syncPillEl.className = "sync-pill";
+      document.body.appendChild(_syncPillEl);
+    }
+    _syncPillEl.classList.remove("syncing", "saved", "error", "visible");
+    if (status === "syncing") {
+      _syncPillEl.textContent = "Syncing…";
+      _syncPillEl.classList.add("syncing", "visible");
+      if (_syncPillTimer) { clearTimeout(_syncPillTimer); _syncPillTimer = null; }
+    } else if (status === "saved") {
+      _syncPillEl.textContent = "✓ Saved";
+      _syncPillEl.classList.add("saved", "visible");
+      if (_syncPillTimer) clearTimeout(_syncPillTimer);
+      _syncPillTimer = setTimeout(() => {
+        if (_syncPillEl) _syncPillEl.classList.remove("visible");
+      }, 1500);
+    } else if (status === "error") {
+      _syncPillEl.textContent = "⚠ Sync failed";
+      _syncPillEl.classList.add("error", "visible");
+      if (_syncPillTimer) clearTimeout(_syncPillTimer);
+      _syncPillTimer = setTimeout(() => {
+        if (_syncPillEl) _syncPillEl.classList.remove("visible");
+      }, 2500);
+    }
+  }
+
+  // Listen for State's sync events and reflect them in the UI.
+  if (typeof window !== "undefined") {
+    window.addEventListener("thai-learner-sync", e => {
+      if (e && e.detail && e.detail.status) showSyncStatus(e.detail.status);
+    });
   }
 
   /* One-time tooltip helper */
@@ -191,6 +258,7 @@ const UI = (() => {
 
   return {
     registerRoute, navigate, handleRoute, init, render, $, $$,
-    celebrate, toast, showXP, timeAgo, navBar, progressRing, applyTheme, setCleanup
+    celebrate, toast, showXP, timeAgo, navBar, headerBar, progressRing, applyTheme, setCleanup,
+    showSyncStatus
   };
 })();
