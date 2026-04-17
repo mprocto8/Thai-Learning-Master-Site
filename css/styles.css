@@ -421,10 +421,27 @@ p { color: var(--text-1); }
 .topic-actions {
   display: flex;
   gap: var(--sp-1);
-  margin-top: auto;
 }
 
 .topic-actions .btn { flex: 1; padding: var(--sp-2) var(--sp-1); font-size: 0.75rem; }
+
+.topic-listen-primary {
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: var(--sp-1);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+.topic-listen-primary:hover { filter: brightness(1.08); }
 
 /* Alphabet CTA */
 .dash-alphabet-cta {

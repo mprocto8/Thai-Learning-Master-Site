@@ -360,6 +360,7 @@ const App = (() => {
                   <span>${Math.round(mastery * 100)}%</span>
                 </div>
                 ${ts ? `<div class="topic-last">${UI.timeAgo(ts.lastPlayed)}</div>` : ''}
+                <button class="btn topic-listen-primary" onclick="UI.navigate('#listen/${t.id}')">🔊 Listen</button>
                 <div class="topic-actions">
                   <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
                   <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
@@ -378,6 +379,7 @@ const App = (() => {
                 <span style="font-size:1.2rem;width:2rem;text-align:center">${t.emoji}</span>
                 <span style="flex:1;font-size:0.9rem;font-weight:500">${t.label}</span>
                 <span style="font-size:0.8rem;color:var(--text-muted);min-width:2.5rem;text-align:right">${Math.round(mastery * 100)}%</span>
+                <button class="btn btn-sm" onclick="UI.navigate('#listen/${t.id}')" style="padding:0.2rem 0.55rem;font-size:0.75rem;background:var(--accent);color:#fff;font-weight:600" title="Listen & Choose">🔊</button>
                 <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">Match</button>
                 <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">Cards</button>
                 <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">⚡</button>
