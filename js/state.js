@@ -37,7 +37,8 @@ const State = (() => {
     badges: [],          // earned pathway badge IDs
     tutorialsSeen: {},   // { sectionId: true }
     xpToday: 0,
-    roundsToday: 0
+    roundsToday: 0,
+    autoPlayAudio: true
   });
 
   let _state = null;

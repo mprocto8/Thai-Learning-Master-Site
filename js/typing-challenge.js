@@ -16,15 +16,19 @@ const TypingChallenge = (() => {
   let answered = false;    // lock after submit until Try again / auto-advance
   let isActive = false;
 
-  /** Strip tone diacritics + whitespace, lowercase. */
+  /** Lenient match: lowercase, strip diacritics, strip separators/punctuation,
+   *  collapse whitespace, trim. So "sa wat dii" matches "sà-wàt-dii". */
   function normalize(s) {
     if (!s) return "";
     return s
+      .toLowerCase()
       .normalize("NFD")
       // Remove combining marks (tone diacritics: â à á ǎ ā ê è é ě ē î ì í ǐ ī …)
       .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
+      // Strip hyphens, en/em dashes, apostrophes, periods.
+      .replace(/[-\u2013\u2014'\u2019.]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   /** Returns true if typed matches any "/"-separated acceptable answer. */

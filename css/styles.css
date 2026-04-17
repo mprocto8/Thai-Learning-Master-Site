@@ -3148,3 +3148,90 @@ p { color: var(--text-1); }
   .listen-speaker-icon { font-size: 2.5rem; }
   .typing-prompt-english { font-size: 1.5rem; }
 }
+
+/* ------------------------------------------------------------------
+ * Today's Listening Practice card — the headline dashboard CTA.
+ * Uses --accent directly so it reads as the primary action.
+ * ------------------------------------------------------------------ */
+.today-listen-card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-5);
+  margin-bottom: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--accent) 0%, rgba(245, 158, 11, 0.8) 100%);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.today-listen-card:hover,
+.today-listen-card:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.5);
+  outline: none;
+}
+.today-listen-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.today-listen-body { flex: 1; min-width: 0; }
+.today-listen-eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+.today-listen-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.today-listen-sub {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+.today-listen-sub kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  margin: 0 2px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+.today-listen-arrow {
+  font-size: 1.4rem;
+  opacity: 0.9;
+}
+
+/* Listen & Choose promoted as primary in practice hub */
+.practice-listen-primary {
+  position: relative;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-md);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.practice-listen-primary:hover { filter: brightness(1.08); }
+.recommended-pill {
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border-radius: 999px;
+}

@@ -7,7 +7,10 @@ userName: ""           xp: 0                streak: 0
 lastPlayedDate: null   showScript: false     darkMode: true
 topicStats: {}         alphabetStats: {}     flashcardStats: {}
 speedBests: {}         onboarded: false      badges: []
-tutorialsSeen: {}
+tutorialsSeen: {}      autoPlayAudio: true
+
+### Settings fields
+- `autoPlayAudio` (bool, default `true`) — when true, Listen & Choose auto-plays the Thai utterance ~300ms after each question loads. Toggled from the Settings screen. Read as `State.get().autoPlayAudio !== false` at playback sites so older saves (without the field) still auto-play.
 
 ## Methods
 

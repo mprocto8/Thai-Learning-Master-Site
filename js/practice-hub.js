@@ -96,11 +96,14 @@ const PracticeHub = (() => {
         </div>
         ${isExpanded ? `
           <div class="practice-topic-actions">
+            <button class="btn btn-lg practice-listen-primary" onclick="UI.navigate('#listen/${t.id}')">
+              🎧 Listen &amp; Choose
+              <span class="recommended-pill">RECOMMENDED</span>
+            </button>
             <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
             <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
             <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">⚡ Speed</button>
             <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#typing/${t.id}')">⌨️ Typing</button>
-            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#listen/${t.id}')">🎧 Listen</button>
           </div>
           ${ts ? `<div class="practice-topic-last">Last played: ${UI.timeAgo(ts.lastPlayed)}</div>` : ''}
         ` : ''}

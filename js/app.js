@@ -26,6 +26,7 @@ const App = (() => {
     UI.registerRoute("#reset-confirm", renderResetConfirm);
     UI.registerRoute("#typing", routeTyping);
     UI.registerRoute("#listen", routeListen);
+    UI.registerRoute("#listen-quick", () => ListenChoose.startQuick());
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once
@@ -65,6 +66,17 @@ const App = (() => {
         }
       }).catch(e => console.warn("[App] session restore failed:", e));
     }
+
+    // `L` on dashboard → today's listening practice.
+    document.addEventListener("keydown", e => {
+      if (e.key !== "l" && e.key !== "L") return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "textarea" || document.activeElement?.isContentEditable) return;
+      if ((window.location.hash || "#dashboard") !== "#dashboard") return;
+      e.preventDefault();
+      startTodayListen();
+    });
 
     // Check onboarding
     if (!State.get().onboarded) {
@@ -130,6 +142,26 @@ const App = (() => {
     return pairs;
   }
 
+  /** Pick today's listening topic: lowest-mastery played topic, or greetings fallback. */
+  function getTodayListenTopic() {
+    const s = State.get();
+    let best = null;
+    let bestMastery = Infinity;
+    for (const t of TOPICS) {
+      const ts = s.topicStats[t.id];
+      if (!ts || ts.played === 0) continue;
+      const m = State.getTopicMastery(t.id);
+      if (m < bestMastery) { best = t; bestMastery = m; }
+    }
+    if (best) return best;
+    return TOPICS.find(t => t.id === "greetings-phrases") || TOPICS[0];
+  }
+
+  function startTodayListen() {
+    const t = getTodayListenTopic();
+    if (t) UI.navigate("#listen/" + t.id);
+  }
+
   function getWordOfTheDay() {
     const s = State.get();
     // Find lowest-mastery played topic
@@ -161,6 +193,7 @@ const App = (() => {
     const topicView = s.topicView || 'grid';
     const mistakePairs = getMistakePairs();
     const wotd = getWordOfTheDay();
+    const listenTopic = getTodayListenTopic();
 
     // Find smart suggestion: lowest mastery topic from active pathway, or last played
     let suggestedTopic = null;
@@ -203,6 +236,19 @@ const App = (() => {
             <p class="dash-subtitle">${getGreeting()}</p>
           </div>
         </div>
+
+        ${listenTopic ? `
+          <div class="today-listen-card" onclick="App.startTodayListen()" role="button" tabindex="0"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();App.startTodayListen();}">
+            <div class="today-listen-icon">🎧</div>
+            <div class="today-listen-body">
+              <div class="today-listen-eyebrow">Today's Listening Practice</div>
+              <div class="today-listen-title">${listenTopic.emoji} ${listenTopic.label}</div>
+              <div class="today-listen-sub">Tap to start · or press <kbd>L</kbd></div>
+            </div>
+            <span class="today-listen-arrow">▶</span>
+          </div>
+        ` : ''}
 
         ${!State.isLoggedIn() ? `
           <div class="guest-nudge" onclick="UI.navigate('#login')">
@@ -468,6 +514,14 @@ const App = (() => {
             </div>
           </div>
 
+          <div class="setting-item">
+            <label>Auto-play audio in Listen mode</label>
+            <div class="toggle-group">
+              <button class="btn btn-sm ${s.autoPlayAudio !== false ? 'btn-active' : ''}" onclick="App.toggleAutoPlay(true)">On</button>
+              <button class="btn btn-sm ${s.autoPlayAudio === false ? 'btn-active' : ''}" onclick="App.toggleAutoPlay(false)">Off</button>
+            </div>
+          </div>
+
           ${renderAccountSection(s)}
 
           <div class="setting-item stats-section">
@@ -514,6 +568,11 @@ const App = (() => {
   function setTheme(dark) {
     State.set("darkMode", dark);
     UI.applyTheme();
+    renderSettings();
+  }
+
+  function toggleAutoPlay(on) {
+    State.set("autoPlayAudio", !!on);
     renderSettings();
   }
 
@@ -835,6 +894,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
+    startTodayListen, toggleAutoPlay,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm

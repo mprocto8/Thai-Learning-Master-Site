@@ -88,6 +88,54 @@ const ListenChoose = (() => {
 
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
+    // Distractors for Quick mode pull from all queue items; here they come
+    // from topic.pairs (set in nextPrompt).
+    idx = 0;
+    correct = 0;
+    wrong = 0;
+    xpEarned = 0;
+    answered = false;
+    isActive = true;
+    nextPrompt();
+  }
+
+  /** Quick Listen — 10 random pairs pulled from all played topics.
+   *  Fallback: greetings-phrases for brand-new users. */
+  function startQuick() {
+    if (!hasTTSSupport() || !hasThaiVoice()) {
+      topic = { id: "listen-quick", label: "Quick Listen", emoji: "🎧", pairs: [] };
+      renderUnavailable();
+      return;
+    }
+
+    const s = State.get();
+    const playedIds = Object.keys(s.topicStats || {}).filter(id => {
+      const ts = s.topicStats[id];
+      return ts && ts.played > 0 && TOPICS.some(t => t.id === id);
+    });
+
+    let pool = [];
+    if (playedIds.length === 0) {
+      const fallback = TOPICS.find(t => t.id === "greetings-phrases") || TOPICS[0];
+      pool = fallback ? [...fallback.pairs] : [];
+    } else {
+      for (const id of playedIds) {
+        const t = TOPICS.find(tp => tp.id === id);
+        if (t) pool.push(...t.pairs);
+      }
+    }
+
+    if (pool.length === 0) { UI.navigate("#dashboard"); return; }
+
+    // Synthetic topic so existing render/record paths keep working.
+    topic = {
+      id: "listen-quick",
+      label: "Quick Listen",
+      emoji: "🎧",
+      pairs: pool
+    };
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
     idx = 0;
     correct = 0;
     wrong = 0;
@@ -114,8 +162,11 @@ const ListenChoose = (() => {
     options = [...distractors, pair].sort(() => Math.random() - 0.5);
 
     renderPrompt();
-    // Auto-play the audio on first appearance.
-    setTimeout(() => speak(pair.script), 200);
+    // Auto-play after a short delay — gated by the user's setting so people
+    // who prefer to tap the speaker themselves can turn it off.
+    if (State.get().autoPlayAudio !== false) {
+      setTimeout(() => speak(pair.script), 300);
+    }
   }
 
   function renderPrompt() {
@@ -304,5 +355,5 @@ const ListenChoose = (() => {
     UI.navigate("#dashboard");
   }
 
-  return { start, answer, playAgain, setRate, continueNext, quit };
+  return { start, startQuick, answer, playAgain, setRate, continueNext, quit };
 })();
