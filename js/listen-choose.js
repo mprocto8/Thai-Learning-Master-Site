@@ -1,10 +1,8 @@
 /**
- * Listen & Choose — listening comprehension using browser TTS.
- * Plays the Thai script form of a pair and asks the user to pick the
- * correct English meaning from 4 options.
- *
- * Relies on window.speechSynthesis + a Thai voice. If no Thai voice is
- * installed, we show a friendly fallback with OS-level install instructions.
+ * Listen & Choose — listening comprehension using pre-generated MP3 when
+ * available, falling back to browser TTS. See js/audio.js for the priority
+ * chain. If neither MP3 nor a Thai voice is available we show a friendly
+ * fallback with OS-level install instructions.
  */
 const ListenChoose = (() => {
   const ROUND_SIZE = 10;
@@ -22,66 +20,38 @@ const ListenChoose = (() => {
   let isActive = false;
 
   let rate = DEFAULT_RATE;
-  let thaiVoice = null;
-  let voicesLoaded = false;
 
-  function _loadVoices() {
-    if (typeof window === "undefined" || !window.speechSynthesis) {
-      voicesLoaded = true;
-      return;
+  // Find a pair's home (topicId + index) for MP3 filename resolution.
+  // Pairs in queue are references to objects inside TOPICS, so identity search
+  // is safe — works for both regular rounds and Quick Listen (mixed topics).
+  function locatePair(pair) {
+    for (const t of TOPICS) {
+      const i = t.pairs.indexOf(pair);
+      if (i !== -1) return { topicId: t.id, index: i };
     }
-    const voices = window.speechSynthesis.getVoices() || [];
-    // Prefer th-TH; fall back to anything starting with "th".
-    thaiVoice = voices.find(v => v.lang === "th-TH")
-             || voices.find(v => v.lang && v.lang.toLowerCase().startsWith("th"))
-             || null;
-    voicesLoaded = voices.length > 0;
+    return null;
   }
 
-  // Eagerly try to load voices, and re-try on voiceschanged (Chrome fires
-  // this once the voice list becomes available).
-  if (typeof window !== "undefined" && window.speechSynthesis) {
-    _loadVoices();
-    window.speechSynthesis.addEventListener?.("voiceschanged", _loadVoices);
-  }
-
-  function hasTTSSupport() {
-    return typeof window !== "undefined" && !!window.speechSynthesis && !!window.SpeechSynthesisUtterance;
-  }
-
-  function hasThaiVoice() {
-    // Some browsers don't populate voices until voiceschanged fires; re-check
-    // on each call just in case.
-    if (!thaiVoice) _loadVoices();
-    return !!thaiVoice;
-  }
-
-  function speak(text) {
-    if (!hasTTSSupport()) return;
-    try {
-      window.speechSynthesis.cancel(); // interrupt any in-flight utterance
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "th-TH";
-      u.rate = rate;
-      if (thaiVoice) u.voice = thaiVoice;
-      // Pulse the speaker button while audio plays.
-      const btn = document.querySelector(".listen-speaker");
-      if (btn) btn.classList.add("playing");
-      u.onend = u.onerror = () => {
-        const b = document.querySelector(".listen-speaker");
-        if (b) b.classList.remove("playing");
-      };
-      window.speechSynthesis.speak(u);
-    } catch (e) {
-      console.warn("[ListenChoose] speak failed:", e);
-    }
+  function speak(pair) {
+    const btn = document.querySelector(".listen-speaker");
+    if (btn) btn.classList.add("playing");
+    const done = () => {
+      const b = document.querySelector(".listen-speaker");
+      if (b) b.classList.remove("playing");
+    };
+    Audio.setRate(rate);
+    const loc = locatePair(pair);
+    const p = loc
+      ? Audio.playWord(loc.topicId, loc.index, pair.script)
+      : Audio.speak(pair.script);
+    p.then(done, done);
   }
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
     if (!topic) { UI.navigate("#dashboard"); return; }
 
-    if (!hasTTSSupport() || !hasThaiVoice()) {
+    if (!Audio.hasTTSSupport() || !Audio.hasThaiVoice()) {
       renderUnavailable();
       return;
     }
@@ -102,7 +72,7 @@ const ListenChoose = (() => {
   /** Quick Listen — 10 random pairs pulled from all played topics.
    *  Fallback: greetings-phrases for brand-new users. */
   function startQuick() {
-    if (!hasTTSSupport() || !hasThaiVoice()) {
+    if (!Audio.hasTTSSupport() || !Audio.hasThaiVoice()) {
       topic = { id: "listen-quick", label: "Quick Listen", emoji: "🎧", pairs: [] };
       renderUnavailable();
       return;
@@ -165,7 +135,7 @@ const ListenChoose = (() => {
     // Auto-play after a short delay — gated by the user's setting so people
     // who prefer to tap the speaker themselves can turn it off.
     if (State.get().autoPlayAudio !== false) {
-      setTimeout(() => speak(pair.script), 300);
+      setTimeout(() => speak(pair), 300);
     }
   }
 
@@ -216,11 +186,12 @@ const ListenChoose = (() => {
 
   function playAgain() {
     const pair = currentPair();
-    if (pair) speak(pair.script);
+    if (pair) speak(pair);
   }
 
   function setRate(r) {
     rate = r;
+    Audio.setRate(r);
     // Re-render to reflect active pill; no need to replay.
     const pills = document.querySelectorAll(".listen-speed-pills .btn");
     pills.forEach(b => {
@@ -284,7 +255,7 @@ const ListenChoose = (() => {
 
   function finishRound() {
     isActive = false;
-    try { window.speechSynthesis.cancel(); } catch {}
+    Audio.cancel();
     const total = correct + wrong;
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
     State.recordTopicRound(topic.id, correct, total);
@@ -351,7 +322,7 @@ const ListenChoose = (() => {
 
   function quit() {
     isActive = false;
-    try { window.speechSynthesis.cancel(); } catch {}
+    Audio.cancel();
     UI.navigate("#dashboard");
   }
 

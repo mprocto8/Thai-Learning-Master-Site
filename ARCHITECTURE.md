@@ -26,6 +26,7 @@
 | js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
 | js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
+| js/audio.js — MP3→TTS playback priority chain | Audio | nothing (uses pre-generated audio/ files when present, else window.speechSynthesis) |
 
 ### Feature Modules (self-contained, never depend on each other)
 | File | Globals | Depends on |
@@ -41,7 +42,7 @@
 | js/pathways.js — guided learning paths + badges | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — practice mode launcher | PracticeHub | State, UI, TOPICS |
 | js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
-| js/listen-choose.js — TTS listening comprehension, 4-option MCQ | ListenChoose | State, UI, TOPICS, window.speechSynthesis |
+| js/listen-choose.js — TTS listening comprehension, 4-option MCQ | ListenChoose | State, UI, TOPICS, Audio |
 
 ### App Shell
 | File | Globals | Depends on |
@@ -68,7 +69,7 @@
 | audio/ | Pre-generated MP3 output, one file per Thai word and per example sentence. Naming: `{topicId}-{pairIndex}-word.mp3` and `{topicId}-{pairIndex}-sentence.mp3`. Committed to the repo so the app can load them with no extra build step. |
 
 ## Script Load Order
-@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → feature modules → js/app.js
+@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/app.js
 
 ## Auth & Sync (optional layer)
 - Supabase provides email/password auth + cross-device progress sync.
