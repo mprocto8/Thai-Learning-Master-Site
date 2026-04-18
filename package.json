@@ -1,0 +1,8 @@
+{
+  "name": "thai-learner",
+  "private": true,
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "dotenv": "^16.6.1"
+  }
+}

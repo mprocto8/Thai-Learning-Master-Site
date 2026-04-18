@@ -60,6 +60,13 @@
 4. Routes are hash-based: #dashboard, #game/days, #flashcard/months-1, etc.
 5. CSS custom properties for theming — dark mode toggles a class on body
 
+### Build-time Tools (not loaded by the app)
+| Path | Purpose |
+|------|---------|
+| scripts/generate-audio.js | Node.js script that calls Gemini TTS to render an MP3 per vocab word and per example sentence in `data/topics.js`. Reads `scripts/.env` for `GEMINI_API_KEY`. Caches by filename; use `--force` to regenerate. |
+| scripts/.env.example | Template for the API key file. Real `scripts/.env` is gitignored. |
+| audio/ | Pre-generated MP3 output, one file per Thai word and per example sentence. Naming: `{topicId}-{pairIndex}-word.mp3` and `{topicId}-{pairIndex}-sentence.mp3`. Committed to the repo so the app can load them with no extra build step. |
+
 ## Script Load Order
 @supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → feature modules → js/app.js
 

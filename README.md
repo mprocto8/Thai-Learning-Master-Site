@@ -42,6 +42,19 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 2. Open `index.html` in a browser
 3. That's it — no install, no build
 
+## Regenerating audio files
+
+The app ships with pre-generated MP3 files in `audio/`. To regenerate
+(e.g. after adding new words or changing voice):
+
+1. Copy `scripts/.env.example` to `scripts/.env` and paste your Gemini
+   API key.
+2. From the project root: `npm install @google/genai dotenv`
+3. Run: `node scripts/generate-audio.js`
+4. To force regenerate all files (even cached ones):
+   `node scripts/generate-audio.js --force`
+5. After generation completes, commit the new audio files.
+
 ## Supabase Setup (optional — for cross-device sync)
 
 The app works fully offline as a guest. Add a Supabase backend to enable
