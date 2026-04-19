@@ -26,7 +26,7 @@
 | js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
 | js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
-| js/audio.js — MP3→TTS playback priority chain | Audio | nothing (uses pre-generated audio/ files when present, else window.speechSynthesis) |
+| js/audio.js — synchronous TTS wrapper (speak / playWord / playSentence). Fires `speechSynthesis.speak()` in the caller's gesture tick (iOS requirement). MP3-first playback is stubbed behind `USE_MP3_FILES=false` until audio/ is populated. | Audio | TOPICS (for playWord/playSentence lookups), window.speechSynthesis |
 
 ### Feature Modules (self-contained, never depend on each other)
 | File | Globals | Depends on |

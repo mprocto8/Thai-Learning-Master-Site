@@ -1,25 +1,27 @@
 /**
- * Audio — central playback with an MP3 → browser TTS priority chain.
+ * Audio — TTS playback wrapper around window.speechSynthesis.
  *
- * Priority per call:
- *   1. HTMLAudioElement on audio/{topicId}-{index}-{word|sentence}.mp3
- *   2. window.speechSynthesis (Thai voice preferred)
+ * Intentionally a thin synchronous wrapper: speak() fires speechSynthesis
+ * immediately in the caller's user-gesture tick, which iOS Safari requires.
+ * No HTMLAudioElement. No async MP3 probe. No Promise chain before speak().
  *
- * If neither works the feature module shows its own fallback UI —
- * hasTTSSupport() and hasThaiVoice() are exposed so callers can gate on them.
+ * When pre-rendered MP3s exist in audio/, flip USE_MP3_FILES to true and
+ * implement the MP3-first path in _playMp3. The MP3 path MUST preserve the
+ * synchronous gesture invariant: call HTMLAudioElement.play() on the same
+ * tick as the click; do NOT await a 404 before falling back. The robust fix
+ * is a pre-computed manifest of known-present filenames (generated alongside
+ * the MP3s) so the decision between file and TTS is made synchronously.
  *
- * All play methods return Promise<void> that resolves when playback ends
- * (or fails quietly). Callers can chain .then() to toggle their own UI.
- *
- * Naming note: this module is named `Audio`, shadowing the browser's global
- * HTMLAudioElement constructor. Internally we reach the native one via
- * `window.Audio`. No other file in this repo instantiates it by bare name.
+ * Naming note: shadows the browser's global `Audio` HTMLAudioElement
+ * constructor. Nothing in this app instantiates it by bare name.
  */
 const Audio = (() => {
-  const AUDIO_DIR = "audio";
+  // Flip to true once audio/ is populated AND the iOS-safe MP3-first logic
+  // in _playMp3 is implemented. Leaving false keeps playback purely TTS.
+  const USE_MP3_FILES = false;
+
   let rate = 1.0;
   let thaiVoice = null;
-  let currentFileEl = null;
 
   function _loadVoices() {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
@@ -47,78 +49,56 @@ const Audio = (() => {
 
   function setRate(r) {
     rate = r;
-    if (currentFileEl) currentFileEl.playbackRate = r;
   }
 
   function cancel() {
-    if (currentFileEl) {
-      try { currentFileEl.pause(); } catch {}
-      currentFileEl = null;
-    }
     if (hasTTSSupport()) {
       try { window.speechSynthesis.cancel(); } catch {}
     }
   }
 
-  function _playFile(url) {
-    return new Promise((resolve, reject) => {
-      const el = new window.Audio(url);
-      el.playbackRate = rate;
-      currentFileEl = el;
-      el.onended = () => {
-        if (currentFileEl === el) currentFileEl = null;
-        resolve();
-      };
-      el.onerror = () => {
-        if (currentFileEl === el) currentFileEl = null;
-        reject(new Error("audio_load_failed"));
-      };
-      el.play().catch(err => {
-        if (currentFileEl === el) currentFileEl = null;
-        reject(err);
-      });
-    });
-  }
-
-  function _speakTTS(text) {
-    return new Promise(resolve => {
-      if (!hasTTSSupport()) { resolve(); return; }
-      try {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "th-TH";
-        u.rate = rate;
-        if (thaiVoice) u.voice = thaiVoice;
-        u.onend = () => resolve();
-        u.onerror = () => resolve();
-        window.speechSynthesis.speak(u);
-      } catch (e) {
-        console.warn("[Audio] TTS failed:", e);
-        resolve();
-      }
-    });
-  }
-
-  async function _playOrFallback(fileUrl, fallbackText) {
-    cancel();
+  // Speak arbitrary Thai text. Synchronous — call from a user-gesture handler
+  // on iOS. If there is no Thai voice the browser may pick a default or
+  // silently do nothing; that is acceptable per spec (help link in caller).
+  function speak(text) {
+    if (!text || !hasTTSSupport()) return;
     try {
-      await _playFile(fileUrl);
-    } catch {
-      await _speakTTS(fallbackText);
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "th-TH";
+      u.rate = rate;
+      if (thaiVoice) u.voice = thaiVoice;
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      console.warn("[Audio] speak failed:", e);
     }
   }
 
-  function speak(text) {
-    cancel();
-    return _speakTTS(text);
+  function _resolvePair(topicId, index) {
+    if (typeof TOPICS === "undefined") return null;
+    const topic = TOPICS.find(t => t.id === topicId);
+    if (!topic) return null;
+    return topic.pairs[index] || null;
   }
 
-  function playWord(topicId, index, text) {
-    return _playOrFallback(`${AUDIO_DIR}/${topicId}-${index}-word.mp3`, text);
+  function playWord(topicId, index) {
+    const pair = _resolvePair(topicId, index);
+    if (!pair || !pair.script) return;
+    if (USE_MP3_FILES) { _playMp3(`audio/${topicId}-${index}-word.mp3`, pair.script); return; }
+    speak(pair.script);
   }
 
-  function playSentence(topicId, index, text) {
-    return _playOrFallback(`${AUDIO_DIR}/${topicId}-${index}-sentence.mp3`, text);
+  function playSentence(topicId, index) {
+    const pair = _resolvePair(topicId, index);
+    const text = pair && pair.example && pair.example.thai;
+    if (!text) return;
+    if (USE_MP3_FILES) { _playMp3(`audio/${topicId}-${index}-sentence.mp3`, text); return; }
+    speak(text);
+  }
+
+  // Stub. See the module-level doc for the iOS-safe implementation sketch.
+  function _playMp3(/* url, fallbackText */) {
+    // intentionally empty while USE_MP3_FILES === false
   }
 
   return {

@@ -1,8 +1,9 @@
 /**
- * Listen & Choose — listening comprehension using pre-generated MP3 when
- * available, falling back to browser TTS. See js/audio.js for the priority
- * chain. If neither MP3 nor a Thai voice is available we show a friendly
- * fallback with OS-level install instructions.
+ * Listen & Choose — listening comprehension using browser TTS via the Audio
+ * module (see js/audio.js). No pre-flight gate: we let the user tap the
+ * speaker on Q1 (iOS needs a gesture to unlock speechSynthesis), and from
+ * there auto-play is allowed. A small help link under the speaker opens the
+ * "No Thai voice" install-instructions screen on demand.
  */
 const ListenChoose = (() => {
   const ROUND_SIZE = 10;
@@ -20,10 +21,13 @@ const ListenChoose = (() => {
   let isActive = false;
 
   let rate = DEFAULT_RATE;
+  // iOS Safari blocks speechSynthesis until the user has tapped something in
+  // the round. We gate autoplay on this so Q1 waits for a tap; Q2+ autoplay.
+  let hasInteractedThisRound = false;
 
-  // Find a pair's home (topicId + index) for MP3 filename resolution.
-  // Pairs in queue are references to objects inside TOPICS, so identity search
-  // is safe — works for both regular rounds and Quick Listen (mixed topics).
+  // Find a pair's home (topicId + index) to pass to Audio.playWord. Pairs in
+  // queue are references to objects inside TOPICS, so identity search is safe
+  // — works for both regular rounds and Quick Listen (mixed topics).
   function locatePair(pair) {
     for (const t of TOPICS) {
       const i = t.pairs.indexOf(pair);
@@ -32,29 +36,18 @@ const ListenChoose = (() => {
     return null;
   }
 
+  // Fire TTS synchronously in the caller's tick — required by iOS Safari.
   function speak(pair) {
-    const btn = document.querySelector(".listen-speaker");
-    if (btn) btn.classList.add("playing");
-    const done = () => {
-      const b = document.querySelector(".listen-speaker");
-      if (b) b.classList.remove("playing");
-    };
+    hasInteractedThisRound = true;
     Audio.setRate(rate);
     const loc = locatePair(pair);
-    const p = loc
-      ? Audio.playWord(loc.topicId, loc.index, pair.script)
-      : Audio.speak(pair.script);
-    p.then(done, done);
+    if (loc) Audio.playWord(loc.topicId, loc.index);
+    else Audio.speak(pair.script);
   }
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
     if (!topic) { UI.navigate("#dashboard"); return; }
-
-    if (!Audio.hasTTSSupport() || !Audio.hasThaiVoice()) {
-      renderUnavailable();
-      return;
-    }
 
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
@@ -66,18 +59,13 @@ const ListenChoose = (() => {
     xpEarned = 0;
     answered = false;
     isActive = true;
+    hasInteractedThisRound = false;
     nextPrompt();
   }
 
   /** Quick Listen — 10 random pairs pulled from all played topics.
    *  Fallback: greetings-phrases for brand-new users. */
   function startQuick() {
-    if (!Audio.hasTTSSupport() || !Audio.hasThaiVoice()) {
-      topic = { id: "listen-quick", label: "Quick Listen", emoji: "🎧", pairs: [] };
-      renderUnavailable();
-      return;
-    }
-
     const s = State.get();
     const playedIds = Object.keys(s.topicStats || {}).filter(id => {
       const ts = s.topicStats[id];
@@ -112,6 +100,7 @@ const ListenChoose = (() => {
     xpEarned = 0;
     answered = false;
     isActive = true;
+    hasInteractedThisRound = false;
     nextPrompt();
   }
 
@@ -132,15 +121,17 @@ const ListenChoose = (() => {
     options = [...distractors, pair].sort(() => Math.random() - 0.5);
 
     renderPrompt();
-    // Auto-play after a short delay — gated by the user's setting so people
-    // who prefer to tap the speaker themselves can turn it off.
-    if (State.get().autoPlayAudio !== false) {
+    // Auto-play only after the user has tapped something this round — iOS
+    // Safari blocks speechSynthesis until a gesture has been seen.
+    if (State.get().autoPlayAudio !== false && hasInteractedThisRound) {
       setTimeout(() => speak(pair), 300);
     }
   }
 
   function renderPrompt() {
-    const pair = currentPair();
+    const hint = hasInteractedThisRound
+      ? "Tap to play — listen carefully"
+      : "Tap the speaker to begin";
     UI.render(`
       <div class="listen-screen">
         <div class="game-header">
@@ -170,7 +161,8 @@ const ListenChoose = (() => {
           <button class="listen-speaker" onclick="ListenChoose.playAgain()" aria-label="Play audio">
             <span class="listen-speaker-icon">🔊</span>
           </button>
-          <div class="listen-hint">Tap to play — listen carefully</div>
+          <div class="listen-hint">${hint}</div>
+          <a href="#" class="listen-audio-help" onclick="ListenChoose.showAudioHelp(); return false;">Audio not working?</a>
         </div>
 
         <div class="listen-options">
@@ -295,10 +287,11 @@ const ListenChoose = (() => {
   }
 
   function renderUnavailable() {
+    const canReturn = isActive && queue.length > 0;
     UI.render(`
       <div class="listen-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#dashboard')">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${canReturn ? 'ListenChoose.resumeRound()' : "UI.navigate('#dashboard')"}">← Back</button>
           <h2>🎧 Listen &amp; Choose</h2>
           <div></div>
         </div>
@@ -306,18 +299,29 @@ const ListenChoose = (() => {
         <div class="listen-unavailable">
           <div class="listen-unavailable-icon">🔇</div>
           <h3>No Thai voice available</h3>
-          <p>This mode uses your device's built-in Thai text-to-speech. Your browser or OS doesn't seem to have one installed yet.</p>
+          <p>This mode uses your device's built-in Thai text-to-speech. If you hear nothing when you tap the speaker, you probably need to install a Thai voice.</p>
           <ul class="listen-unavailable-steps">
             <li><strong>iOS:</strong> Settings → Accessibility → Spoken Content → Voices → add a Thai voice.</li>
             <li><strong>Android:</strong> Settings → Language &amp; input → Text-to-speech → install Thai voice data.</li>
             <li><strong>Desktop Chrome:</strong> The built-in Google Thai voice usually just works — try updating Chrome.</li>
           </ul>
           <div class="round-actions">
-            <button class="btn btn-primary" onclick="UI.navigate('#dashboard')">Back to Dashboard</button>
+            ${canReturn
+              ? `<button class="btn btn-primary" onclick="ListenChoose.resumeRound()">Back to round</button>`
+              : `<button class="btn btn-primary" onclick="UI.navigate('#dashboard')">Back to Dashboard</button>`}
           </div>
         </div>
       </div>
     `);
+  }
+
+  function showAudioHelp() {
+    renderUnavailable();
+  }
+
+  function resumeRound() {
+    if (isActive && queue.length > 0) renderPrompt();
+    else UI.navigate("#dashboard");
   }
 
   function quit() {
@@ -326,5 +330,5 @@ const ListenChoose = (() => {
     UI.navigate("#dashboard");
   }
 
-  return { start, startQuick, answer, playAgain, setRate, continueNext, quit };
+  return { start, startQuick, answer, playAgain, setRate, continueNext, quit, showAudioHelp, resumeRound };
 })();

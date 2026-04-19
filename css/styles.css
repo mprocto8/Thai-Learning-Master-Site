@@ -3062,6 +3062,14 @@ p { color: var(--text-1); }
   font-size: 0.82rem;
   color: var(--text-2);
 }
+.listen-audio-help {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  opacity: 0.65;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.listen-audio-help:hover { opacity: 1; }
 
 .listen-options {
   display: grid;
