@@ -19,7 +19,11 @@
       "Bash(node -c js/speed.js)",
       "Bash(node -c js/pathways.js)",
       "Bash(node -c js/state.js)",
-      "Bash(node -c js/sentence-builder.js)"
+      "Bash(node -c js/sentence-builder.js)",
+      "Bash(node -e \"const fs=require\\('fs'\\),vm=require\\('vm'\\),path=require\\('path'\\);const src=fs.readFileSync\\(path.join\\('data','topics.js'\\),'utf8'\\);const s={};vm.createContext\\(s\\);vm.runInContext\\(src+'\\\\nthis.__T=TOPICS;',s\\);const t=s.__T;console.log\\('topics:',t.length\\);let w=0,se=0;for\\(const x of t\\){x.pairs.forEach\\(p=>{if\\(p.script\\)w++;if\\(p.example&&p.example.thai\\)se++;}\\);}console.log\\('word files:',w,'sentence files:',se,'total:',w+se\\);\")",
+      "Bash(npm install *)",
+      "Bash(node scripts/generate-audio.js --limit=3)",
+      "Bash(node -e ' *)"
     ]
   }
 }
