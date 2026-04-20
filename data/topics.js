@@ -1,13 +1,59 @@
 /**
- * All vocabulary topics — 25 topics, ~230 pairs.
+ * All topics — 25 topics, ~230 pairs.
  * Every pair: romanized (with tone diacritics), script, english, example.
  * Tone diacritics: ` low, ^ falling, ´ high, ˇ rising, unmarked = mid.
+ *
+ * Topic types (the `type` field):
+ *   - "vocabulary" — standard word/phrase packs (default)
+ *   - "situation"  — phrase packs tied to a real-world situation
+ *                     (Ordering Food, Getting Around, 7-Eleven, etc.)
+ *   - "pattern"    — frame/template topics for Pattern Practice mode.
+ *                     Not yet populated; shape documented below.
+ *
+ * Pattern topic shape (for reference — none exist yet):
+ *
+ *   {
+ *     id: "ask-location",
+ *     label: "Ask Where Something Is",
+ *     emoji: "📍",
+ *     type: "pattern",
+ *
+ *     // The sentence template with a blank slot.
+ *     frame: {
+ *       romanized: "___ yùu thîi nǎi",
+ *       script: "___ อยู่ที่ไหน",
+ *       english: "Where is ___?",
+ *       explanation: "Use this to ask where any place or thing is located."
+ *     },
+ *
+ *     // Pairs are slot-fillings of the frame. Each pair has the usual
+ *     // romanized/script/english for the complete sentence, plus a `slot`
+ *     // identifying what fills the blank, and an optional `example` for a
+ *     // natural full-context sentence (used by Audio.playSentence).
+ *     pairs: [
+ *       {
+ *         romanized: "hông náam yùu thîi nǎi",
+ *         script:    "ห้องน้ำอยู่ที่ไหน",
+ *         english:   "Where is the bathroom?",
+ *         slot: { romanized: "hông náam", script: "ห้องน้ำ", english: "bathroom" },
+ *         example: {
+ *           thai:      "ขอโทษ ห้องน้ำอยู่ที่ไหน",
+ *           romanized: "khǎw thôot, hông náam yùu thîi nǎi",
+ *           english:   "Excuse me, where is the bathroom?"
+ *         }
+ *       },
+ *       // ...8–12 more slot fillings
+ *     ]
+ *   }
+ *
+ * The `slot` field is what makes Pattern Practice mode possible —
+ * it identifies which specific word plugs into the frame.
  */
 const TOPICS = [
 
   // ─── 1. Days of the Week ───
   {
-    id: "days", emoji: "📅", label: "Days of the Week",
+    id: "days", emoji: "📅", label: "Days of the Week", type: "vocabulary",
     pairs: [
       { romanized: "Wan Jan", script: "วันจันทร์", english: "Monday", example: { thai: "วันนี้คือวันจันทร์", romanized: "Wan níi khue Wan Jan", english: "Today is Monday" } },
       { romanized: "Wan Ang-khaan", script: "วันอังคาร", english: "Tuesday", example: { thai: "วันอังคารฉันไปทำงาน", romanized: "Wan Ang-khaan chǎn pai tham-ngaan", english: "On Tuesday I go to work" } },
@@ -21,7 +67,7 @@ const TOPICS = [
 
   // ─── 2. Time Expressions ───
   {
-    id: "time-expressions", emoji: "⏰", label: "Time Expressions",
+    id: "time-expressions", emoji: "⏰", label: "Time Expressions", type: "vocabulary",
     pairs: [
       { romanized: "Wan níi", script: "วันนี้", english: "Today", example: { thai: "วันนี้อากาศดี", romanized: "Wan níi aa-gàat dii", english: "Today the weather is good" } },
       { romanized: "Phrûng níi", script: "พรุ่งนี้", english: "Tomorrow", example: { thai: "พรุ่งนี้ไปเที่ยว", romanized: "Phrûng níi pai thîao", english: "Tomorrow let's go out" } },
@@ -36,7 +82,7 @@ const TOPICS = [
 
   // ─── 3. Months (Jan–Jun) ───
   {
-    id: "months-1-6", emoji: "🌸", label: "Months (Jan–Jun)",
+    id: "months-1-6", emoji: "🌸", label: "Months (Jan–Jun)", type: "vocabulary",
     pairs: [
       { romanized: "Mòk-kà-raa-khom", script: "มกราคม", english: "January", example: { thai: "เดือนมกราคมอากาศเย็น", romanized: "Deuan Mòk-kà-raa-khom aa-gàat yen", english: "January the weather is cool" } },
       { romanized: "Kum-phaa-phan", script: "กุมภาพันธ์", english: "February", example: { thai: "กุมภาพันธ์มีวันวาเลนไทน์", romanized: "Kum-phaa-phan mii Wan Waa-len-thai", english: "February has Valentine's Day" } },
@@ -49,7 +95,7 @@ const TOPICS = [
 
   // ─── 4. Months (Jul–Dec) ───
   {
-    id: "months-7-12", emoji: "🍂", label: "Months (Jul–Dec)",
+    id: "months-7-12", emoji: "🍂", label: "Months (Jul–Dec)", type: "vocabulary",
     pairs: [
       { romanized: "Kà-rák-kà-daa-khom", script: "กรกฎาคม", english: "July", example: { thai: "กรกฎาคมไปทะเล", romanized: "Kà-rák-kà-daa-khom pai thá-lee", english: "July go to the beach" } },
       { romanized: "Sǐng-hǎa-khom", script: "สิงหาคม", english: "August", example: { thai: "สิงหาคมเป็นวันแม่", romanized: "Sǐng-hǎa-khom pen Wan Mâae", english: "August is Mother's Day" } },
@@ -62,7 +108,7 @@ const TOPICS = [
 
   // ─── 5. Time of Day ───
   {
-    id: "time-of-day", emoji: "🌅", label: "Time of Day",
+    id: "time-of-day", emoji: "🌅", label: "Time of Day", type: "vocabulary",
     pairs: [
       { romanized: "Cháo", script: "เช้า", english: "Morning", example: { thai: "ตอนเช้ากินกาแฟ", romanized: "Dtawn cháo gin gaa-fae", english: "In the morning drink coffee" } },
       { romanized: "Bàai", script: "บ่าย", english: "Afternoon", example: { thai: "ตอนบ่ายอากาศร้อน", romanized: "Dtawn bàai aa-gàat rón", english: "In the afternoon it's hot" } },
@@ -76,7 +122,7 @@ const TOPICS = [
 
   // ─── 6. Numbers 1–10 ───
   {
-    id: "numbers", emoji: "🔢", label: "Numbers 1–10",
+    id: "numbers", emoji: "🔢", label: "Numbers 1–10", type: "vocabulary",
     pairs: [
       { romanized: "Nùeng", script: "หนึ่ง", english: "One (1)", example: { thai: "ฉันมีแมวหนึ่งตัว", romanized: "Chǎn mii maew nùeng dtuua", english: "I have one cat" } },
       { romanized: "Sǎawng", script: "สอง", english: "Two (2)", example: { thai: "มีสองคน", romanized: "Mii sǎawng khon", english: "There are two people" } },
@@ -93,7 +139,7 @@ const TOPICS = [
 
   // ─── 7. Pronouns & Questions ───
   {
-    id: "pronouns-questions", emoji: "👤", label: "Pronouns & Questions", essential: true,
+    id: "pronouns-questions", emoji: "👤", label: "Pronouns & Questions", type: "vocabulary", essential: true,
     pairs: [
       { romanized: "Chǎn / Phǒm", script: "ฉัน / ผม", english: "I / me", example: { thai: "ฉันชื่อมะลิ", romanized: "Chǎn chêu Má-lí", english: "My name is Mali" }, note: "chǎn = female/casual, phǒm = male/formal" },
       { romanized: "Khun", script: "คุณ", english: "You (polite)", example: { thai: "คุณชื่ออะไร?", romanized: "Khun chêu à-rai?", english: "What is your name?" } },
@@ -112,7 +158,7 @@ const TOPICS = [
 
   // ─── 8. Connectors & Particles ───
   {
-    id: "connectors-particles", emoji: "🔗", label: "Connectors & Particles", essential: true,
+    id: "connectors-particles", emoji: "🔗", label: "Connectors & Particles", type: "vocabulary", essential: true,
     pairs: [
       { romanized: "Khâ / Khráp", script: "ค่ะ / ครับ", english: "Polite particle", example: { thai: "ขอบคุณค่ะ", romanized: "Khàawp-khun khâ", english: "Thank you (female)" }, note: "khâ = female, khráp = male — add to end of sentences for politeness" },
       { romanized: "Mâi", script: "ไม่", english: "No / not", example: { thai: "ฉันไม่ชอบ", romanized: "Chǎn mâi châwp", english: "I don't like it" } },
@@ -133,7 +179,7 @@ const TOPICS = [
 
   // ─── 9. Adjectives ───
   {
-    id: "adjectives", emoji: "✨", label: "Adjectives",
+    id: "adjectives", emoji: "✨", label: "Adjectives", type: "vocabulary",
     pairs: [
       { romanized: "Dii", script: "ดี", english: "Good", example: { thai: "อาหารร้านนี้ดี", romanized: "Aa-hǎan ráan níi dii", english: "This restaurant's food is good" } },
       { romanized: "Mâi dii", script: "ไม่ดี", english: "Not good / bad", example: { thai: "อากาศไม่ดี", romanized: "Aa-gàat mâi dii", english: "The weather is bad" } },
@@ -156,7 +202,7 @@ const TOPICS = [
 
   // ─── 10. Feelings & States ───
   {
-    id: "feelings", emoji: "😊", label: "Feelings",
+    id: "feelings", emoji: "😊", label: "Feelings", type: "vocabulary",
     pairs: [
       { romanized: "Dii-jai", script: "ดีใจ", english: "Happy / glad", example: { thai: "ฉันดีใจที่เจอคุณ", romanized: "Chǎn dii-jai thîi jur khun", english: "I'm glad to meet you" } },
       { romanized: "Sǐa-jai", script: "เสียใจ", english: "Sad / sorry", example: { thai: "เสียใจด้วยนะ", romanized: "Sǐa-jai dûay ná", english: "I'm sorry about that" } },
@@ -175,7 +221,7 @@ const TOPICS = [
 
   // ─── 11. Locations & Directions ───
   {
-    id: "locations-directions", emoji: "🧭", label: "Locations & Directions",
+    id: "locations-directions", emoji: "🧭", label: "Locations & Directions", type: "vocabulary",
     pairs: [
       { romanized: "Tîi-nǎi?", script: "ที่ไหน?", english: "Where?", example: { thai: "คุณจะไปที่ไหน?", romanized: "Khun jà pai thîi-nǎi?", english: "Where are you going?" } },
       { romanized: "Yùu thîi-nǎi?", script: "อยู่ที่ไหน?", english: "Where is it?", example: { thai: "สถานีรถไฟอยู่ที่ไหน?", romanized: "Sà-thǎa-nii rót-fai yùu thîi-nǎi?", english: "Where is the train station?" } },
@@ -196,7 +242,7 @@ const TOPICS = [
 
   // ─── 12. Essential Verbs ───
   {
-    id: "essential-verbs", emoji: "💬", label: "Essential Verbs",
+    id: "essential-verbs", emoji: "💬", label: "Essential Verbs", type: "vocabulary",
     pairs: [
       { romanized: "Ao", script: "เอา", english: "To want / take", example: { thai: "เอาอันนี้", romanized: "Ao an níi", english: "I'll take this one" } },
       { romanized: "Dtâwng-gaan", script: "ต้องการ", english: "To need / require", example: { thai: "ฉันต้องการความช่วยเหลือ", romanized: "Chǎn dtâwng-gaan khwaam-chûay-lěua", english: "I need help" } },
@@ -223,7 +269,7 @@ const TOPICS = [
 
   // ─── 13. Greetings & Phrases ───
   {
-    id: "greetings-phrases", emoji: "🙏", label: "Greetings & Phrases", essential: true,
+    id: "greetings-phrases", emoji: "🙏", label: "Greetings & Phrases", type: "vocabulary", essential: true,
     pairs: [
       { romanized: "Sà-wàt-dii", script: "สวัสดี", english: "Hello / goodbye", example: { thai: "สวัสดีครับ", romanized: "Sà-wàt-dii khráp", english: "Hello (male)" } },
       { romanized: "Khàawp-khun", script: "ขอบคุณ", english: "Thank you", example: { thai: "ขอบคุณมากค่ะ", romanized: "Khàawp-khun mâak khâ", english: "Thank you very much (female)" } },
@@ -244,7 +290,7 @@ const TOPICS = [
 
   // ─── 14. Family ───
   {
-    id: "family", emoji: "👨‍👩‍👧", label: "Family",
+    id: "family", emoji: "👨‍👩‍👧", label: "Family", type: "vocabulary",
     pairs: [
       { romanized: "Phâaw", script: "พ่อ", english: "Father", example: { thai: "พ่อทำงานทุกวัน", romanized: "Phâaw tham-ngaan thúk wan", english: "Father works every day" } },
       { romanized: "Mâae", script: "แม่", english: "Mother", example: { thai: "แม่ทำอาหารอร่อย", romanized: "Mâae tham aa-hǎan à-ròi", english: "Mother cooks delicious food" } },
@@ -270,7 +316,7 @@ const TOPICS = [
 
   // ─── 15. Numbers — Extended ───
   {
-    id: "numbers-extended", emoji: "🔢", label: "Numbers — Extended",
+    id: "numbers-extended", emoji: "🔢", label: "Numbers — Extended", type: "vocabulary",
     pairs: [
       { romanized: "Nùeng", script: "หนึ่ง", english: "One (1)", example: { thai: "ขอหนึ่งอัน", romanized: "Khǎaw nùeng an", english: "One piece please" } },
       { romanized: "Sìp", script: "สิบ", english: "Ten (10)", example: { thai: "สิบบาท", romanized: "Sìp bàat", english: "Ten baht" } },
@@ -293,7 +339,7 @@ const TOPICS = [
 
   // ─── 16. Kitchenware ───
   {
-    id: "kitchenware", emoji: "🍽️", label: "Kitchenware",
+    id: "kitchenware", emoji: "🍽️", label: "Kitchenware", type: "vocabulary",
     pairs: [
       { romanized: "Gâew", script: "แก้ว", english: "Glass / cup", example: { thai: "ขอน้ำหนึ่งแก้ว", romanized: "Khǎaw náam nùeng gâew", english: "One glass of water please" } },
       { romanized: "Jaan", script: "จาน", english: "Plate", example: { thai: "ล้างจานด้วย", romanized: "Láang jaan dûay", english: "Wash the plates too" } },
@@ -310,7 +356,7 @@ const TOPICS = [
 
   // ─── 17. Fruits ───
   {
-    id: "fruits", emoji: "🍉", label: "Fruits",
+    id: "fruits", emoji: "🍉", label: "Fruits", type: "vocabulary",
     pairs: [
       { romanized: "Mà-mûang", script: "มะม่วง", english: "Mango", example: { thai: "มะม่วงหวานมาก", romanized: "Mà-mûang wǎan mâak", english: "The mango is very sweet" } },
       { romanized: "Mà-lá-gaw", script: "มะละกอ", english: "Papaya", example: { thai: "ส้มตำใส่มะละกอ", romanized: "Sôm-dtam sài mà-lá-gaw", english: "Som tam uses papaya" } },
@@ -327,7 +373,7 @@ const TOPICS = [
 
   // ─── 18. Meats & Proteins ───
   {
-    id: "meats-proteins", emoji: "🍖", label: "Meats & Proteins",
+    id: "meats-proteins", emoji: "🍖", label: "Meats & Proteins", type: "vocabulary",
     pairs: [
       { romanized: "Néua", script: "เนื้อ", english: "Beef / meat", example: { thai: "ข้าวผัดเนื้อ", romanized: "Khâao-phàt néua", english: "Beef fried rice" } },
       { romanized: "Mǔu", script: "หมู", english: "Pork", example: { thai: "หมูกรอบอร่อย", romanized: "Mǔu gràwp à-ròi", english: "Crispy pork is delicious" } },
@@ -342,7 +388,7 @@ const TOPICS = [
 
   // ─── 19. Ingredients ───
   {
-    id: "ingredients", emoji: "🧄", label: "Ingredients",
+    id: "ingredients", emoji: "🧄", label: "Ingredients", type: "vocabulary",
     pairs: [
       { romanized: "Náam-dtaan", script: "น้ำตาล", english: "Sugar", example: { thai: "ไม่ใส่น้ำตาล", romanized: "Mâi sài náam-dtaan", english: "No sugar please" } },
       { romanized: "Glua", script: "เกลือ", english: "Salt", example: { thai: "ใส่เกลือนิดหน่อย", romanized: "Sài glua nít-nòi", english: "Add a little salt" } },
@@ -359,7 +405,7 @@ const TOPICS = [
 
   // ─── 20. Food & Eating ───
   {
-    id: "food-eating", emoji: "🍜", label: "Food & Eating",
+    id: "food-eating", emoji: "🍜", label: "Food & Eating", type: "vocabulary",
     pairs: [
       { romanized: "Khâao", script: "ข้าว", english: "Rice", example: { thai: "ขอข้าวเพิ่ม", romanized: "Khǎaw khâao phôem", english: "More rice please" } },
       { romanized: "Khâao-phàt", script: "ข้าวผัด", english: "Fried rice", example: { thai: "ข้าวผัดหมูหนึ่งจาน", romanized: "Khâao-phàt mǔu nùeng jaan", english: "One pork fried rice" } },
@@ -382,7 +428,7 @@ const TOPICS = [
 
   // ─── 21. Shopping & Money ───
   {
-    id: "shopping-money", emoji: "🛍️", label: "Shopping & Money",
+    id: "shopping-money", emoji: "🛍️", label: "Shopping & Money", type: "vocabulary",
     pairs: [
       { romanized: "Bàat", script: "บาท", english: "Thai Baht", example: { thai: "ราคาห้าสิบบาท", romanized: "Raa-khaa hâa-sìp bàat", english: "The price is 50 baht" } },
       { romanized: "Raa-khaa", script: "ราคา", english: "Price", example: { thai: "ราคาเท่าไร?", romanized: "Raa-khaa tâo-rai?", english: "What's the price?" } },
@@ -401,7 +447,7 @@ const TOPICS = [
 
   // ─── 22. Health & Emergencies (Situation) ───
   {
-    id: "health-emergencies", emoji: "🏥", label: "Health & Emergencies", situation: true,
+    id: "health-emergencies", emoji: "🏥", label: "Health & Emergencies", type: "situation",
     pairs: [
       { romanized: "Jèp", script: "เจ็บ", english: "Hurt / painful", example: { thai: "เจ็บตรงนี้", romanized: "Jèp trong níi", english: "It hurts here" } },
       { romanized: "Jèp thîi-nǎi?", script: "เจ็บที่ไหน?", english: "Where does it hurt?", example: { thai: "เจ็บที่ไหนบอกหมอ", romanized: "Jèp thîi-nǎi bàwk mǎw", english: "Tell the doctor where it hurts" } },
@@ -420,7 +466,7 @@ const TOPICS = [
 
   // ─── 23. Ordering Food (Situation) ───
   {
-    id: "ordering-food", emoji: "🍜", label: "Ordering Food", situation: true,
+    id: "ordering-food", emoji: "🍜", label: "Ordering Food", type: "situation",
     pairs: [
       { romanized: "Khǎaw...", script: "ขอ...", english: "I'd like... / Can I have...", example: { thai: "ขอเมนูหน่อยครับ", romanized: "Khǎaw mee-nuu nòi khráp", english: "Can I have the menu?" } },
       { romanized: "À-rai dii?", script: "อะไรดี?", english: "What's good?", example: { thai: "ร้านนี้อะไรดี?", romanized: "Ráan níi à-rai dii?", english: "What's good here?" } },
@@ -435,7 +481,7 @@ const TOPICS = [
 
   // ─── 24. Getting Around (Situation) ───
   {
-    id: "getting-around", emoji: "🛺", label: "Getting Around", situation: true,
+    id: "getting-around", emoji: "🛺", label: "Getting Around", type: "situation",
     pairs: [
       { romanized: "Pai...dâi mǎi?", script: "ไป...ได้ไหม?", english: "Can you take me to...?", example: { thai: "ไปสยามได้ไหม?", romanized: "Pai Sà-yǎam dâi mǎi?", english: "Can you take me to Siam?" } },
       { romanized: "Yùt thîi-nîi", script: "หยุดที่นี่", english: "Stop here", example: { thai: "หยุดที่นี่ครับ", romanized: "Yùt thîi-nîi khráp", english: "Stop here please" } },
@@ -450,7 +496,7 @@ const TOPICS = [
 
   // ─── 25. 7-Eleven (Situation) ───
   {
-    id: "seven-eleven", emoji: "🏪", label: "7-Eleven", situation: true,
+    id: "seven-eleven", emoji: "🏪", label: "7-Eleven", type: "situation",
     pairs: [
       { romanized: "Mii...mǎi?", script: "มี...ไหม?", english: "Do you have...?", example: { thai: "มีน้ำเปล่าไหม?", romanized: "Mii náam bplào mǎi?", english: "Do you have water?" } },
       { romanized: "Bai-sèt", script: "ใบเสร็จ", english: "Receipt", example: { thai: "ไม่ต้องใบเสร็จ", romanized: "Mâi dtâwng bai-sèt", english: "No receipt needed" } },

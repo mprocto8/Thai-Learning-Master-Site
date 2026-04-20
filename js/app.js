@@ -3,6 +3,12 @@
  */
 const App = (() => {
   let _dashScrollY = 0;
+  // Dashboard section collapse state — in-memory only.
+  const _dashCollapsed = { vocabulary: false, patterns: false, situations: false };
+
+  function _topicType(t) {
+    return t.type || "vocabulary";
+  }
 
   function init() {
     State.load();
@@ -27,6 +33,7 @@ const App = (() => {
     UI.registerRoute("#typing", routeTyping);
     UI.registerRoute("#listen", routeListen);
     UI.registerRoute("#listen-quick", () => ListenChoose.startQuick());
+    UI.registerRoute("#pattern", routePattern);
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once
@@ -341,59 +348,11 @@ const App = (() => {
           </div>
         </div>
 
-        ${topicView === 'grid' ? `
-        <div class="topic-grid">
-          ${TOPICS.slice(0, 12).map(t => {
-            const mastery = State.getTopicMastery(t.id);
-            const ts = s.topicStats[t.id];
-            return `
-              <div class="topic-card">
-                <div class="topic-card-header">
-                  <div class="topic-ring">${UI.progressRing(mastery, 44, 3)}</div>
-                  <span class="topic-emoji">${t.emoji}</span>
-                  ${t.situation ? '<span class="situation-badge">SITUATION</span>' : ''}
-                  ${t.essential ? '<span class="essential-badge">CORE</span>' : ''}
-                </div>
-                <h3 class="topic-name">${t.label}</h3>
-                <div class="topic-meta">
-                  <span>${t.pairs.length} words</span>
-                  <span>${Math.round(mastery * 100)}%</span>
-                </div>
-                ${ts ? `<div class="topic-last">${UI.timeAgo(ts.lastPlayed)}</div>` : ''}
-                <button class="btn topic-listen-primary" onclick="UI.navigate('#listen/${t.id}')">🔊 Listen</button>
-                <div class="topic-actions">
-                  <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
-                  <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
-                  <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">⚡</button>
-                </div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-        ` : `
-        <div style="display:flex;flex-direction:column;gap:2px;margin-top:0.5rem">
-          ${TOPICS.slice(0, 12).map(t => {
-            const mastery = State.getTopicMastery(t.id);
-            return `
-              <div style="display:flex;align-items:center;gap:0.5rem;min-height:48px;padding:0.4rem 0.6rem;background:var(--surface-1);border-radius:8px">
-                <span style="font-size:1.2rem;width:2rem;text-align:center">${t.emoji}</span>
-                <span style="flex:1;font-size:0.9rem;font-weight:500">${t.label}</span>
-                <span style="font-size:0.8rem;color:var(--text-muted);min-width:2.5rem;text-align:right">${Math.round(mastery * 100)}%</span>
-                <button class="btn btn-sm" onclick="UI.navigate('#listen/${t.id}')" style="padding:0.2rem 0.55rem;font-size:0.75rem;background:var(--accent);color:#fff;font-weight:600" title="Listen & Choose">🔊</button>
-                <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">Match</button>
-                <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">Cards</button>
-                <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')" style="padding:0.2rem 0.5rem;font-size:0.75rem">⚡</button>
-              </div>
-            `;
-          }).join("")}
-        </div>
-        `}
+        ${renderDashTopicSections(s, topicView)}
 
-        ${TOPICS.length > 12 ? `
-          <div class="dash-see-all">
-            <button class="btn btn-secondary" onclick="UI.navigate('#practice')">See all ${TOPICS.length} topics →</button>
-          </div>
-        ` : ''}
+        <div class="dash-see-all">
+          <button class="btn btn-secondary" onclick="UI.navigate('#practice')">See all ${TOPICS.length} topics →</button>
+        </div>
 
         <h2 class="section-title">Learn More</h2>
         <div class="dash-cta-grid">
@@ -441,6 +400,115 @@ const App = (() => {
     }
   }
 
+  /* Topic grouping on the dashboard: Vocabulary / Patterns / Situations.
+   * Patterns section is hidden when empty (content arrives in a later session). */
+  function renderDashTopicSections(s, topicView) {
+    const vocabularyTopics = TOPICS
+      .filter(t => _topicType(t) === "vocabulary")
+      .sort((a, b) => (b.essential ? 1 : 0) - (a.essential ? 1 : 0));
+    const patternTopics = TOPICS.filter(t => _topicType(t) === "pattern");
+    const situationTopics = TOPICS.filter(t => _topicType(t) === "situation");
+
+    return `
+      ${renderDashSection("vocabulary", "Vocabulary", vocabularyTopics, s, topicView)}
+      ${patternTopics.length > 0 ? renderDashSection("patterns", "Patterns", patternTopics, s, topicView) : ""}
+      ${situationTopics.length > 0 ? renderDashSection("situations", "Situations", situationTopics, s, topicView) : ""}
+    `;
+  }
+
+  function renderDashSection(key, label, topics, s, topicView) {
+    const collapsed = !!_dashCollapsed[key];
+    return `
+      <div class="dash-topic-section" data-section="${key}">
+        <h3 class="dash-topic-section-header"
+            onclick="App.toggleDashSection('${key}')"
+            role="button" tabindex="0"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();App.toggleDashSection('${key}');}">
+          <span class="section-caret ${collapsed ? 'collapsed' : ''}">▾</span>
+          <span>${label}</span>
+          <span class="section-count">${topics.length}</span>
+        </h3>
+        ${collapsed ? "" : (topicView === 'grid'
+          ? `<div class="topic-grid">${topics.map(t => renderDashTopicCard(t, s)).join("")}</div>`
+          : `<div class="dash-topic-list">${topics.map(t => renderDashTopicRow(t, s)).join("")}</div>`)}
+      </div>
+    `;
+  }
+
+  function _primaryRoute(t) {
+    return _topicType(t) === "pattern" ? `#pattern/${t.id}` : `#listen/${t.id}`;
+  }
+
+  function _primaryLabel(t) {
+    return _topicType(t) === "pattern" ? "🧩 Practice" : "🔊 Listen";
+  }
+
+  function _typeBadge(type) {
+    if (type === "pattern") return '<span class="pattern-badge">PATTERN</span>';
+    if (type === "situation") return '<span class="situation-badge">SITUATION</span>';
+    return "";
+  }
+
+  function renderDashTopicCard(t, s) {
+    const mastery = State.getTopicMastery(t.id);
+    const ts = s.topicStats[t.id];
+    const type = _topicType(t);
+    const isPattern = type === "pattern";
+    return `
+      <div class="topic-card topic-type-${type}">
+        <div class="topic-card-header">
+          <div class="topic-ring">${UI.progressRing(mastery, 44, 3)}</div>
+          <span class="topic-emoji">${t.emoji}</span>
+          ${_typeBadge(type)}
+          ${t.essential ? '<span class="essential-badge">CORE</span>' : ''}
+        </div>
+        <h3 class="topic-name">${t.label}</h3>
+        <div class="topic-meta">
+          <span>${t.pairs.length} ${isPattern ? "examples" : "words"}</span>
+          <span>${Math.round(mastery * 100)}%</span>
+        </div>
+        ${ts ? `<div class="topic-last">${UI.timeAgo(ts.lastPlayed)}</div>` : ''}
+        <button class="btn topic-listen-primary" onclick="UI.navigate('${_primaryRoute(t)}')">${_primaryLabel(t)}</button>
+        <div class="topic-actions">
+          ${isPattern ? `
+            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#listen/${t.id}')">🎧</button>
+            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+          ` : `
+            <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
+            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+            <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">⚡</button>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderDashTopicRow(t, s) {
+    const mastery = State.getTopicMastery(t.id);
+    const type = _topicType(t);
+    const isPattern = type === "pattern";
+    return `
+      <div class="dash-topic-row topic-type-${type}">
+        <span class="dash-topic-row-emoji">${t.emoji}</span>
+        <span class="dash-topic-row-name">${t.label}${t.essential ? ' <span class="essential-badge">CORE</span>' : ''}${_typeBadge(type)}</span>
+        <span class="dash-topic-row-mastery">${Math.round(mastery * 100)}%</span>
+        <button class="btn btn-sm dash-topic-row-primary" onclick="UI.navigate('${_primaryRoute(t)}')" title="${isPattern ? 'Pattern Practice' : 'Listen & Choose'}">${isPattern ? '🧩' : '🔊'}</button>
+        ${isPattern ? `
+          <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+        ` : `
+          <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
+          <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+          <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">⚡</button>
+        `}
+      </div>
+    `;
+  }
+
+  function toggleDashSection(key) {
+    _dashCollapsed[key] = !_dashCollapsed[key];
+    renderDashboard();
+  }
+
   function getGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning! Ready to learn?";
@@ -478,6 +546,18 @@ const App = (() => {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) ListenChoose.start(topicId);
     else UI.navigate("#dashboard");
+  }
+
+  function routePattern() {
+    const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (!topicId) { UI.navigate("#dashboard"); return; }
+    const t = TOPICS.find(tp => tp.id === topicId);
+    if (!t || _topicType(t) !== "pattern") {
+      UI.toast("Pattern Practice is only available for pattern topics.", "info");
+      UI.navigate("#practice");
+      return;
+    }
+    PatternPractice.start(topicId);
   }
 
   /* Settings */
@@ -896,7 +976,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
-    startTodayListen, toggleAutoPlay,
+    startTodayListen, toggleAutoPlay, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm
