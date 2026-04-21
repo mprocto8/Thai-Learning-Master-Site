@@ -14,7 +14,7 @@
 ### Data (read-only, rarely modified)
 | File | Globals |
 |------|---------|
-| data/topics.js — 19 vocab topic packs | TOPICS |
+| data/topics.js — 30 topic packs (vocabulary / situation / pattern), 333 pairs total | TOPICS |
 | data/alphabet.js — 44 consonants, 21 vowels, 4 tone marks | THAI_CONSONANTS, THAI_VOWELS, THAI_TONE_MARKS |
 | data/sentences.js — 15 sentence builder exercises | SENTENCES |
 | data/pathways.js — 5 learning pathways with badges | PATHWAYS |
