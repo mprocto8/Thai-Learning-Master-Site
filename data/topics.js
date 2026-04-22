@@ -26,15 +26,28 @@
  *       explanation: "Use this to ask where any place or thing is located."
  *     },
  *
- *     // Pairs are slot-fillings of the frame. Each pair has the usual
- *     // romanized/script/english for the complete sentence, plus a `slot`
- *     // identifying what fills the blank, and an optional `example` for a
- *     // natural full-context sentence (used by Audio.playSentence).
+ *     // Pairs are full sentences under the frame. Each pair carries:
+ *     //   - romanized / script / english: the complete sentence
+ *     //   - slottable: an array of words WITHIN the sentence that are
+ *     //     eligible to become the blank. Pattern Practice picks one
+ *     //     at random per round, so a single pair can teach multiple
+ *     //     words. Pattern markers themselves (e.g. `mâi` in negation,
+ *     //     `mǎi` in yes-no-questions) are NOT included — blanking
+ *     //     them teaches nothing.
+ *     //   - slot: the old single-slot field, kept equal to slottable[0]
+ *     //     for backward compatibility. Runtime uses `slottable`.
+ *     //   - example (optional): a natural full-context sentence for
+ *     //     Audio.playSentence.
  *     pairs: [
  *       {
  *         romanized: "hông náam yùu thîi nǎi",
  *         script:    "ห้องน้ำอยู่ที่ไหน",
  *         english:   "Where is the bathroom?",
+ *         slottable: [
+ *           { romanized: "hông náam", script: "ห้องน้ำ", english: "bathroom" },
+ *           { romanized: "yùu", script: "อยู่", english: "is located at" },
+ *           { romanized: "thîi nǎi", script: "ที่ไหน", english: "where" }
+ *         ],
  *         slot: { romanized: "hông náam", script: "ห้องน้ำ", english: "bathroom" },
  *         example: {
  *           thai:      "ขอโทษ ห้องน้ำอยู่ที่ไหน",
@@ -42,12 +55,14 @@
  *           english:   "Excuse me, where is the bathroom?"
  *         }
  *       },
- *       // ...8–12 more slot fillings
+ *       // ...8–12 more
  *     ]
  *   }
  *
- * The `slot` field is what makes Pattern Practice mode possible —
- * it identifies which specific word plugs into the frame.
+ * The `slottable` array is what makes Pattern Practice mode possible —
+ * it identifies which words within the sentence can plug into the frame.
+ * At round time one is picked at random; the word's script position is
+ * blanked out for the prompt.
  */
 const TOPICS = [
 
@@ -520,20 +535,90 @@ const TOPICS = [
     },
     pairs: [
       // TODO: verify with native speaker — Western name transliterations are approximations
-      { romanized: "Phǒm chêu Jawn", script: "ผมชื่อจอห์น", english: "My name is John", slot: { romanized: "Jawn", script: "จอห์น", english: "John" }, example: { thai: "สวัสดีครับ ผมชื่อจอห์น", romanized: "Sà-wàt-dii khráp, phǒm chêu Jawn", english: "Hello, my name is John" }, note: "Male speaker — uses ผม (phǒm)" },
+      { romanized: "Phǒm chêu Jawn", script: "ผมชื่อจอห์น", english: "My name is John",
+        slottable: [
+          { romanized: "phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Jawn", script: "จอห์น", english: "John" }
+        ],
+        slot: { romanized: "phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "สวัสดีครับ ผมชื่อจอห์น", romanized: "Sà-wàt-dii khráp, phǒm chêu Jawn", english: "Hello, my name is John" }, note: "Male speaker — uses ผม (phǒm)" },
       // TODO: verify with native speaker — เดวิด tone marks
-      { romanized: "Phǒm chêu Dee-wít", script: "ผมชื่อเดวิด", english: "My name is David", slot: { romanized: "Dee-wít", script: "เดวิด", english: "David" }, example: { thai: "ผมชื่อเดวิด ยินดีที่ได้รู้จัก", romanized: "Phǒm chêu Dee-wít, yin-dii thîi dâi rúu-jàk", english: "My name is David, nice to meet you" }, note: "Male speaker — uses ผม (phǒm)" },
-      { romanized: "Phǒm chêu Thawm", script: "ผมชื่อทอม", english: "My name is Tom", slot: { romanized: "Thawm", script: "ทอม", english: "Tom" }, example: { thai: "ผมชื่อทอมครับ", romanized: "Phǒm chêu Thawm khráp", english: "My name is Tom" }, note: "Male speaker — uses ผม (phǒm)" },
-      { romanized: "Phǒm chêu Dtôn", script: "ผมชื่อต้น", english: "My name is Ton", slot: { romanized: "Dtôn", script: "ต้น", english: "Ton (nickname)" }, example: { thai: "ผมชื่อต้น เป็นคนไทยครับ", romanized: "Phǒm chêu Dtôn, pen khon Thai khráp", english: "My name is Ton, I'm Thai" }, note: "Male speaker — ต้น is a common Thai male nickname meaning 'tree/beginning'" },
-      { romanized: "Phǒm chêu Lék", script: "ผมชื่อเล็ก", english: "My name is Lek", slot: { romanized: "Lék", script: "เล็ก", english: "Lek (nickname)" }, example: { thai: "ผมชื่อเล็กครับ", romanized: "Phǒm chêu Lék khráp", english: "My name is Lek" }, note: "Male speaker — เล็ก means 'small', a very common Thai nickname" },
+      { romanized: "Phǒm chêu Dee-wít", script: "ผมชื่อเดวิด", english: "My name is David",
+        slottable: [
+          { romanized: "phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Dee-wít", script: "เดวิด", english: "David" }
+        ],
+        slot: { romanized: "phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "ผมชื่อเดวิด ยินดีที่ได้รู้จัก", romanized: "Phǒm chêu Dee-wít, yin-dii thîi dâi rúu-jàk", english: "My name is David, nice to meet you" }, note: "Male speaker — uses ผม (phǒm)" },
+      { romanized: "Phǒm chêu Thawm", script: "ผมชื่อทอม", english: "My name is Tom",
+        slottable: [
+          { romanized: "phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Thawm", script: "ทอม", english: "Tom" }
+        ],
+        slot: { romanized: "phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "ผมชื่อทอมครับ", romanized: "Phǒm chêu Thawm khráp", english: "My name is Tom" }, note: "Male speaker — uses ผม (phǒm)" },
+      { romanized: "Phǒm chêu Dtôn", script: "ผมชื่อต้น", english: "My name is Ton",
+        slottable: [
+          { romanized: "phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Dtôn", script: "ต้น", english: "Ton (nickname)" }
+        ],
+        slot: { romanized: "phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "ผมชื่อต้น เป็นคนไทยครับ", romanized: "Phǒm chêu Dtôn, pen khon Thai khráp", english: "My name is Ton, I'm Thai" }, note: "Male speaker — ต้น is a common Thai male nickname meaning 'tree/beginning'" },
+      { romanized: "Phǒm chêu Lék", script: "ผมชื่อเล็ก", english: "My name is Lek",
+        slottable: [
+          { romanized: "phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Lék", script: "เล็ก", english: "Lek (nickname)" }
+        ],
+        slot: { romanized: "phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "ผมชื่อเล็กครับ", romanized: "Phǒm chêu Lék khráp", english: "My name is Lek" }, note: "Male speaker — เล็ก means 'small', a very common Thai nickname" },
       // TODO: verify with native speaker — ซาร่า tone marks
-      { romanized: "Chǎn chêu Saa-râa", script: "ฉันชื่อซาร่า", english: "My name is Sarah", slot: { romanized: "Saa-râa", script: "ซาร่า", english: "Sarah" }, example: { thai: "ฉันชื่อซาร่า มาจากอเมริกา", romanized: "Chǎn chêu Saa-râa, maa jàak A-mee-rí-gaa", english: "My name is Sarah, I'm from America" }, note: "Female speaker — uses ฉัน (chǎn)" },
+      { romanized: "Chǎn chêu Saa-râa", script: "ฉันชื่อซาร่า", english: "My name is Sarah",
+        slottable: [
+          { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Saa-râa", script: "ซาร่า", english: "Sarah" }
+        ],
+        slot: { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "ฉันชื่อซาร่า มาจากอเมริกา", romanized: "Chǎn chêu Saa-râa, maa jàak A-mee-rí-gaa", english: "My name is Sarah, I'm from America" }, note: "Female speaker — uses ฉัน (chǎn)" },
       // TODO: verify with native speaker — เอ็มม่า tone marks
-      { romanized: "Chǎn chêu Em-mâa", script: "ฉันชื่อเอ็มม่า", english: "My name is Emma", slot: { romanized: "Em-mâa", script: "เอ็มม่า", english: "Emma" }, example: { thai: "สวัสดีค่ะ ฉันชื่อเอ็มม่า", romanized: "Sà-wàt-dii khâ, chǎn chêu Em-mâa", english: "Hello, my name is Emma" }, note: "Female speaker — uses ฉัน (chǎn)" },
+      { romanized: "Chǎn chêu Em-mâa", script: "ฉันชื่อเอ็มม่า", english: "My name is Emma",
+        slottable: [
+          { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Em-mâa", script: "เอ็มม่า", english: "Emma" }
+        ],
+        slot: { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "สวัสดีค่ะ ฉันชื่อเอ็มม่า", romanized: "Sà-wàt-dii khâ, chǎn chêu Em-mâa", english: "Hello, my name is Emma" }, note: "Female speaker — uses ฉัน (chǎn)" },
       // TODO: verify with native speaker — แอนน่า tone marks
-      { romanized: "Chǎn chêu Aen-nâa", script: "ฉันชื่อแอนน่า", english: "My name is Anna", slot: { romanized: "Aen-nâa", script: "แอนน่า", english: "Anna" }, example: { thai: "ฉันชื่อแอนน่าค่ะ", romanized: "Chǎn chêu Aen-nâa khâ", english: "My name is Anna" }, note: "Female speaker — uses ฉัน (chǎn)" },
-      { romanized: "Chǎn chêu Phloi", script: "ฉันชื่อพลอย", english: "My name is Ploy", slot: { romanized: "Phloi", script: "พลอย", english: "Ploy (nickname)" }, example: { thai: "ฉันชื่อพลอย เป็นคนกรุงเทพ", romanized: "Chǎn chêu Phloi, pen khon Grung-thêep", english: "My name is Ploy, I'm from Bangkok" }, note: "Female speaker — พลอย means 'gemstone', a very popular Thai female nickname" },
-      { romanized: "Chǎn chêu Má-lí", script: "ฉันชื่อมะลิ", english: "My name is Mali", slot: { romanized: "Má-lí", script: "มะลิ", english: "Mali (nickname)" }, example: { thai: "ฉันชื่อมะลิค่ะ", romanized: "Chǎn chêu Má-lí khâ", english: "My name is Mali" }, note: "Female speaker — มะลิ means 'jasmine flower', a classic Thai female name" }
+      { romanized: "Chǎn chêu Aen-nâa", script: "ฉันชื่อแอนน่า", english: "My name is Anna",
+        slottable: [
+          { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Aen-nâa", script: "แอนน่า", english: "Anna" }
+        ],
+        slot: { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "ฉันชื่อแอนน่าค่ะ", romanized: "Chǎn chêu Aen-nâa khâ", english: "My name is Anna" }, note: "Female speaker — uses ฉัน (chǎn)" },
+      { romanized: "Chǎn chêu Phloi", script: "ฉันชื่อพลอย", english: "My name is Ploy",
+        slottable: [
+          { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Phloi", script: "พลอย", english: "Ploy (nickname)" }
+        ],
+        slot: { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "ฉันชื่อพลอย เป็นคนกรุงเทพ", romanized: "Chǎn chêu Phloi, pen khon Grung-thêep", english: "My name is Ploy, I'm from Bangkok" }, note: "Female speaker — พลอย means 'gemstone', a very popular Thai female nickname" },
+      { romanized: "Chǎn chêu Má-lí", script: "ฉันชื่อมะลิ", english: "My name is Mali",
+        slottable: [
+          { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "Má-lí", script: "มะลิ", english: "Mali (nickname)" }
+        ],
+        slot: { romanized: "chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "ฉันชื่อมะลิค่ะ", romanized: "Chǎn chêu Má-lí khâ", english: "My name is Mali" }, note: "Female speaker — มะลิ means 'jasmine flower', a classic Thai female name" }
     ]
   },
 
@@ -547,16 +632,76 @@ const TOPICS = [
       explanation: "Thai has NO word for 'is/am/are' when describing things. Just place the noun first, then the adjective — that's the whole sentence."
     },
     pairs: [
-      { romanized: "Aa-hǎan à-ròi", script: "อาหารอร่อย", english: "The food is delicious", slot: { romanized: "à-ròi", script: "อร่อย", english: "delicious" }, example: { thai: "อาหารร้านนี้อร่อยมาก", romanized: "Aa-hǎan ráan níi à-ròi mâak", english: "The food at this restaurant is very delicious" } },
-      { romanized: "Aa-gàat rón", script: "อากาศร้อน", english: "The weather is hot", slot: { romanized: "rón", script: "ร้อน", english: "hot" }, example: { thai: "วันนี้อากาศร้อนมาก", romanized: "Wan níi aa-gàat rón mâak", english: "Today the weather is very hot" }, note: "One of the most common sentences you'll hear in Bangkok" },
-      { romanized: "Náam yen", script: "น้ำเย็น", english: "The water is cold", slot: { romanized: "yen", script: "เย็น", english: "cold (to the touch)" }, example: { thai: "ขอน้ำเย็นหน่อยครับ", romanized: "Khǎw náam yen nòi khráp", english: "Cold water please" } },
-      { romanized: "Khon yóe", script: "คนเยอะ", english: "There are lots of people / It's crowded", slot: { romanized: "yóe", script: "เยอะ", english: "many / a lot" }, example: { thai: "วันเสาร์คนเยอะมาก", romanized: "Wan Sǎo khon yóe mâak", english: "On Saturday it's very crowded" } },
-      { romanized: "Rót tìt", script: "รถติด", english: "The traffic is jammed", slot: { romanized: "tìt", script: "ติด", english: "stuck / jammed" }, example: { thai: "ตอนเย็นรถติดมาก", romanized: "Dtawn yen rót tìt mâak", english: "In the evening the traffic is terrible" }, note: "Essential Bangkok phrase — you'll say this daily" },
-      { romanized: "Phǒm nùeai", script: "ผมเหนื่อย", english: "I'm tired", slot: { romanized: "nùeai", script: "เหนื่อย", english: "tired" }, example: { thai: "วันนี้ผมเหนื่อยมาก", romanized: "Wan níi phǒm nùeai mâak", english: "Today I'm very tired" }, note: "Male speaker — female would say 'chǎn nùeai'" },
-      { romanized: "Chǎn hǐw", script: "ฉันหิว", english: "I'm hungry", slot: { romanized: "hǐw", script: "หิว", english: "hungry" }, example: { thai: "ฉันหิว ไปกินข้าวกัน", romanized: "Chǎn hǐw, pai gin khâao gan", english: "I'm hungry, let's go eat" }, note: "Female speaker — male would say 'phǒm hǐw'" },
-      { romanized: "Bâan yài", script: "บ้านใหญ่", english: "The house is big", slot: { romanized: "yài", script: "ใหญ่", english: "big" }, example: { thai: "บ้านเขาใหญ่มาก", romanized: "Bâan khǎo yài mâak", english: "His/her house is very big" } },
-      { romanized: "Phleeng phráw", script: "เพลงเพราะ", english: "The song is beautiful", slot: { romanized: "phráw", script: "เพราะ", english: "pleasant-sounding / melodic" }, example: { thai: "เพลงนี้เพราะมาก", romanized: "Phleeng níi phráw mâak", english: "This song is really beautiful" } },
-      { romanized: "Ngaan yûng", script: "งานยุ่ง", english: "Work is busy", slot: { romanized: "yûng", script: "ยุ่ง", english: "busy" }, example: { thai: "อาทิตย์นี้งานยุ่งมาก", romanized: "Aa-thít níi ngaan yûng mâak", english: "This week work is very busy" } }
+      { romanized: "Aa-hǎan à-ròi", script: "อาหารอร่อย", english: "The food is delicious",
+        slottable: [
+          { romanized: "Aa-hǎan", script: "อาหาร", english: "food" },
+          { romanized: "à-ròi", script: "อร่อย", english: "delicious" }
+        ],
+        slot: { romanized: "Aa-hǎan", script: "อาหาร", english: "food" },
+        example: { thai: "อาหารร้านนี้อร่อยมาก", romanized: "Aa-hǎan ráan níi à-ròi mâak", english: "The food at this restaurant is very delicious" } },
+      { romanized: "Aa-gàat rón", script: "อากาศร้อน", english: "The weather is hot",
+        slottable: [
+          { romanized: "Aa-gàat", script: "อากาศ", english: "weather" },
+          { romanized: "rón", script: "ร้อน", english: "hot" }
+        ],
+        slot: { romanized: "Aa-gàat", script: "อากาศ", english: "weather" },
+        example: { thai: "วันนี้อากาศร้อนมาก", romanized: "Wan níi aa-gàat rón mâak", english: "Today the weather is very hot" }, note: "One of the most common sentences you'll hear in Bangkok" },
+      { romanized: "Náam yen", script: "น้ำเย็น", english: "The water is cold",
+        slottable: [
+          { romanized: "Náam", script: "น้ำ", english: "water" },
+          { romanized: "yen", script: "เย็น", english: "cold (to the touch)" }
+        ],
+        slot: { romanized: "Náam", script: "น้ำ", english: "water" },
+        example: { thai: "ขอน้ำเย็นหน่อยครับ", romanized: "Khǎw náam yen nòi khráp", english: "Cold water please" } },
+      { romanized: "Khon yóe", script: "คนเยอะ", english: "There are lots of people / It's crowded",
+        slottable: [
+          { romanized: "Khon", script: "คน", english: "people" },
+          { romanized: "yóe", script: "เยอะ", english: "many / a lot" }
+        ],
+        slot: { romanized: "Khon", script: "คน", english: "people" },
+        example: { thai: "วันเสาร์คนเยอะมาก", romanized: "Wan Sǎo khon yóe mâak", english: "On Saturday it's very crowded" } },
+      { romanized: "Rót tìt", script: "รถติด", english: "The traffic is jammed",
+        slottable: [
+          { romanized: "Rót", script: "รถ", english: "car / traffic" },
+          { romanized: "tìt", script: "ติด", english: "stuck / jammed" }
+        ],
+        slot: { romanized: "Rót", script: "รถ", english: "car / traffic" },
+        example: { thai: "ตอนเย็นรถติดมาก", romanized: "Dtawn yen rót tìt mâak", english: "In the evening the traffic is terrible" }, note: "Essential Bangkok phrase — you'll say this daily" },
+      { romanized: "Phǒm nùeai", script: "ผมเหนื่อย", english: "I'm tired",
+        slottable: [
+          { romanized: "Phǒm", script: "ผม", english: "I (male)" },
+          { romanized: "nùeai", script: "เหนื่อย", english: "tired" }
+        ],
+        slot: { romanized: "Phǒm", script: "ผม", english: "I (male)" },
+        example: { thai: "วันนี้ผมเหนื่อยมาก", romanized: "Wan níi phǒm nùeai mâak", english: "Today I'm very tired" }, note: "Male speaker — female would say 'chǎn nùeai'" },
+      { romanized: "Chǎn hǐw", script: "ฉันหิว", english: "I'm hungry",
+        slottable: [
+          { romanized: "Chǎn", script: "ฉัน", english: "I (female)" },
+          { romanized: "hǐw", script: "หิว", english: "hungry" }
+        ],
+        slot: { romanized: "Chǎn", script: "ฉัน", english: "I (female)" },
+        example: { thai: "ฉันหิว ไปกินข้าวกัน", romanized: "Chǎn hǐw, pai gin khâao gan", english: "I'm hungry, let's go eat" }, note: "Female speaker — male would say 'phǒm hǐw'" },
+      { romanized: "Bâan yài", script: "บ้านใหญ่", english: "The house is big",
+        slottable: [
+          { romanized: "Bâan", script: "บ้าน", english: "house" },
+          { romanized: "yài", script: "ใหญ่", english: "big" }
+        ],
+        slot: { romanized: "Bâan", script: "บ้าน", english: "house" },
+        example: { thai: "บ้านเขาใหญ่มาก", romanized: "Bâan khǎo yài mâak", english: "His/her house is very big" } },
+      { romanized: "Wan-níi sanùk", script: "วันนี้สนุก", english: "Today is fun",
+        slottable: [
+          { romanized: "Wan-níi", script: "วันนี้", english: "today" },
+          { romanized: "sanùk", script: "สนุก", english: "fun / enjoyable" }
+        ],
+        slot: { romanized: "Wan-níi", script: "วันนี้", english: "today" },
+        example: { thai: "วันนี้สนุกมาก", romanized: "Wan-níi sanùk mâak", english: "Today was very fun" }, note: "สนุก (sanùk) is central to Thai culture — fun/enjoyment is valued in work, travel, and daily life" },
+      { romanized: "Ngaan yûng", script: "งานยุ่ง", english: "Work is busy",
+        slottable: [
+          { romanized: "Ngaan", script: "งาน", english: "work" },
+          { romanized: "yûng", script: "ยุ่ง", english: "busy" }
+        ],
+        slot: { romanized: "Ngaan", script: "งาน", english: "work" },
+        example: { thai: "อาทิตย์นี้งานยุ่งมาก", romanized: "Aa-thít níi ngaan yûng mâak", english: "This week work is very busy" } }
     ]
   },
 
@@ -570,16 +715,46 @@ const TOPICS = [
       explanation: "Put ไม่ (mâi) directly before any verb or adjective to negate it. This is the #1 most common negation in Thai."
     },
     pairs: [
-      { romanized: "Mâi phèt", script: "ไม่เผ็ด", english: "Not spicy", slot: { romanized: "phèt", script: "เผ็ด", english: "spicy" }, example: { thai: "ขอไม่เผ็ดครับ", romanized: "Khǎw mâi phèt khráp", english: "Not spicy please" }, note: "Essential at any Thai restaurant if you can't handle heat" },
-      { romanized: "Mâi ao", script: "ไม่เอา", english: "Don't want / No thanks", slot: { romanized: "ao", script: "เอา", english: "want / take" }, example: { thai: "ไม่เอาถุงครับ", romanized: "Mâi ao thǔng khráp", english: "I don't need a bag" } },
-      { romanized: "Mâi rúu", script: "ไม่รู้", english: "Don't know", slot: { romanized: "rúu", script: "รู้", english: "know (information)" }, example: { thai: "ไม่รู้เหมือนกัน", romanized: "Mâi rúu mǔean-gan", english: "I don't know either" } },
-      { romanized: "Mâi khâo-jai", script: "ไม่เข้าใจ", english: "Don't understand", slot: { romanized: "khâo-jai", script: "เข้าใจ", english: "understand" }, example: { thai: "ขอโทษครับ ไม่เข้าใจ", romanized: "Khǎw thôot khráp, mâi khâo-jai", english: "Sorry, I don't understand" } },
-      { romanized: "Mâi chôp", script: "ไม่ชอบ", english: "Don't like", slot: { romanized: "chôp", script: "ชอบ", english: "like" }, example: { thai: "ฉันไม่ชอบผักชี", romanized: "Chǎn mâi chôp phàk-chii", english: "I don't like cilantro" } },
-      { romanized: "Mâi sà-baai", script: "ไม่สบาย", english: "Not feeling well / sick", slot: { romanized: "sà-baai", script: "สบาย", english: "well / comfortable" }, example: { thai: "วันนี้ผมไม่สบาย", romanized: "Wan níi phǒm mâi sà-baai", english: "Today I'm not feeling well" } },
-      { romanized: "Mâi mii", script: "ไม่มี", english: "Don't have / there isn't", slot: { romanized: "mii", script: "มี", english: "have / there is" }, example: { thai: "ขอโทษ ไม่มีครับ", romanized: "Khǎw thôot, mâi mii khráp", english: "Sorry, we don't have any" } },
-      { romanized: "Mâi wâang", script: "ไม่ว่าง", english: "Not free / busy", slot: { romanized: "wâang", script: "ว่าง", english: "free / available" }, example: { thai: "พรุ่งนี้ผมไม่ว่าง", romanized: "Phrûng níi phǒm mâi wâang", english: "Tomorrow I'm not free" } },
-      { romanized: "Mâi dâi", script: "ไม่ได้", english: "Cannot / didn't", slot: { romanized: "dâi", script: "ได้", english: "can / able to" }, example: { thai: "ขอโทษครับ ไม่ได้", romanized: "Khǎw thôot khráp, mâi dâi", english: "Sorry, that's not possible" } },
-      { romanized: "Mâi châi", script: "ไม่ใช่", english: "No / that's not it", slot: { romanized: "châi", script: "ใช่", english: "yes / correct" }, example: { thai: "ไม่ใช่ครับ อันนั้น", romanized: "Mâi châi khráp, an nán", english: "No, that one over there" } }
+      { romanized: "Mâi phèt", script: "ไม่เผ็ด", english: "Not spicy",
+        slottable: [{ romanized: "phèt", script: "เผ็ด", english: "spicy" }],
+        slot: { romanized: "phèt", script: "เผ็ด", english: "spicy" },
+        example: { thai: "ขอไม่เผ็ดครับ", romanized: "Khǎw mâi phèt khráp", english: "Not spicy please" }, note: "Essential at any Thai restaurant if you can't handle heat" },
+      { romanized: "Mâi ao", script: "ไม่เอา", english: "Don't want / No thanks",
+        slottable: [{ romanized: "ao", script: "เอา", english: "want / take" }],
+        slot: { romanized: "ao", script: "เอา", english: "want / take" },
+        example: { thai: "ไม่เอาถุงครับ", romanized: "Mâi ao thǔng khráp", english: "I don't need a bag" } },
+      { romanized: "Mâi rúu", script: "ไม่รู้", english: "Don't know",
+        slottable: [{ romanized: "rúu", script: "รู้", english: "know (information)" }],
+        slot: { romanized: "rúu", script: "รู้", english: "know (information)" },
+        example: { thai: "ไม่รู้เหมือนกัน", romanized: "Mâi rúu mǔean-gan", english: "I don't know either" } },
+      { romanized: "Mâi khâo-jai", script: "ไม่เข้าใจ", english: "Don't understand",
+        slottable: [{ romanized: "khâo-jai", script: "เข้าใจ", english: "understand" }],
+        slot: { romanized: "khâo-jai", script: "เข้าใจ", english: "understand" },
+        example: { thai: "ขอโทษครับ ไม่เข้าใจ", romanized: "Khǎw thôot khráp, mâi khâo-jai", english: "Sorry, I don't understand" } },
+      { romanized: "Mâi chôp", script: "ไม่ชอบ", english: "Don't like",
+        slottable: [{ romanized: "chôp", script: "ชอบ", english: "like" }],
+        slot: { romanized: "chôp", script: "ชอบ", english: "like" },
+        example: { thai: "ฉันไม่ชอบผักชี", romanized: "Chǎn mâi chôp phàk-chii", english: "I don't like cilantro" } },
+      { romanized: "Mâi sà-baai", script: "ไม่สบาย", english: "Not feeling well / sick",
+        slottable: [{ romanized: "sà-baai", script: "สบาย", english: "well / comfortable" }],
+        slot: { romanized: "sà-baai", script: "สบาย", english: "well / comfortable" },
+        example: { thai: "วันนี้ผมไม่สบาย", romanized: "Wan níi phǒm mâi sà-baai", english: "Today I'm not feeling well" } },
+      { romanized: "Mâi mii", script: "ไม่มี", english: "Don't have / there isn't",
+        slottable: [{ romanized: "mii", script: "มี", english: "have / there is" }],
+        slot: { romanized: "mii", script: "มี", english: "have / there is" },
+        example: { thai: "ขอโทษ ไม่มีครับ", romanized: "Khǎw thôot, mâi mii khráp", english: "Sorry, we don't have any" } },
+      { romanized: "Mâi wâang", script: "ไม่ว่าง", english: "Not free / busy",
+        slottable: [{ romanized: "wâang", script: "ว่าง", english: "free / available" }],
+        slot: { romanized: "wâang", script: "ว่าง", english: "free / available" },
+        example: { thai: "พรุ่งนี้ผมไม่ว่าง", romanized: "Phrûng níi phǒm mâi wâang", english: "Tomorrow I'm not free" } },
+      { romanized: "Mâi dâi", script: "ไม่ได้", english: "Cannot / didn't",
+        slottable: [{ romanized: "dâi", script: "ได้", english: "can / able to" }],
+        slot: { romanized: "dâi", script: "ได้", english: "can / able to" },
+        example: { thai: "ขอโทษครับ ไม่ได้", romanized: "Khǎw thôot khráp, mâi dâi", english: "Sorry, that's not possible" } },
+      { romanized: "Mâi châi", script: "ไม่ใช่", english: "No / that's not it",
+        slottable: [{ romanized: "châi", script: "ใช่", english: "yes / correct" }],
+        slot: { romanized: "châi", script: "ใช่", english: "yes / correct" },
+        example: { thai: "ไม่ใช่ครับ อันนั้น", romanized: "Mâi châi khráp, an nán", english: "No, that one over there" } }
     ]
   },
 
@@ -593,16 +768,46 @@ const TOPICS = [
       explanation: "To turn any statement into a yes/no question, just tack ไหม (mǎi) onto the end. No word order changes."
     },
     pairs: [
-      { romanized: "Ao mǎi?", script: "เอาไหม?", english: "Do you want it?", slot: { romanized: "ao", script: "เอา", english: "want / take" }, example: { thai: "ถุงเอาไหมคะ?", romanized: "Thǔng ao mǎi khá?", english: "Do you want a bag?" }, note: "You'll hear this at every 7-Eleven" },
-      { romanized: "Phèt mǎi?", script: "เผ็ดไหม?", english: "Is it spicy?", slot: { romanized: "phèt", script: "เผ็ด", english: "spicy" }, example: { thai: "อาหารนี้เผ็ดไหม?", romanized: "Aa-hǎan níi phèt mǎi?", english: "Is this food spicy?" } },
-      { romanized: "À-ròi mǎi?", script: "อร่อยไหม?", english: "Is it delicious?", slot: { romanized: "à-ròi", script: "อร่อย", english: "delicious" }, example: { thai: "ร้านนี้อร่อยไหม?", romanized: "Ráan níi à-ròi mǎi?", english: "Is this restaurant good?" } },
-      { romanized: "Sà-baai-dii mǎi?", script: "สบายดีไหม?", english: "Are you well? / How are you?", slot: { romanized: "sà-baai-dii", script: "สบายดี", english: "well / fine" }, example: { thai: "คุณสบายดีไหม?", romanized: "Khun sà-baai-dii mǎi?", english: "How are you?" }, note: "Standard Thai greeting after 'hello'" },
-      { romanized: "Chôp mǎi?", script: "ชอบไหม?", english: "Do you like it?", slot: { romanized: "chôp", script: "ชอบ", english: "like" }, example: { thai: "ชอบเมืองไทยไหม?", romanized: "Chôp meuang Thai mǎi?", english: "Do you like Thailand?" } },
-      { romanized: "Khâo-jai mǎi?", script: "เข้าใจไหม?", english: "Do you understand?", slot: { romanized: "khâo-jai", script: "เข้าใจ", english: "understand" }, example: { thai: "ที่ผมพูดเข้าใจไหม?", romanized: "Thîi phǒm phûut khâo-jai mǎi?", english: "Do you understand what I'm saying?" } },
-      { romanized: "Pai mǎi?", script: "ไปไหม?", english: "Are you going? / Want to go?", slot: { romanized: "pai", script: "ไป", english: "go" }, example: { thai: "ไปกินข้าวด้วยกันไหม?", romanized: "Pai gin khâao dûay-gan mǎi?", english: "Want to go eat together?" } },
-      { romanized: "Mii mǎi?", script: "มีไหม?", english: "Do you have it?", slot: { romanized: "mii", script: "มี", english: "have / there is" }, example: { thai: "มีน้ำเปล่าไหม?", romanized: "Mii náam bplào mǎi?", english: "Do you have water?" } },
-      { romanized: "Dâi mǎi?", script: "ได้ไหม?", english: "Can you? / Is it OK?", slot: { romanized: "dâi", script: "ได้", english: "can / able to" }, example: { thai: "ลดราคาได้ไหม?", romanized: "Lót raa-khaa dâi mǎi?", english: "Can you lower the price?" } },
-      { romanized: "Nùeai mǎi?", script: "เหนื่อยไหม?", english: "Are you tired?", slot: { romanized: "nùeai", script: "เหนื่อย", english: "tired" }, example: { thai: "เดินเยอะเหนื่อยไหม?", romanized: "Dern yóe nùeai mǎi?", english: "Walked a lot — are you tired?" } }
+      { romanized: "Ao mǎi?", script: "เอาไหม?", english: "Do you want it?",
+        slottable: [{ romanized: "ao", script: "เอา", english: "want / take" }],
+        slot: { romanized: "ao", script: "เอา", english: "want / take" },
+        example: { thai: "ถุงเอาไหมคะ?", romanized: "Thǔng ao mǎi khá?", english: "Do you want a bag?" }, note: "You'll hear this at every 7-Eleven" },
+      { romanized: "Phèt mǎi?", script: "เผ็ดไหม?", english: "Is it spicy?",
+        slottable: [{ romanized: "phèt", script: "เผ็ด", english: "spicy" }],
+        slot: { romanized: "phèt", script: "เผ็ด", english: "spicy" },
+        example: { thai: "อาหารนี้เผ็ดไหม?", romanized: "Aa-hǎan níi phèt mǎi?", english: "Is this food spicy?" } },
+      { romanized: "À-ròi mǎi?", script: "อร่อยไหม?", english: "Is it delicious?",
+        slottable: [{ romanized: "à-ròi", script: "อร่อย", english: "delicious" }],
+        slot: { romanized: "à-ròi", script: "อร่อย", english: "delicious" },
+        example: { thai: "ร้านนี้อร่อยไหม?", romanized: "Ráan níi à-ròi mǎi?", english: "Is this restaurant good?" } },
+      { romanized: "Sà-baai-dii mǎi?", script: "สบายดีไหม?", english: "Are you well? / How are you?",
+        slottable: [{ romanized: "sà-baai-dii", script: "สบายดี", english: "well / fine" }],
+        slot: { romanized: "sà-baai-dii", script: "สบายดี", english: "well / fine" },
+        example: { thai: "คุณสบายดีไหม?", romanized: "Khun sà-baai-dii mǎi?", english: "How are you?" }, note: "Standard Thai greeting after 'hello'" },
+      { romanized: "Chôp mǎi?", script: "ชอบไหม?", english: "Do you like it?",
+        slottable: [{ romanized: "chôp", script: "ชอบ", english: "like" }],
+        slot: { romanized: "chôp", script: "ชอบ", english: "like" },
+        example: { thai: "ชอบเมืองไทยไหม?", romanized: "Chôp meuang Thai mǎi?", english: "Do you like Thailand?" } },
+      { romanized: "Khâo-jai mǎi?", script: "เข้าใจไหม?", english: "Do you understand?",
+        slottable: [{ romanized: "khâo-jai", script: "เข้าใจ", english: "understand" }],
+        slot: { romanized: "khâo-jai", script: "เข้าใจ", english: "understand" },
+        example: { thai: "ที่ผมพูดเข้าใจไหม?", romanized: "Thîi phǒm phûut khâo-jai mǎi?", english: "Do you understand what I'm saying?" } },
+      { romanized: "Pai mǎi?", script: "ไปไหม?", english: "Are you going? / Want to go?",
+        slottable: [{ romanized: "pai", script: "ไป", english: "go" }],
+        slot: { romanized: "pai", script: "ไป", english: "go" },
+        example: { thai: "ไปกินข้าวด้วยกันไหม?", romanized: "Pai gin khâao dûay-gan mǎi?", english: "Want to go eat together?" } },
+      { romanized: "Mii mǎi?", script: "มีไหม?", english: "Do you have it?",
+        slottable: [{ romanized: "mii", script: "มี", english: "have / there is" }],
+        slot: { romanized: "mii", script: "มี", english: "have / there is" },
+        example: { thai: "มีน้ำเปล่าไหม?", romanized: "Mii náam bplào mǎi?", english: "Do you have water?" } },
+      { romanized: "Dâi mǎi?", script: "ได้ไหม?", english: "Can you? / Is it OK?",
+        slottable: [{ romanized: "dâi", script: "ได้", english: "can / able to" }],
+        slot: { romanized: "dâi", script: "ได้", english: "can / able to" },
+        example: { thai: "ลดราคาได้ไหม?", romanized: "Lót raa-khaa dâi mǎi?", english: "Can you lower the price?" } },
+      { romanized: "Nùeai mǎi?", script: "เหนื่อยไหม?", english: "Are you tired?",
+        slottable: [{ romanized: "nùeai", script: "เหนื่อย", english: "tired" }],
+        slot: { romanized: "nùeai", script: "เหนื่อย", english: "tired" },
+        example: { thai: "เดินเยอะเหนื่อยไหม?", romanized: "Dern yóe nùeai mǎi?", english: "Walked a lot — are you tired?" } }
     ]
   },
 
@@ -616,16 +821,78 @@ const TOPICS = [
       explanation: "Thai puts question words (where, what, who, when, why, how) at the END of sentences, not the beginning. The statement stays in normal order."
     },
     pairs: [
-      { romanized: "Khun chêu à-rai?", script: "คุณชื่ออะไร?", english: "What is your name?", slot: { romanized: "à-rai", script: "อะไร", english: "what" }, example: { thai: "สวัสดีครับ คุณชื่ออะไร?", romanized: "Sà-wàt-dii khráp, khun chêu à-rai?", english: "Hello, what's your name?" } },
-      { romanized: "Pai nǎi?", script: "ไปไหน?", english: "Where are you going?", slot: { romanized: "nǎi", script: "ไหน", english: "where" }, example: { thai: "วันนี้จะไปไหน?", romanized: "Wan níi jà pai nǎi?", english: "Where are you going today?" }, note: "Also used as a casual greeting, like 'what's up?'" },
-      { romanized: "Raa-khaa tâo-rai?", script: "ราคาเท่าไร?", english: "How much does it cost?", slot: { romanized: "tâo-rai", script: "เท่าไร", english: "how much" }, example: { thai: "อันนี้ราคาเท่าไร?", romanized: "An níi raa-khaa tâo-rai?", english: "How much is this one?" } },
-      { romanized: "Nîi khrai?", script: "นี่ใคร?", english: "Who is this?", slot: { romanized: "khrai", script: "ใคร", english: "who" }, example: { thai: "ในรูปนี่ใคร?", romanized: "Nai rûup nîi khrai?", english: "Who is this in the photo?" } },
-      { romanized: "Maa mêua-rài?", script: "มาเมื่อไร?", english: "When did you come?", slot: { romanized: "mêua-rài", script: "เมื่อไร", english: "when" }, example: { thai: "คุณมาเมืองไทยเมื่อไร?", romanized: "Khun maa meuang Thai mêua-rài?", english: "When did you come to Thailand?" } },
-      { romanized: "Pai yang-ngai?", script: "ไปยังไง?", english: "How do you get there?", slot: { romanized: "yang-ngai", script: "ยังไง", english: "how" }, example: { thai: "ไปสยามยังไง?", romanized: "Pai Sà-yǎam yang-ngai?", english: "How do I get to Siam?" }, note: "ยังไง is the casual/spoken form of อย่างไร" },
-      { romanized: "Hông-náam yùu thîi-nǎi?", script: "ห้องน้ำอยู่ที่ไหน?", english: "Where is the bathroom?", slot: { romanized: "thîi-nǎi", script: "ที่ไหน", english: "where (location)" }, example: { thai: "ขอโทษ ห้องน้ำอยู่ที่ไหน?", romanized: "Khǎw thôot, hông-náam yùu thîi-nǎi?", english: "Excuse me, where is the bathroom?" }, note: "ที่ไหน = 'at where'; ไหน alone also works" },
-      { romanized: "Aa-yú tâo-rai?", script: "อายุเท่าไร?", english: "How old are you?", slot: { romanized: "tâo-rai", script: "เท่าไร", english: "how much / how many" }, example: { thai: "คุณอายุเท่าไร?", romanized: "Khun aa-yú tâo-rai?", english: "How old are you?" } },
-      { romanized: "Mâi maa tham-mai?", script: "ไม่มาทำไม?", english: "Why didn't you come?", slot: { romanized: "tham-mai", script: "ทำไม", english: "why" }, example: { thai: "เมื่อวานไม่มาทำไม?", romanized: "Mêua-waan mâi maa tham-mai?", english: "Why didn't you come yesterday?" } },
-      { romanized: "Gin à-rai?", script: "กินอะไร?", english: "What are you eating?", slot: { romanized: "à-rai", script: "อะไร", english: "what" }, example: { thai: "วันนี้กินอะไรดี?", romanized: "Wan níi gin à-rai dii?", english: "What should we eat today?" } }
+      { romanized: "Khun chêu à-rai?", script: "คุณชื่ออะไร?", english: "What is your name?",
+        slottable: [
+          { romanized: "khun", script: "คุณ", english: "you" },
+          { romanized: "chêu", script: "ชื่อ", english: "am named" },
+          { romanized: "à-rai", script: "อะไร", english: "what" }
+        ],
+        slot: { romanized: "khun", script: "คุณ", english: "you" },
+        example: { thai: "สวัสดีครับ คุณชื่ออะไร?", romanized: "Sà-wàt-dii khráp, khun chêu à-rai?", english: "Hello, what's your name?" } },
+      { romanized: "Pai nǎi?", script: "ไปไหน?", english: "Where are you going?",
+        slottable: [
+          { romanized: "pai", script: "ไป", english: "go" },
+          { romanized: "nǎi", script: "ไหน", english: "where" }
+        ],
+        slot: { romanized: "pai", script: "ไป", english: "go" },
+        example: { thai: "วันนี้จะไปไหน?", romanized: "Wan níi jà pai nǎi?", english: "Where are you going today?" }, note: "Also used as a casual greeting, like 'what's up?'" },
+      { romanized: "Raa-khaa tâo-rai?", script: "ราคาเท่าไร?", english: "How much does it cost?",
+        slottable: [
+          { romanized: "raa-khaa", script: "ราคา", english: "price" },
+          { romanized: "tâo-rai", script: "เท่าไร", english: "how much" }
+        ],
+        slot: { romanized: "raa-khaa", script: "ราคา", english: "price" },
+        example: { thai: "อันนี้ราคาเท่าไร?", romanized: "An níi raa-khaa tâo-rai?", english: "How much is this one?" } },
+      { romanized: "Nîi khrai?", script: "นี่ใคร?", english: "Who is this?",
+        slottable: [
+          { romanized: "nîi", script: "นี่", english: "this (person/thing)" },
+          { romanized: "khrai", script: "ใคร", english: "who" }
+        ],
+        slot: { romanized: "nîi", script: "นี่", english: "this (person/thing)" },
+        example: { thai: "ในรูปนี่ใคร?", romanized: "Nai rûup nîi khrai?", english: "Who is this in the photo?" } },
+      { romanized: "Maa mêua-rài?", script: "มาเมื่อไร?", english: "When did you come?",
+        slottable: [
+          { romanized: "maa", script: "มา", english: "come" },
+          { romanized: "mêua-rài", script: "เมื่อไร", english: "when" }
+        ],
+        slot: { romanized: "maa", script: "มา", english: "come" },
+        example: { thai: "คุณมาเมืองไทยเมื่อไร?", romanized: "Khun maa meuang Thai mêua-rài?", english: "When did you come to Thailand?" } },
+      { romanized: "Pai yang-ngai?", script: "ไปยังไง?", english: "How do you get there?",
+        slottable: [
+          { romanized: "pai", script: "ไป", english: "go" },
+          { romanized: "yang-ngai", script: "ยังไง", english: "how" }
+        ],
+        slot: { romanized: "pai", script: "ไป", english: "go" },
+        example: { thai: "ไปสยามยังไง?", romanized: "Pai Sà-yǎam yang-ngai?", english: "How do I get to Siam?" }, note: "ยังไง is the casual/spoken form of อย่างไร" },
+      { romanized: "Hông-náam yùu thîi-nǎi?", script: "ห้องน้ำอยู่ที่ไหน?", english: "Where is the bathroom?",
+        slottable: [
+          { romanized: "hông-náam", script: "ห้องน้ำ", english: "bathroom" },
+          { romanized: "yùu", script: "อยู่", english: "is located at" },
+          { romanized: "thîi-nǎi", script: "ที่ไหน", english: "where (location)" }
+        ],
+        slot: { romanized: "hông-náam", script: "ห้องน้ำ", english: "bathroom" },
+        example: { thai: "ขอโทษ ห้องน้ำอยู่ที่ไหน?", romanized: "Khǎw thôot, hông-náam yùu thîi-nǎi?", english: "Excuse me, where is the bathroom?" }, note: "ที่ไหน = 'at where'; ไหน alone also works" },
+      { romanized: "Aa-yú tâo-rai?", script: "อายุเท่าไร?", english: "How old are you?",
+        slottable: [
+          { romanized: "aa-yú", script: "อายุ", english: "age" },
+          { romanized: "tâo-rai", script: "เท่าไร", english: "how much / how many" }
+        ],
+        slot: { romanized: "aa-yú", script: "อายุ", english: "age" },
+        example: { thai: "คุณอายุเท่าไร?", romanized: "Khun aa-yú tâo-rai?", english: "How old are you?" } },
+      { romanized: "Mâi maa tham-mai?", script: "ไม่มาทำไม?", english: "Why didn't you come?",
+        slottable: [
+          { romanized: "maa", script: "มา", english: "come" },
+          { romanized: "tham-mai", script: "ทำไม", english: "why" }
+        ],
+        slot: { romanized: "maa", script: "มา", english: "come" },
+        example: { thai: "เมื่อวานไม่มาทำไม?", romanized: "Mêua-waan mâi maa tham-mai?", english: "Why didn't you come yesterday?" } },
+      { romanized: "Gin à-rai?", script: "กินอะไร?", english: "What are you eating?",
+        slottable: [
+          { romanized: "gin", script: "กิน", english: "eat" },
+          { romanized: "à-rai", script: "อะไร", english: "what" }
+        ],
+        slot: { romanized: "gin", script: "กิน", english: "eat" },
+        example: { thai: "วันนี้กินอะไรดี?", romanized: "Wan níi gin à-rai dii?", english: "What should we eat today?" } }
     ]
   }
 ];

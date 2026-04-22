@@ -3,10 +3,11 @@
  * plug the right word into a blank slot. Builds generative language
  * ability rather than one-way memorization.
  *
- * Only available for topics where `type === "pattern"`. Each pair in a
- * pattern topic carries a `slot` describing what fills the blank; the
- * user is prompted for a specific sentence and must pick the correct
- * slot word out of 4–6 buttons.
+ * Only available for topics where `type === "pattern"`. Each pair carries
+ * a `slottable` array listing which of its words can become the blank.
+ * At round time one is picked at random, so a single pair can teach
+ * multiple positions across replays. Pattern markers (e.g. `mâi`, `mǎi`)
+ * are excluded from `slottable` — blanking them teaches nothing.
  *
  * Scoring: +12 XP per correct answer (harder than other modes), no
  * penalty on incorrect. Round = 10 prompts, no repeats within a round.
@@ -21,6 +22,8 @@ const PatternPractice = (() => {
   const SLOT_PLACEHOLDER = "___";
 
   let topic = null;
+  // queue is an array of { pair, slot } — the selected slot is frozen
+  // at the start of the round so prompts and answers stay consistent.
   let queue = [];
   let idx = 0;
   let correct = 0;
@@ -30,15 +33,21 @@ const PatternPractice = (() => {
   let answered = false;
   let isActive = false;
 
+  function _pairSlottable(p) {
+    if (!p) return [];
+    if (Array.isArray(p.slottable) && p.slottable.length) return p.slottable;
+    if (p.slot && p.slot.script) return [p.slot];
+    return [];
+  }
+
   function start(topicId) {
     const t = TOPICS.find(tp => tp.id === topicId);
     if (!t || t.type !== "pattern") {
       UI.navigate("#dashboard");
       return;
     }
-    // Keep only pairs that actually carry a slot (the field that makes
-    // this mode possible).
-    const valid = (t.pairs || []).filter(p => p && p.slot && p.slot.script);
+    // Keep only pairs that actually carry at least one slottable word.
+    const valid = (t.pairs || []).filter(p => _pairSlottable(p).length > 0);
     if (valid.length === 0) {
       UI.render(`
         <div class="pattern-screen">
@@ -61,7 +70,12 @@ const PatternPractice = (() => {
     }
 
     topic = t;
-    queue = [...valid].sort(() => Math.random() - 0.5).slice(0, Math.min(ROUND_SIZE, valid.length));
+    const picked = [...valid].sort(() => Math.random() - 0.5).slice(0, Math.min(ROUND_SIZE, valid.length));
+    queue = picked.map(pair => {
+      const pool = _pairSlottable(pair);
+      const slot = pool[Math.floor(Math.random() * pool.length)];
+      return { pair, slot };
+    });
     idx = 0;
     correct = 0;
     wrong = 0;
@@ -71,15 +85,14 @@ const PatternPractice = (() => {
     nextPrompt();
   }
 
-  function currentPair() {
+  function currentEntry() {
     return queue[idx];
   }
 
-  /** Build distractor slot words: prefer slots from OTHER pattern topics, then
-   *  any vocabulary topic, then other pairs in the current topic. Dedup by
-   *  script and exclude the correct answer. */
-  function buildDistractors(correctPair, n) {
-    const correctScript = correctPair.slot.script;
+  /** Collect slottable words from every pattern topic + any vocab fallback,
+   *  dedup by script, exclude the correct answer, return up to n. */
+  function buildDistractors(correctSlot, n) {
+    const correctScript = correctSlot.script;
     const seen = new Set([correctScript]);
     const bucketOtherPatterns = [];
     const bucketVocab = [];
@@ -88,13 +101,15 @@ const PatternPractice = (() => {
     for (const t of TOPICS) {
       if (!t.pairs) continue;
       for (const p of t.pairs) {
-        if (t.type === "pattern" && p && p.slot && p.slot.script) {
-          if (seen.has(p.slot.script)) continue;
-          if (t.id === topic.id && p === correctPair) continue;
-          seen.add(p.slot.script);
-          if (t.id === topic.id) bucketSameTopic.push(p.slot);
-          else bucketOtherPatterns.push(p.slot);
-        } else if (t.type !== "pattern" && p && p.script && p.english) {
+        if (t.type === "pattern") {
+          for (const s of _pairSlottable(p)) {
+            if (!s || !s.script) continue;
+            if (seen.has(s.script)) continue;
+            seen.add(s.script);
+            if (t.id === topic.id) bucketSameTopic.push(s);
+            else bucketOtherPatterns.push(s);
+          }
+        } else if (p && p.script && p.english) {
           if (seen.has(p.script)) continue;
           seen.add(p.script);
           bucketVocab.push({ script: p.script, romanized: p.romanized, english: p.english });
@@ -110,23 +125,26 @@ const PatternPractice = (() => {
   function nextPrompt() {
     if (idx >= queue.length) { finishRound(); return; }
     answered = false;
-    const pair = currentPair();
-    const distractors = buildDistractors(pair, Math.max(0, OPTION_COUNT - 1));
-    options = [pair.slot, ...distractors].sort(() => Math.random() - 0.5);
-    renderPrompt(null);
+    const { slot } = currentEntry();
+    const distractors = buildDistractors(slot, Math.max(0, OPTION_COUNT - 1));
+    options = [slot, ...distractors].sort(() => Math.random() - 0.5);
+    renderPrompt(false);
   }
 
-  function fillSlot(frameText, slotText) {
-    if (!frameText) return slotText || "";
-    // Replace the first "___" (or run of 2+ underscores) with the slot word.
-    return frameText.replace(/_{2,}/, slotText || SLOT_PLACEHOLDER);
+  function _blank(text, word) {
+    if (!text) return "";
+    if (!word) return text;
+    const idx = text.indexOf(word);
+    if (idx === -1) return text;
+    return text.slice(0, idx) + SLOT_PLACEHOLDER + text.slice(idx + word.length);
   }
 
-  function renderPrompt(state) {
-    const pair = currentPair();
+  function renderPrompt(filled) {
+    const { pair, slot } = currentEntry();
     const frame = topic.frame || {};
-    const filledRom = state && state.filled ? fillSlot(frame.romanized, pair.slot.romanized) : frame.romanized || "";
-    const filledScript = state && state.filled ? fillSlot(frame.script, pair.slot.script) : frame.script || "";
+
+    const displayScript = filled ? pair.script : _blank(pair.script, slot.script);
+    const displayRom = filled ? pair.romanized : _blank(pair.romanized, slot.romanized);
 
     UI.render(`
       <div class="pattern-screen">
@@ -147,14 +165,14 @@ const PatternPractice = (() => {
         </div>
 
         <div class="pattern-frame">
-          <div class="pattern-frame-script ${state && state.filled ? 'filled' : ''}">${filledScript}</div>
-          <div class="pattern-frame-romanized">${filledRom}</div>
-          <div class="pattern-frame-english">${frame.english || ""}</div>
+          <div class="pattern-frame-script ${filled ? 'filled' : ''}">${displayScript}</div>
+          <div class="pattern-frame-romanized">${displayRom}</div>
+          <div class="pattern-frame-english">${pair.english || ""}</div>
           ${frame.explanation ? `<div class="pattern-frame-explanation">${frame.explanation}</div>` : ''}
         </div>
 
         <div class="pattern-prompt">
-          How do you say: <strong>“${pair.english}”</strong>?
+          In <strong>&ldquo;${pair.english}&rdquo;</strong>, what's the Thai word for <strong>&ldquo;${slot.english}&rdquo;</strong>?
         </div>
 
         <div class="pattern-options">
@@ -172,7 +190,7 @@ const PatternPractice = (() => {
   }
 
   function _playCorrectAudio() {
-    const pair = currentPair();
+    const { pair } = currentEntry();
     const loc = _locatePair(pair);
     if (loc) Audio.playSentence(loc.topicId, loc.index);
     else if (pair && pair.script) Audio.speak(pair.script);
@@ -186,14 +204,52 @@ const PatternPractice = (() => {
     return null;
   }
 
+  function replayAudio() {
+    _playCorrectAudio();
+  }
+
+  function _fillFrame(isCorrect) {
+    const { pair, slot } = currentEntry();
+    const frameEl = document.querySelector(".pattern-frame-script");
+    const romEl = document.querySelector(".pattern-frame-romanized");
+    if (frameEl) {
+      frameEl.textContent = pair.script;
+      frameEl.classList.add("filled");
+    }
+    if (romEl) romEl.textContent = pair.romanized;
+
+    const feedback = document.getElementById("pattern-feedback");
+    if (!feedback) return;
+    const replayBtn = `<button class="btn btn-sm pattern-replay" onclick="PatternPractice.replayAudio()" aria-label="Replay audio">🔊 Replay</button>`;
+    if (isCorrect) {
+      feedback.className = "pattern-feedback correct";
+      feedback.innerHTML = `
+        <div class="pattern-feedback-title">✓ Correct! +${CORRECT_XP} XP</div>
+        <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
+        <div class="pattern-feedback-actions">${replayBtn}</div>
+      `;
+    } else {
+      feedback.className = "pattern-feedback wrong";
+      feedback.innerHTML = `
+        <div class="pattern-feedback-title">✗ Not quite — the word was <strong>${slot.script}</strong></div>
+        <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
+        <div class="pattern-feedback-english">${pair.english}</div>
+        <div class="pattern-feedback-actions">
+          ${replayBtn}
+          <button class="btn btn-sm btn-primary" onclick="PatternPractice.continueNext()">Continue →</button>
+        </div>
+      `;
+    }
+    feedback.style.display = "block";
+  }
+
   function answer(index) {
     if (answered) return;
     answered = true;
     const chosen = options[index];
-    const pair = currentPair();
-    const isCorrect = chosen.script === pair.slot.script;
+    const { slot } = currentEntry();
+    const isCorrect = chosen.script === slot.script;
     const buttons = document.querySelectorAll(".pattern-option");
-    const feedback = document.getElementById("pattern-feedback");
 
     if (isCorrect) {
       correct++;
@@ -202,26 +258,7 @@ const PatternPractice = (() => {
       State.checkStreak();
 
       if (buttons[index]) buttons[index].classList.add("correct");
-
-      // Rerender the frame with the slot filled in so the user sees the
-      // complete sentence before auto-advance.
-      const frameEl = document.querySelector(".pattern-frame-script");
-      const romEl = document.querySelector(".pattern-frame-romanized");
-      if (frameEl) {
-        frameEl.textContent = fillSlot(topic.frame?.script, pair.slot.script);
-        frameEl.classList.add("filled");
-      }
-      if (romEl) romEl.textContent = fillSlot(topic.frame?.romanized, pair.slot.romanized);
-
-      if (feedback) {
-        feedback.className = "pattern-feedback correct";
-        feedback.innerHTML = `
-          <div class="pattern-feedback-title">✓ Correct! +${CORRECT_XP} XP</div>
-          <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
-        `;
-        feedback.style.display = "block";
-      }
-
+      _fillFrame(true);
       _playCorrectAudio();
       if (levelUp) setTimeout(() => UI.celebrate(levelUp.name, levelUp.emoji), 300);
 
@@ -229,28 +266,14 @@ const PatternPractice = (() => {
     } else {
       wrong++;
       if (buttons[index]) buttons[index].classList.add("wrong");
-      // Highlight the correct option in green.
       buttons.forEach(b => {
         const scriptEl = b.querySelector(".pattern-option-script");
-        if (scriptEl && scriptEl.textContent === pair.slot.script) {
+        if (scriptEl && scriptEl.textContent === slot.script) {
           b.classList.add("correct");
         }
       });
-      // Play the full correct sentence so the user still gets the audio input.
+      _fillFrame(false);
       _playCorrectAudio();
-
-      if (feedback) {
-        feedback.className = "pattern-feedback wrong";
-        feedback.innerHTML = `
-          <div class="pattern-feedback-title">✗ Not quite</div>
-          <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
-          <div class="pattern-feedback-english">${pair.english}</div>
-          <div class="pattern-feedback-actions">
-            <button class="btn btn-sm btn-primary" onclick="PatternPractice.continueNext()">Continue →</button>
-          </div>
-        `;
-        feedback.style.display = "block";
-      }
     }
   }
 
@@ -306,5 +329,5 @@ const PatternPractice = (() => {
     UI.navigate("#practice");
   }
 
-  return { start, answer, continueNext, quit };
+  return { start, answer, continueNext, quit, replayAudio };
 })();

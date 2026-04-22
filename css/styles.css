@@ -3532,6 +3532,20 @@ p { color: var(--text-1); }
 }
 .pattern-feedback-actions {
   margin-top: var(--sp-2);
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pattern-replay {
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 1px solid var(--surface-2);
+}
+.pattern-replay:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+  color: var(--teal);
 }
 .pattern-empty {
   background: var(--surface-1);

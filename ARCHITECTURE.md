@@ -14,7 +14,7 @@
 ### Data (read-only, rarely modified)
 | File | Globals |
 |------|---------|
-| data/topics.js — 30 topic packs (vocabulary / situation / pattern), 333 pairs total | TOPICS |
+| data/topics.js — 30 topic packs (vocabulary / situation / pattern), 333 pairs total. Pattern pairs carry a `slottable` array of eligible blank positions (pattern markers excluded); Pattern Practice picks one at random per round. A legacy `slot` field == `slottable[0]` is kept for backward compat. | TOPICS |
 | data/alphabet.js — 44 consonants, 21 vowels, 4 tone marks | THAI_CONSONANTS, THAI_VOWELS, THAI_TONE_MARKS |
 | data/sentences.js — 15 sentence builder exercises | SENTENCES |
 | data/pathways.js — 5 learning pathways with badges | PATHWAYS |
