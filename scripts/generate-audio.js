@@ -2,16 +2,21 @@
  * generate-audio.js — build-time TTS generator (ElevenLabs).
  *
  * Reads data/topics.js, generates one MP3 per Thai word (pair.script)
- * and per example sentence (pair.example.thai), saves into audio/.
+ * and per example sentence (pair.example.thai). Output is split per voice:
+ *
+ *   audio/ploy/{topicId}-{i}-word.mp3        ← default tier
+ *   audio/serafina/{topicId}-{i}-word.mp3    ← premium tier
  *
  * Usage:
- *   node scripts/generate-audio.js              # generate missing files
- *   node scripts/generate-audio.js --force      # regenerate everything
- *   node scripts/generate-audio.js --limit=3    # generate only first N (test)
+ *   node scripts/generate-audio.js                    # default voice = ploy
+ *   node scripts/generate-audio.js --voice=ploy
+ *   node scripts/generate-audio.js --voice=serafina
+ *   node scripts/generate-audio.js --voice=all        # both voices
+ *   node scripts/generate-audio.js --force            # regenerate everything
+ *   node scripts/generate-audio.js --limit=3          # first N tasks (test)
  *
+ * Caching: per-voice. A serafina file does not satisfy a ploy cache check.
  * Requires scripts/.env with ELEVENLABS_API_KEY.
- *
- * Output is real MP3 (mp3_44100_128) — no WAV wrapping needed.
  */
 
 const fs = require('fs');
@@ -20,12 +25,25 @@ const vm = require('vm');
 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// ─── Voices ──────────────────────────────────────────────────────────────
+const VOICES = {
+  ploy: {
+    id: 'NhRzFfvPkFFjni1xBM0K',
+    folder: 'audio/ploy',
+    label: 'Ploy (default)',
+  },
+  serafina: {
+    id: '4tRn1lSkEn13EVTuqb0g',
+    folder: 'audio/serafina',
+    label: 'Serafina (premium)',
+  },
+};
+
 // ─── Config ──────────────────────────────────────────────────────────────
-const VOICE_ID      = '4tRn1lSkEn13EVTuqb0g';
 const MODEL_ID      = 'eleven_v3';
 const OUTPUT_FORMAT = 'mp3_44100_128';
-const DELAY_MS      = 1500;   // sequential pacing — well under 4 concurrent cap
-const RETRY_DELAY_MS = 30000; // backoff on 429
+const DELAY_MS      = 1500;
+const RETRY_DELAY_MS = 30000;
 const OUT_EXT       = '.mp3';
 
 const VOICE_SETTINGS = {
@@ -36,7 +54,7 @@ const VOICE_SETTINGS = {
 };
 
 const TOPICS_FILE = path.join(__dirname, '..', 'data', 'topics.js');
-const AUDIO_DIR   = path.join(__dirname, '..', 'audio');
+const REPO_ROOT   = path.join(__dirname, '..');
 
 // ─── CLI args ────────────────────────────────────────────────────────────
 const argv  = process.argv.slice(2);
@@ -45,6 +63,17 @@ const LIMIT = (() => {
   const m = argv.find(a => a.startsWith('--limit='));
   return m ? parseInt(m.split('=')[1], 10) : null;
 })();
+const VOICE_ARG = (() => {
+  const m = argv.find(a => a.startsWith('--voice='));
+  return m ? m.split('=')[1] : 'ploy';
+})();
+
+function resolveVoices(arg) {
+  if (arg === 'all') return Object.keys(VOICES);
+  if (VOICES[arg]) return [arg];
+  console.error(`Unknown --voice=${arg}. Expected: ploy, serafina, all.`);
+  process.exit(1);
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
 function loadTopics() {
@@ -59,8 +88,8 @@ function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-async function synthesize(apiKey, text) {
-  const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=${OUTPUT_FORMAT}`;
+async function synthesize(apiKey, voiceId, text) {
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${OUTPUT_FORMAT}`;
   const body = JSON.stringify({
     text,
     model_id: MODEL_ID,
@@ -88,9 +117,9 @@ async function synthesize(apiKey, text) {
   return Buffer.from(arrayBuf);
 }
 
-async function synthesizeWithRetry(apiKey, text) {
+async function synthesizeWithRetry(apiKey, voiceId, text) {
   try {
-    return await synthesize(apiKey, text);
+    return await synthesize(apiKey, voiceId, text);
   } catch (err) {
     if (err.status === 401) {
       console.error('\nFATAL: HTTP 401 from ElevenLabs — API key is invalid or unauthorized.');
@@ -100,31 +129,13 @@ async function synthesizeWithRetry(apiKey, text) {
     if (err.status === 429) {
       console.log(`\n  rate limited (429), backing off ${RETRY_DELAY_MS / 1000}s and retrying once...`);
       await sleep(RETRY_DELAY_MS);
-      return await synthesize(apiKey, text);
+      return await synthesize(apiKey, voiceId, text);
     }
     throw err;
   }
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────
-async function main() {
-  if (!process.env.ELEVENLABS_API_KEY) {
-    console.error('Missing ELEVENLABS_API_KEY.');
-    console.error('Copy scripts/.env.example to scripts/.env and paste your key.');
-    process.exit(1);
-  }
-
-  if (!fs.existsSync(AUDIO_DIR)) {
-    fs.mkdirSync(AUDIO_DIR, { recursive: true });
-  }
-
-  const topics = loadTopics();
-  if (!Array.isArray(topics)) {
-    console.error('Could not load TOPICS from data/topics.js.');
-    process.exit(1);
-  }
-
-  // Build flat task list.
+function buildTasks(topics) {
   const tasks = [];
   for (const topic of topics) {
     topic.pairs.forEach((pair, i) => {
@@ -142,43 +153,52 @@ async function main() {
           kind: 'sentence',
         });
       }
+      // Slot words for pattern topics
+      if (topic.type === 'pattern' && Array.isArray(pair.slottable)) {
+        pair.slottable.forEach((slot, slotIdx) => {
+          if (slot && slot.script) {
+            tasks.push({
+              file: `${topic.id}-${i}-slot-${slotIdx}${OUT_EXT}`,
+              text: slot.script,
+              kind: 'slot',
+            });
+          }
+        });
+      }
     });
   }
+  return tasks;
+}
+
+async function runForVoice(voiceKey, apiKey, tasks) {
+  const voice = VOICES[voiceKey];
+  const outDir = path.join(REPO_ROOT, voice.folder);
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+
+  console.log('');
+  console.log(`═══ Voice: ${voice.label} ═══`);
+  console.log(`Voice ID: ${voice.id}`);
+  console.log(`Output:   ${outDir}`);
 
   const effective = LIMIT != null ? tasks.slice(0, LIMIT) : tasks;
 
-  console.log('─── ElevenLabs TTS audio generation ───');
-  console.log(`Voice ID: ${VOICE_ID}`);
-  console.log(`Model:    ${MODEL_ID}`);
-  console.log(`Format:   ${OUTPUT_FORMAT}`);
-  console.log(`Output:   ${AUDIO_DIR}`);
-  console.log(`Force:    ${FORCE}`);
-  console.log(`Tasks:    ${effective.length}${LIMIT != null ? ` (limit=${LIMIT}, total=${tasks.length})` : ''}`);
-  console.log('');
-
-  const apiKey = process.env.ELEVENLABS_API_KEY;
-
-  let generated  = 0;
-  let skipped    = 0;
-  let failed     = 0;
-  let totalChars = 0;
+  let generated = 0, skipped = 0, failed = 0, totalChars = 0;
 
   for (let i = 0; i < effective.length; i++) {
     const { file, text } = effective[i];
-    const outPath = path.join(AUDIO_DIR, file);
-    const prefix  = `[${i + 1}/${effective.length}]`;
+    const outPath = path.join(outDir, file);
+    const prefix  = `[${voiceKey} ${i + 1}/${effective.length}]`;
 
     if (!FORCE && fs.existsSync(outPath)) {
-      console.log(`${prefix} skip (cached) ${file}`);
       skipped++;
       continue;
     }
 
-    process.stdout.write(`${prefix} Generating ${file}  "${text}" ... `);
+    process.stdout.write(`${prefix} ${file}  "${text}" ... `);
     let didNetworkCall = false;
     try {
       didNetworkCall = true;
-      const audio = await synthesizeWithRetry(apiKey, text);
+      const audio = await synthesizeWithRetry(apiKey, voice.id, text);
       fs.writeFileSync(outPath, audio);
       totalChars += text.length;
       generated++;
@@ -194,11 +214,54 @@ async function main() {
   }
 
   console.log('');
-  console.log('─── Summary ───');
+  console.log(`─── ${voice.label} summary ───`);
   console.log(`Generated:        ${generated}`);
   console.log(`Skipped (cached): ${skipped}`);
   console.log(`Failed:           ${failed}`);
   console.log(`Characters sent:  ${totalChars.toLocaleString()}`);
+  return { generated, skipped, failed, totalChars };
+}
+
+// ─── Main ────────────────────────────────────────────────────────────────
+async function main() {
+  if (!process.env.ELEVENLABS_API_KEY) {
+    console.error('Missing ELEVENLABS_API_KEY.');
+    process.exit(1);
+  }
+
+  const topics = loadTopics();
+  if (!Array.isArray(topics)) {
+    console.error('Could not load TOPICS from data/topics.js.');
+    process.exit(1);
+  }
+
+  const tasks = buildTasks(topics);
+  const voiceKeys = resolveVoices(VOICE_ARG);
+
+  console.log('─── ElevenLabs TTS audio generation ───');
+  console.log(`Model:    ${MODEL_ID}`);
+  console.log(`Format:   ${OUTPUT_FORMAT}`);
+  console.log(`Voices:   ${voiceKeys.join(', ')}`);
+  console.log(`Force:    ${FORCE}`);
+  console.log(`Tasks:    ${tasks.length} per voice${LIMIT != null ? ` (limit=${LIMIT})` : ''}`);
+
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  const totals = { generated: 0, skipped: 0, failed: 0, totalChars: 0 };
+
+  for (const key of voiceKeys) {
+    const r = await runForVoice(key, apiKey, tasks);
+    totals.generated  += r.generated;
+    totals.skipped    += r.skipped;
+    totals.failed     += r.failed;
+    totals.totalChars += r.totalChars;
+  }
+
+  console.log('');
+  console.log('═══ All voices total ═══');
+  console.log(`Generated:        ${totals.generated}`);
+  console.log(`Skipped (cached): ${totals.skipped}`);
+  console.log(`Failed:           ${totals.failed}`);
+  console.log(`Characters sent:  ${totals.totalChars.toLocaleString()}`);
 }
 
 main().catch(err => {
