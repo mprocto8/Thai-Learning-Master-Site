@@ -983,6 +983,19 @@ p { color: var(--text-1); }
   gap: var(--sp-2);
 }
 
+.setting-hint {
+  margin-top: var(--sp-2);
+  font-size: 0.75rem;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.voice-info {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

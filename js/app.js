@@ -604,6 +604,17 @@ const App = (() => {
             </div>
           </div>
 
+          <div class="setting-item">
+            <label>Auto-advance Pattern Practice</label>
+            <div class="toggle-group">
+              <button class="btn btn-sm ${s.autoAdvancePatternPractice ? 'btn-active' : ''}" onclick="App.togglePatternAutoAdvance(true)">On</button>
+              <button class="btn btn-sm ${!s.autoAdvancePatternPractice ? 'btn-active' : ''}" onclick="App.togglePatternAutoAdvance(false)">Off</button>
+            </div>
+            <div class="setting-hint">When off, tap Continue (or press space) after each round.</div>
+          </div>
+
+          ${renderVoiceSection(s)}
+
           ${renderAccountSection(s)}
 
           <div class="setting-item stats-section">
@@ -656,6 +667,41 @@ const App = (() => {
   function toggleAutoPlay(on) {
     State.set("autoPlayAudio", !!on);
     renderSettings();
+  }
+
+  function togglePatternAutoAdvance(on) {
+    State.set("autoAdvancePatternPractice", !!on);
+    renderSettings();
+  }
+
+  function setVoice(voiceId) {
+    State.setVoicePreference(voiceId);
+    UI.toast(`Voice set to ${voiceId === "ploy" ? "Ploy" : "Serafina"}`, "success");
+    renderSettings();
+  }
+
+  function renderVoiceSection(s) {
+    const isPremium = State.isPremium && State.isPremium();
+    if (!isPremium) {
+      return `
+        <div class="setting-item">
+          <label>Voice</label>
+          <div class="voice-info">Ploy</div>
+          <div class="setting-hint">Premium users can choose between Ploy and Serafina.</div>
+        </div>
+      `;
+    }
+    const current = (State.getVoicePreference && State.getVoicePreference()) || "serafina";
+    return `
+      <div class="setting-item">
+        <label>Voice</label>
+        <div class="toggle-group">
+          <button class="btn btn-sm ${current === "ploy" ? 'btn-active' : ''}" onclick="App.setVoice('ploy')">Ploy</button>
+          <button class="btn btn-sm ${current === "serafina" ? 'btn-active' : ''}" onclick="App.setVoice('serafina')">Serafina ⭐</button>
+        </div>
+        <div class="setting-hint">Switches the audio voice across the app.</div>
+      </div>
+    `;
   }
 
   function confirmReset() {
@@ -976,7 +1022,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
-    startTodayListen, toggleAutoPlay, toggleDashSection,
+    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, setVoice, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm
