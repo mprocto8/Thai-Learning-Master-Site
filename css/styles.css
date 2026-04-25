@@ -3613,6 +3613,67 @@ p { color: var(--text-1); }
   border-color: var(--teal);
   color: var(--teal);
 }
+.pattern-feedback-block {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: center;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid var(--surface-2);
+}
+.pattern-feedback-block:first-of-type { border-top: none; }
+.pattern-feedback-block .pattern-feedback-script { font-size: 1.05rem; font-weight: 600; }
+.pattern-feedback-block .pattern-feedback-romanized { color: var(--text-1); }
+.pattern-feedback-block .pattern-feedback-english {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.pattern-replay-btn {
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 1px solid var(--surface-2);
+  padding: 0 var(--sp-2);
+  min-width: 36px;
+}
+.pattern-replay-btn:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+.pattern-audio-dots {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: center;
+  margin-bottom: var(--sp-2);
+}
+.pattern-audio-dots .audio-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  transition: background 120ms ease;
+}
+.pattern-audio-dots .audio-dot.on {
+  background: var(--teal);
+  box-shadow: 0 0 8px var(--teal-glow);
+}
+.pattern-frame-script.filled-wrong {
+  color: var(--coral);
+}
+.kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  border: 1px solid var(--surface-2);
+  border-radius: 4px;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
 .pattern-empty {
   background: var(--surface-1);
   border-radius: var(--r-lg);

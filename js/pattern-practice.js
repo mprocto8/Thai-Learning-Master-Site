@@ -75,8 +75,8 @@ const PatternPractice = (() => {
     const picked = [...valid].sort(() => Math.random() - 0.5).slice(0, Math.min(ROUND_SIZE, valid.length));
     queue = picked.map(pair => {
       const pool = _pairSlottable(pair);
-      const slot = pool[Math.floor(Math.random() * pool.length)];
-      return { pair, slot };
+      const slotIndex = Math.floor(Math.random() * pool.length);
+      return { pair, slot: pool[slotIndex], slotIndex };
     });
     idx = 0;
     correct = 0;
@@ -202,13 +202,6 @@ const PatternPractice = (() => {
     `);
   }
 
-  function _playCorrectAudio() {
-    const { pair } = currentEntry();
-    const loc = _locatePair(pair);
-    if (loc) Audio.playSentence(loc.topicId, loc.index);
-    else if (pair && pair.script) Audio.speak(pair.script);
-  }
-
   function _locatePair(pair) {
     for (const t of TOPICS) {
       const i = (t.pairs || []).indexOf(pair);
@@ -217,9 +210,67 @@ const PatternPractice = (() => {
     return null;
   }
 
-  function replayAudio() {
-    _playCorrectAudio();
+  function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  // Sequencer state for the post-answer 3-clip playback. Cancelled if the
+  // user quits or taps Continue mid-sequence.
+  let _seqToken = 0;
+
+  function _setIndicator(step) {
+    // step ∈ 0..3 — number of dots that should be lit.
+    const el = document.getElementById("pattern-audio-dots");
+    if (!el) return;
+    const dots = el.querySelectorAll(".audio-dot");
+    dots.forEach((d, i) => d.classList.toggle("on", i < step));
   }
+
+  async function _playSequence(token) {
+    const entry = currentEntry();
+    if (!entry) return;
+    const loc = _locatePair(entry.pair);
+    if (!loc) return;
+
+    _setIndicator(1);
+    await Audio.playSlot(loc.topicId, loc.index, entry.slotIndex);
+    if (token !== _seqToken) return;
+    await _sleep(500);
+    if (token !== _seqToken) return;
+
+    _setIndicator(2);
+    await Audio.playWord(loc.topicId, loc.index);
+    if (token !== _seqToken) return;
+    await _sleep(500);
+    if (token !== _seqToken) return;
+
+    _setIndicator(3);
+    await Audio.playSentence(loc.topicId, loc.index);
+    if (token !== _seqToken) return;
+
+    const s = State.get();
+    if (s.autoAdvancePatternPractice) {
+      await _sleep(1000);
+      if (token !== _seqToken) return;
+      continueNext();
+    }
+  }
+
+  function replaySlot() {
+    const e = currentEntry(); if (!e) return;
+    const loc = _locatePair(e.pair); if (!loc) return;
+    Audio.playSlot(loc.topicId, loc.index, e.slotIndex);
+  }
+  function replayWord() {
+    const e = currentEntry(); if (!e) return;
+    const loc = _locatePair(e.pair); if (!loc) return;
+    Audio.playWord(loc.topicId, loc.index);
+  }
+  function replaySentence() {
+    const e = currentEntry(); if (!e) return;
+    const loc = _locatePair(e.pair); if (!loc) return;
+    Audio.playSentence(loc.topicId, loc.index);
+  }
+  // Back-compat wrapper (older inline handler may still call it)
+  function replayAudio() { replaySentence(); }
 
   function _fillFrame(isCorrect) {
     const { pair, slot } = currentEntry();
@@ -227,38 +278,53 @@ const PatternPractice = (() => {
     const romEl = document.querySelector(".pattern-frame-romanized");
     if (frameEl) {
       frameEl.textContent = pair.script;
-      frameEl.classList.add("filled");
+      frameEl.classList.add(isCorrect ? "filled" : "filled-wrong");
     }
     if (romEl) romEl.textContent = pair.romanized;
 
     const feedback = document.getElementById("pattern-feedback");
     if (!feedback) return;
-    const replayBtn = `<button class="btn btn-sm pattern-replay" onclick="PatternPractice.replayAudio()" aria-label="Replay audio">🔊 Replay</button>`;
-    const revealLine = `
-      <span class="pattern-feedback-script">${pair.script}</span><span class="pattern-feedback-sep"> · </span><span class="pattern-feedback-romanized">${pair.romanized}</span>
-    `;
+
+    const example = pair.example || {};
     const wrongTitle = displayMode === "romanized"
       ? `✗ Not quite — the word was <strong>${slot.romanized}</strong>`
       : `✗ Not quite — the word was <strong>${slot.script}</strong>`;
-    if (isCorrect) {
-      feedback.className = "pattern-feedback correct";
-      feedback.innerHTML = `
-        <div class="pattern-feedback-title">✓ Correct! +${CORRECT_XP} XP</div>
-        <div class="pattern-feedback-thai">${revealLine}</div>
-        <div class="pattern-feedback-actions">${replayBtn}</div>
-      `;
-    } else {
-      feedback.className = "pattern-feedback wrong";
-      feedback.innerHTML = `
-        <div class="pattern-feedback-title">${wrongTitle}</div>
-        <div class="pattern-feedback-thai">${revealLine}</div>
-        <div class="pattern-feedback-english">${pair.english}</div>
-        <div class="pattern-feedback-actions">
-          ${replayBtn}
-          <button class="btn btn-sm btn-primary" onclick="PatternPractice.continueNext()">Continue →</button>
+    const title = isCorrect
+      ? `<div class="pattern-feedback-title">✓ Correct! +${CORRECT_XP} XP</div>`
+      : `<div class="pattern-feedback-title">${wrongTitle}</div>`;
+
+    feedback.className = `pattern-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+    feedback.innerHTML = `
+      <div id="pattern-audio-dots" class="pattern-audio-dots" aria-hidden="true">
+        <span class="audio-dot"></span><span class="audio-dot"></span><span class="audio-dot"></span>
+      </div>
+      ${title}
+      <div class="pattern-feedback-block">
+        <button class="btn btn-sm pattern-replay-btn" onclick="PatternPractice.replaySlot()" aria-label="Replay slot word">🔊</button>
+        <span class="pattern-feedback-script">${slot.script || ""}</span>
+        <span class="pattern-feedback-sep"> · </span>
+        <span class="pattern-feedback-romanized">${slot.romanized || ""}</span>
+        <span class="pattern-feedback-english"> — ${slot.english || ""}</span>
+      </div>
+      <div class="pattern-feedback-block">
+        <button class="btn btn-sm pattern-replay-btn" onclick="PatternPractice.replayWord()" aria-label="Replay sentence">🔊</button>
+        <span class="pattern-feedback-script">${pair.script}</span>
+        <span class="pattern-feedback-sep"> · </span>
+        <span class="pattern-feedback-romanized">${pair.romanized}</span>
+        <div class="pattern-feedback-english">${pair.english || ""}</div>
+      </div>
+      ${example.thai ? `
+        <div class="pattern-feedback-block">
+          <button class="btn btn-sm pattern-replay-btn" onclick="PatternPractice.replaySentence()" aria-label="Replay example">🔊</button>
+          <span class="pattern-feedback-script">${example.thai}</span>
+          ${example.romanized ? `<span class="pattern-feedback-sep"> · </span><span class="pattern-feedback-romanized">${example.romanized}</span>` : ''}
+          ${example.english ? `<div class="pattern-feedback-english">${example.english}</div>` : ''}
         </div>
-      `;
-    }
+      ` : ''}
+      <div class="pattern-feedback-actions">
+        <button class="btn btn-primary" onclick="PatternPractice.continueNext()">Continue → <span class="kbd">space</span></button>
+      </div>
+    `;
     feedback.style.display = "block";
   }
 
@@ -275,30 +341,39 @@ const PatternPractice = (() => {
       xpEarned += CORRECT_XP;
       const levelUp = State.addXP(CORRECT_XP);
       State.checkStreak();
-
       if (buttons[index]) buttons[index].classList.add("correct");
-      _fillFrame(true);
-      _playCorrectAudio();
       if (levelUp) setTimeout(() => UI.celebrate(levelUp.name, levelUp.emoji), 300);
-
-      setTimeout(() => { if (!isActive) return; idx++; nextPrompt(); }, ADVANCE_MS);
     } else {
       wrong++;
       if (buttons[index]) buttons[index].classList.add("wrong");
       buttons.forEach(b => {
         const scriptEl = b.querySelector(".pattern-option-script");
-        if (scriptEl && scriptEl.textContent === slot.script) {
-          b.classList.add("correct");
-        }
+        if (scriptEl && scriptEl.textContent === slot.script) b.classList.add("correct");
       });
-      _fillFrame(false);
-      _playCorrectAudio();
     }
+    _fillFrame(isCorrect);
+    _seqToken++;
+    _playSequence(_seqToken);
   }
 
   function continueNext() {
+    if (!isActive) return;
+    _seqToken++; // cancel any in-flight sequence
+    Audio.cancel();
     idx++;
     nextPrompt();
+  }
+
+  // Spacebar advances when the result screen is showing.
+  function _onKeydown(e) {
+    if (!isActive || !answered) return;
+    if (e.code === "Space" || e.key === " ") {
+      e.preventDefault();
+      continueNext();
+    }
+  }
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", _onKeydown);
   }
 
   function finishRound() {
@@ -344,6 +419,7 @@ const PatternPractice = (() => {
 
   function quit() {
     isActive = false;
+    _seqToken++;
     Audio.cancel();
     UI.navigate("#practice");
   }
@@ -367,5 +443,5 @@ const PatternPractice = (() => {
     }
   }
 
-  return { start, answer, continueNext, quit, replayAudio, setMode };
+  return { start, answer, continueNext, quit, replayAudio, replaySlot, replayWord, replaySentence, setMode };
 })();
