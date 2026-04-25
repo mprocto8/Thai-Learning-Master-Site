@@ -18,7 +18,7 @@
 const Audio = (() => {
   // Flip to true once audio/ is populated AND the iOS-safe MP3-first logic
   // in _playMp3 is implemented. Leaving false keeps playback purely TTS.
-  const USE_MP3_FILES = false;
+  const USE_MP3_FILES = true;
 
   let rate = 1.0;
   let thaiVoice = null;
@@ -96,9 +96,25 @@ const Audio = (() => {
     speak(text);
   }
 
-  // Stub. See the module-level doc for the iOS-safe implementation sketch.
-  function _playMp3(/* url, fallbackText */) {
-    // intentionally empty while USE_MP3_FILES === false
+  // iOS-safe MP3 playback. The HTMLAudioElement is constructed and .play()
+  // is invoked synchronously in the caller's gesture tick (same iOS rule as
+  // speechSynthesis). If load/decode fails we fall back to TTS, but on iOS
+  // the gesture is already consumed by the time `error` fires, so the
+  // fallback may be silent there. Since generate-audio.js renders a file for
+  // every (script, example.thai) pair, missing files should be rare.
+  function _playMp3(url, fallbackText) {
+    try {
+      const el = new window.Audio(url);
+      el.addEventListener("error", () => {
+        if (fallbackText) speak(fallbackText);
+      });
+      const p = el.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => { if (fallbackText) speak(fallbackText); });
+      }
+    } catch {
+      if (fallbackText) speak(fallbackText);
+    }
   }
 
   return {
