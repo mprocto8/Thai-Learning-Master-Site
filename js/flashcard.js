@@ -73,6 +73,13 @@ const Flashcard = (() => {
     const card = deck[currentIndex];
     const progress = (currentIndex / deck.length) * 100;
     const showScript = State.get().showScript;
+    const canPlayAudio = topic.id !== '_mistakes';
+    const wordBtn = canPlayAudio
+      ? `<button class="btn btn-sm flashcard-audio-btn" onclick="event.stopPropagation();Flashcard.playWord()" aria-label="Play audio">🔊</button>`
+      : "";
+    const sentenceBtn = canPlayAudio
+      ? `<button class="btn btn-sm flashcard-audio-btn" onclick="event.stopPropagation();Flashcard.playSentence()" aria-label="Play example audio">🔊</button>`
+      : "";
 
     UI.render(`
       <div class="flashcard-screen">
@@ -97,20 +104,20 @@ const Flashcard = (() => {
           <div class="flashcard ${flipped ? 'flipped' : ''}">
             <div class="flashcard-front">
               ${showScript ? `
-                <div class="flashcard-thai-script">${card.script}</div>
+                <div class="flashcard-thai-script">${card.script} ${wordBtn}</div>
                 <div class="flashcard-thai-romanized sub">${card.romanized}</div>
               ` : `
-                <div class="flashcard-thai-romanized">${card.romanized}</div>
+                <div class="flashcard-thai-romanized">${card.romanized} ${wordBtn}</div>
                 <div class="flashcard-thai-script sub">${card.script}</div>
               `}
               <div class="flashcard-hint">Tap to reveal</div>
             </div>
             <div class="flashcard-back">
               <div class="flashcard-english">${card.english}</div>
-              <div class="flashcard-thai-small">${card.romanized} · ${card.script}</div>
+              <div class="flashcard-thai-small">${card.romanized} · ${card.script} ${wordBtn}</div>
               ${card.example ? `
                 <div class="flashcard-example">
-                  <div class="flashcard-example-thai">${card.example.thai}</div>
+                  <div class="flashcard-example-thai">${card.example.thai} ${sentenceBtn}</div>
                   <div class="flashcard-example-rom">${card.example.romanized}</div>
                   <div class="flashcard-example-eng">${card.example.english}</div>
                 </div>
@@ -261,5 +268,19 @@ const Flashcard = (() => {
     }
   });
 
-  return { start, startFromDeck, flip, answer, toggleScript };
+  function playWord() {
+    if (!topic || topic.id === '_mistakes') return;
+    const card = deck[currentIndex];
+    if (!card) return;
+    Audio.playWord(topic.id, card.originalIndex);
+  }
+
+  function playSentence() {
+    if (!topic || topic.id === '_mistakes') return;
+    const card = deck[currentIndex];
+    if (!card) return;
+    Audio.playSentence(topic.id, card.originalIndex);
+  }
+
+  return { start, startFromDeck, flip, answer, toggleScript, playWord, playSentence };
 })();

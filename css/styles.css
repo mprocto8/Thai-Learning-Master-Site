@@ -3663,6 +3663,20 @@ p { color: var(--text-1); }
 .pattern-frame-script.filled-wrong {
   color: var(--coral);
 }
+.flashcard-audio-btn {
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 1px solid var(--surface-2);
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+.flashcard-audio-btn:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+  color: var(--teal);
+}
 .kbd {
   display: inline-block;
   padding: 1px 6px;
