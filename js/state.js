@@ -38,7 +38,8 @@ const State = (() => {
     tutorialsSeen: {},   // { sectionId: true }
     xpToday: 0,
     roundsToday: 0,
-    autoPlayAudio: true
+    autoPlayAudio: true,
+    autoAdvancePatternPractice: false
   });
 
   let _state = null;
@@ -309,6 +310,23 @@ const State = (() => {
     return _profile.account_tier || "free";
   }
 
+  /**
+   * Premium voice preference — lives on _profile.settings_json.
+   * Returns null when not set (caller should fall back to a default).
+   */
+  function getVoicePreference() {
+    if (!_profile || !_profile.settings_json) return null;
+    return _profile.settings_json.voicePreference || null;
+  }
+
+  /** Set the premium voice preference. Triggers a sync if logged in. */
+  function setVoicePreference(voiceId) {
+    if (!_profile) return;
+    if (!_profile.settings_json) _profile.settings_json = {};
+    _profile.settings_json.voicePreference = voiceId || null;
+    save();
+  }
+
   function isPremium() {
     if (!_profile) return false;
     if (_profile.account_tier !== "premium") return false;
@@ -489,10 +507,15 @@ const State = (() => {
     const s = get();
     const userId = _user.id;
 
+    const existingSettings = (_profile && _profile.settings_json) || {};
     const settings_json = {
       showScript: !!s.showScript,
       darkMode: !!s.darkMode,
-      topicView: s.topicView || "grid"
+      topicView: s.topicView || "grid",
+      autoAdvancePatternPractice: !!s.autoAdvancePatternPractice,
+      // voicePreference is set via State.setVoicePreference (premium-only).
+      // It lives on the profile, not local state — preserve any existing value.
+      voicePreference: existingSettings.voicePreference || null
     };
 
     const lastPlayedISO = s.lastPlayedDate
@@ -586,6 +609,9 @@ const State = (() => {
       if (typeof settings.showScript === "boolean") s.showScript = settings.showScript;
       if (typeof settings.darkMode === "boolean") s.darkMode = settings.darkMode;
       if (typeof settings.topicView === "string") s.topicView = settings.topicView;
+      if (typeof settings.autoAdvancePatternPractice === "boolean") {
+        s.autoAdvancePatternPractice = settings.autoAdvancePatternPractice;
+      }
     }
 
     // Progress — additive: max XP, max streak, union of badges, latest last_played.
@@ -689,6 +715,7 @@ const State = (() => {
     restoreSession, signUp, login, loginWithGoogle, logout,
     resetPassword, updatePassword,
     isLoggedIn, currentUser, getProfile, isPremium, getAccountTier,
+    getVoicePreference, setVoicePreference,
     isRecoveryMode, clearRecoveryMode
   };
 })();
