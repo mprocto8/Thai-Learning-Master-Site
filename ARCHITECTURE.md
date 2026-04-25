@@ -26,7 +26,7 @@
 | js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
 | js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
-| js/audio.js — synchronous TTS wrapper (speak / playWord / playSentence). Fires `speechSynthesis.speak()` in the caller's gesture tick (iOS requirement). MP3-first playback is stubbed behind `USE_MP3_FILES=false` until audio/ is populated. | Audio | TOPICS (for playWord/playSentence lookups), window.speechSynthesis |
+| js/audio.js — TTS + MP3 playback wrapper (speak / playWord / playSentence / playSlot). Fires `speechSynthesis.speak()` and HTMLAudioElement `.play()` in the caller's gesture tick (iOS requirement). Resolves the active voice folder per call from State (free → ploy, premium → user preference / serafina). playWord/playSentence/playSlot return Promises that resolve on the audio element's `ended` event so callers can await a sequence. Fallback chain on missing/error: active voice → default voice (ploy) → TTS. | Audio | TOPICS, State (for tier + voice preference), window.speechSynthesis |
 
 ### Feature Modules (self-contained, never depend on each other)
 | File | Globals | Depends on |
@@ -64,9 +64,9 @@
 ### Build-time Tools (not loaded by the app)
 | Path | Purpose |
 |------|---------|
-| scripts/generate-audio.js | Node.js script that calls Gemini TTS to render an MP3 per vocab word and per example sentence in `data/topics.js`. Reads `scripts/.env` for `GEMINI_API_KEY`. Caches by filename; use `--force` to regenerate. |
+| scripts/generate-audio.js | Node.js script that calls ElevenLabs TTS (model `eleven_v3`) to render one MP3 per Thai word, example sentence, and (for pattern topics) per slot word. Supports two voices: `ploy` (default tier) and `serafina` (premium). CLI: `--voice=ploy\|serafina\|all`, `--force`, `--limit=N`. Reads `scripts/.env` for `ELEVENLABS_API_KEY`. Caches by per-voice filename. |
 | scripts/.env.example | Template for the API key file. Real `scripts/.env` is gitignored. |
-| audio/ | Pre-generated MP3 output, one file per Thai word and per example sentence. Naming: `{topicId}-{pairIndex}-word.mp3` and `{topicId}-{pairIndex}-sentence.mp3`. Committed to the repo so the app can load them with no extra build step. |
+| audio/ploy/, audio/serafina/ | Pre-generated MP3 output, split by voice. Free users hear Ploy; premium users hear Serafina (or whichever voice they pick in Settings). Naming: `{topicId}-{i}-word.mp3`, `{topicId}-{i}-sentence.mp3`, and for pattern topics `{topicId}-{i}-slot-{slotIdx}.mp3`. Committed so the app loads them with no extra build step. |
 
 ## Script Load Order
 @supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/app.js
