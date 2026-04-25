@@ -32,6 +32,8 @@ const PatternPractice = (() => {
   let options = [];
   let answered = false;
   let isActive = false;
+  // Session-only display mode: "both" | "script" | "romanized". Not persisted.
+  let displayMode = "both";
 
   function _pairSlottable(p) {
     if (!p) return [];
@@ -131,10 +133,15 @@ const PatternPractice = (() => {
     renderPrompt(false);
   }
 
+  // Case-insensitive substring blank. The bug we're guarding against:
+  // pair.romanized starts capitalized ("Phǒm chêu Jawn") while slot.romanized
+  // is the dictionary form ("phǒm"). A case-sensitive indexOf misses the
+  // start-of-string occurrence and leaves the romanized un-blanked. Thai
+  // script has no casing so the same logic works fine for it.
   function _blank(text, word) {
     if (!text) return "";
     if (!word) return text;
-    const idx = text.indexOf(word);
+    const idx = text.toLowerCase().indexOf(word.toLowerCase());
     if (idx === -1) return text;
     return text.slice(0, idx) + SLOT_PLACEHOLDER + text.slice(idx + word.length);
   }
@@ -147,11 +154,17 @@ const PatternPractice = (() => {
     const displayRom = filled ? pair.romanized : _blank(pair.romanized, slot.romanized);
 
     UI.render(`
-      <div class="pattern-screen">
+      <div class="pattern-screen mode-${displayMode}">
         <div class="game-header">
           <button class="btn btn-ghost back-btn" onclick="PatternPractice.quit()">← Quit</button>
           <h2>🧩 ${topic.emoji} ${topic.label}</h2>
           <div class="pattern-progress-count">${idx + 1} / ${queue.length}</div>
+        </div>
+
+        <div class="pattern-display-toggle" role="group" aria-label="Display mode">
+          <button class="pattern-display-btn ${displayMode==='both'?'active':''}" onclick="PatternPractice.setMode('both')">Both</button>
+          <button class="pattern-display-btn ${displayMode==='script'?'active':''}" onclick="PatternPractice.setMode('script')">Script</button>
+          <button class="pattern-display-btn ${displayMode==='romanized'?'active':''}" onclick="PatternPractice.setMode('romanized')">Romanized</button>
         </div>
 
         <div class="pattern-progress">
@@ -221,18 +234,24 @@ const PatternPractice = (() => {
     const feedback = document.getElementById("pattern-feedback");
     if (!feedback) return;
     const replayBtn = `<button class="btn btn-sm pattern-replay" onclick="PatternPractice.replayAudio()" aria-label="Replay audio">🔊 Replay</button>`;
+    const revealLine = `
+      <span class="pattern-feedback-script">${pair.script}</span><span class="pattern-feedback-sep"> · </span><span class="pattern-feedback-romanized">${pair.romanized}</span>
+    `;
+    const wrongTitle = displayMode === "romanized"
+      ? `✗ Not quite — the word was <strong>${slot.romanized}</strong>`
+      : `✗ Not quite — the word was <strong>${slot.script}</strong>`;
     if (isCorrect) {
       feedback.className = "pattern-feedback correct";
       feedback.innerHTML = `
         <div class="pattern-feedback-title">✓ Correct! +${CORRECT_XP} XP</div>
-        <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
+        <div class="pattern-feedback-thai">${revealLine}</div>
         <div class="pattern-feedback-actions">${replayBtn}</div>
       `;
     } else {
       feedback.className = "pattern-feedback wrong";
       feedback.innerHTML = `
-        <div class="pattern-feedback-title">✗ Not quite — the word was <strong>${slot.script}</strong></div>
-        <div class="pattern-feedback-thai">${pair.script} · ${pair.romanized}</div>
+        <div class="pattern-feedback-title">${wrongTitle}</div>
+        <div class="pattern-feedback-thai">${revealLine}</div>
         <div class="pattern-feedback-english">${pair.english}</div>
         <div class="pattern-feedback-actions">
           ${replayBtn}
@@ -329,5 +348,24 @@ const PatternPractice = (() => {
     UI.navigate("#practice");
   }
 
-  return { start, answer, continueNext, quit, replayAudio };
+  function setMode(mode) {
+    if (mode !== "both" && mode !== "script" && mode !== "romanized") return;
+    displayMode = mode;
+    // Patch the live DOM in place — avoids re-running renderPrompt which
+    // would lose the answered/feedback state.
+    const screen = document.querySelector(".pattern-screen");
+    if (screen) {
+      screen.classList.remove("mode-both", "mode-script", "mode-romanized");
+      screen.classList.add("mode-" + mode);
+      screen.querySelectorAll(".pattern-display-btn").forEach(btn => {
+        const label = btn.textContent.trim().toLowerCase();
+        btn.classList.toggle("active",
+          (mode === "both" && label === "both") ||
+          (mode === "script" && label === "script") ||
+          (mode === "romanized" && label === "romanized"));
+      });
+    }
+  }
+
+  return { start, answer, continueNext, quit, replayAudio, setMode };
 })();

@@ -3398,6 +3398,59 @@ p { color: var(--text-1); }
   color: var(--text-1);
   margin-bottom: var(--sp-4);
 }
+.pattern-display-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: var(--sp-2) 0 var(--sp-3);
+}
+.pattern-display-btn {
+  background: var(--surface-1);
+  color: var(--text-2);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-full);
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.pattern-display-btn:hover {
+  border-color: var(--teal);
+  color: var(--text-0);
+}
+.pattern-display-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-0);
+}
+/* Display-mode filters: hide the opposite track everywhere on the screen */
+.pattern-screen.mode-script .pattern-frame-romanized,
+.pattern-screen.mode-script .pattern-option-romanized,
+.pattern-screen.mode-script .pattern-feedback-romanized,
+.pattern-screen.mode-script .pattern-feedback-sep {
+  display: none;
+}
+.pattern-screen.mode-romanized .pattern-frame-script,
+.pattern-screen.mode-romanized .pattern-option-script,
+.pattern-screen.mode-romanized .pattern-feedback-script,
+.pattern-screen.mode-romanized .pattern-feedback-sep {
+  display: none;
+}
+/* In romanized-only mode, give the romanized line the prominence the
+   script normally has so the frame doesn't look anemic. */
+.pattern-screen.mode-romanized .pattern-frame-romanized {
+  font-size: 1.6rem;
+  font-style: normal;
+  color: var(--teal);
+  margin-bottom: var(--sp-3);
+}
+.pattern-screen.mode-romanized .pattern-option-romanized {
+  font-size: 1.05rem;
+  font-style: normal;
+  color: var(--text-0);
+}
+
 .pattern-frame {
   background: var(--surface-1);
   border: 1px solid var(--teal);
