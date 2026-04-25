@@ -1,7 +1,7 @@
 /**
- * generate-audio.js — build-time TTS generator.
+ * generate-audio.js — build-time TTS generator (ElevenLabs).
  *
- * Reads data/topics.js, generates one audio file per Thai word (pair.script)
+ * Reads data/topics.js, generates one MP3 per Thai word (pair.script)
  * and per example sentence (pair.example.thai), saves into audio/.
  *
  * Usage:
@@ -9,13 +9,9 @@
  *   node scripts/generate-audio.js --force      # regenerate everything
  *   node scripts/generate-audio.js --limit=3    # generate only first N (test)
  *
- * Requires scripts/.env with GEMINI_API_KEY.
+ * Requires scripts/.env with ELEVENLABS_API_KEY.
  *
- * NOTE ON FORMAT: Gemini TTS returns raw PCM (audio/L16, 24 kHz, 16-bit mono),
- * not MP3. The SDK has no MP3 output option. We wrap PCM with a WAV header and
- * write to the .mp3 filename the app expects. Most browsers play these via
- * content sniffing. If playback fails, either rename files to .wav or add an
- * encoder step (ffmpeg / lamejs).
+ * Output is real MP3 (mp3_44100_128) — no WAV wrapping needed.
  */
 
 const fs = require('fs');
@@ -24,13 +20,20 @@ const vm = require('vm');
 
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const { GoogleGenAI } = require('@google/genai');
-
 // ─── Config ──────────────────────────────────────────────────────────────
-const MODEL       = 'gemini-3.1-flash-tts-preview'; // update here if model name changes
-const VOICE_NAME  = 'Achernar';                      // Thai female voice from AI Studio
-const DELAY_MS    = 500;                             // between requests, to avoid rate limits
-const OUT_EXT     = '.mp3';                          // filename extension (content is WAV-wrapped PCM)
+const VOICE_ID      = '4tRn1lSkEn13EVTuqb0g';
+const MODEL_ID      = 'eleven_v3';
+const OUTPUT_FORMAT = 'mp3_44100_128';
+const DELAY_MS      = 1500;   // sequential pacing — well under 4 concurrent cap
+const RETRY_DELAY_MS = 30000; // backoff on 429
+const OUT_EXT       = '.mp3';
+
+const VOICE_SETTINGS = {
+  stability: 0.5,
+  similarity_boost: 0.75,
+  style: 0.0,
+  use_speaker_boost: true,
+};
 
 const TOPICS_FILE = path.join(__dirname, '..', 'data', 'topics.js');
 const AUDIO_DIR   = path.join(__dirname, '..', 'audio');
@@ -48,7 +51,6 @@ function loadTopics() {
   const src = fs.readFileSync(TOPICS_FILE, 'utf8');
   const sandbox = {};
   vm.createContext(sandbox);
-  // topics.js declares `const TOPICS = [...]`; append an assignment to expose it.
   vm.runInContext(src + '\nthis.__TOPICS = TOPICS;', sandbox);
   return sandbox.__TOPICS;
 }
@@ -57,63 +59,57 @@ function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-// Wrap raw PCM in a minimal WAV (RIFF) header.
-function pcmToWav(pcm, sampleRate, channels = 1, bitsPerSample = 16) {
-  const byteRate   = (sampleRate * channels * bitsPerSample) / 8;
-  const blockAlign = (channels * bitsPerSample) / 8;
-  const dataSize   = pcm.length;
-  const buf = Buffer.alloc(44 + dataSize);
-  buf.write('RIFF', 0);
-  buf.writeUInt32LE(36 + dataSize, 4);
-  buf.write('WAVE', 8);
-  buf.write('fmt ', 12);
-  buf.writeUInt32LE(16, 16);            // PCM chunk size
-  buf.writeUInt16LE(1, 20);             // format = PCM
-  buf.writeUInt16LE(channels, 22);
-  buf.writeUInt32LE(sampleRate, 24);
-  buf.writeUInt32LE(byteRate, 28);
-  buf.writeUInt16LE(blockAlign, 32);
-  buf.writeUInt16LE(bitsPerSample, 34);
-  buf.write('data', 36);
-  buf.writeUInt32LE(dataSize, 40);
-  pcm.copy(buf, 44);
-  return buf;
-}
-
-function parseSampleRate(mimeType) {
-  if (!mimeType) return 24000;
-  const m = mimeType.match(/rate=(\d+)/i);
-  return m ? parseInt(m[1], 10) : 24000;
-}
-
-async function synthesize(ai, text) {
-  const response = await ai.models.generateContent({
-    model: MODEL,
-    contents: [{ parts: [{ text }] }],
-    config: {
-      responseModalities: ['AUDIO'],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: VOICE_NAME },
-        },
-      },
-    },
+async function synthesize(apiKey, text) {
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=${OUTPUT_FORMAT}`;
+  const body = JSON.stringify({
+    text,
+    model_id: MODEL_ID,
+    voice_settings: VOICE_SETTINGS,
   });
 
-  const part = response?.candidates?.[0]?.content?.parts?.[0];
-  const inline = part?.inlineData;
-  if (!inline?.data) {
-    throw new Error('No audio returned from API (empty inlineData).');
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'xi-api-key': apiKey,
+      'Content-Type': 'application/json',
+      'Accept': 'audio/mpeg',
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    const err = new Error(`HTTP ${res.status}: ${errText.slice(0, 300)}`);
+    err.status = res.status;
+    throw err;
   }
-  const pcm = Buffer.from(inline.data, 'base64');
-  const sampleRate = parseSampleRate(inline.mimeType);
-  return pcmToWav(pcm, sampleRate);
+
+  const arrayBuf = await res.arrayBuffer();
+  return Buffer.from(arrayBuf);
+}
+
+async function synthesizeWithRetry(apiKey, text) {
+  try {
+    return await synthesize(apiKey, text);
+  } catch (err) {
+    if (err.status === 401) {
+      console.error('\nFATAL: HTTP 401 from ElevenLabs — API key is invalid or unauthorized.');
+      console.error('Check ELEVENLABS_API_KEY in scripts/.env.');
+      process.exit(1);
+    }
+    if (err.status === 429) {
+      console.log(`\n  rate limited (429), backing off ${RETRY_DELAY_MS / 1000}s and retrying once...`);
+      await sleep(RETRY_DELAY_MS);
+      return await synthesize(apiKey, text);
+    }
+    throw err;
+  }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────
 async function main() {
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('Missing GEMINI_API_KEY.');
+  if (!process.env.ELEVENLABS_API_KEY) {
+    console.error('Missing ELEVENLABS_API_KEY.');
     console.error('Copy scripts/.env.example to scripts/.env and paste your key.');
     process.exit(1);
   }
@@ -151,19 +147,20 @@ async function main() {
 
   const effective = LIMIT != null ? tasks.slice(0, LIMIT) : tasks;
 
-  console.log('─── Gemini TTS audio generation ───');
-  console.log(`Model:    ${MODEL}`);
-  console.log(`Voice:    ${VOICE_NAME}`);
+  console.log('─── ElevenLabs TTS audio generation ───');
+  console.log(`Voice ID: ${VOICE_ID}`);
+  console.log(`Model:    ${MODEL_ID}`);
+  console.log(`Format:   ${OUTPUT_FORMAT}`);
   console.log(`Output:   ${AUDIO_DIR}`);
   console.log(`Force:    ${FORCE}`);
   console.log(`Tasks:    ${effective.length}${LIMIT != null ? ` (limit=${LIMIT}, total=${tasks.length})` : ''}`);
   console.log('');
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const apiKey = process.env.ELEVENLABS_API_KEY;
 
-  let generated = 0;
-  let skipped   = 0;
-  let failed    = 0;
+  let generated  = 0;
+  let skipped    = 0;
+  let failed     = 0;
   let totalChars = 0;
 
   for (let i = 0; i < effective.length; i++) {
@@ -178,8 +175,10 @@ async function main() {
     }
 
     process.stdout.write(`${prefix} Generating ${file}  "${text}" ... `);
+    let didNetworkCall = false;
     try {
-      const audio = await synthesize(ai, text);
+      didNetworkCall = true;
+      const audio = await synthesizeWithRetry(apiKey, text);
       fs.writeFileSync(outPath, audio);
       totalChars += text.length;
       generated++;
@@ -191,7 +190,7 @@ async function main() {
       console.error(`  error: ${err?.message || err}`);
     }
 
-    if (i < effective.length - 1) await sleep(DELAY_MS);
+    if (didNetworkCall && i < effective.length - 1) await sleep(DELAY_MS);
   }
 
   console.log('');
