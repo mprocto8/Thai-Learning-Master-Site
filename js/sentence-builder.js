@@ -200,6 +200,14 @@ const SentenceBuilder = (() => {
     const nextSlot = placedWords.length;
     if (nextSlot >= currentSentence.words.length) return;
 
+    // Per-word audio: play the tapped word's pronunciation regardless of
+    // whether it's the right next word — hearing each piece reinforces the
+    // visual-to-spoken link.
+    const exerciseIdx = SENTENCES.indexOf(currentSentence);
+    if (exerciseIdx !== -1) {
+      Audio.playSentenceBuilderWord(exerciseIdx, shuffledWords[idx].origIdx);
+    }
+
     shuffledWords[idx].placed = true;
     placedWords.push(shuffledWords[idx]);
     selectedIndex = null;
@@ -259,6 +267,10 @@ const SentenceBuilder = (() => {
 
       // Animate success
       document.querySelectorAll(".sb-slot").forEach(s => s.classList.add("correct"));
+
+      // Reward audio: the full sentence in natural rhythm.
+      const exerciseIdx = SENTENCES.indexOf(currentSentence);
+      if (exerciseIdx !== -1) Audio.playSentenceBuilderFull(exerciseIdx);
 
       setTimeout(() => {
         roundIndex++;

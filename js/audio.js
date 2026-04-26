@@ -157,6 +157,32 @@ const Audio = (() => {
     return speak(text);
   }
 
+  /** Play a single word from a Sentence Builder exercise.
+   *  Audio path: audio/{voice}/sentence-{exerciseIdx}-word-{wordIdx}.mp3
+   *  exerciseIdx = SENTENCES array index (stable, append-only). */
+  function playSentenceBuilderWord(exerciseIdx, wordIdx) {
+    if (typeof SENTENCES === "undefined") return Promise.resolve();
+    const ex = SENTENCES[exerciseIdx];
+    if (!ex || !Array.isArray(ex.words) || !ex.words[wordIdx]) return Promise.resolve();
+    const text = ex.words[wordIdx];
+    if (USE_MP3_FILES) {
+      return _playMp3(`${_voiceFolder()}/sentence-${exerciseIdx}-word-${wordIdx}.mp3`, text);
+    }
+    return speak(text);
+  }
+
+  /** Play the full target sentence for a Sentence Builder exercise. */
+  function playSentenceBuilderFull(exerciseIdx) {
+    if (typeof SENTENCES === "undefined") return Promise.resolve();
+    const ex = SENTENCES[exerciseIdx];
+    if (!ex || !Array.isArray(ex.words)) return Promise.resolve();
+    const text = ex.words.join(" ");
+    if (USE_MP3_FILES) {
+      return _playMp3(`${_voiceFolder()}/sentence-${exerciseIdx}-full.mp3`, text);
+    }
+    return speak(text);
+  }
+
   /** Play a single slot-word for a Pattern Practice round. */
   function playSlot(topicId, pairIndex, slotIndex) {
     const pair = _resolvePair(topicId, pairIndex);
@@ -175,6 +201,8 @@ const Audio = (() => {
     playWord,
     playSentence,
     playSlot,
+    playSentenceBuilderWord,
+    playSentenceBuilderFull,
     cancel,
     setRate,
     hasTTSSupport,

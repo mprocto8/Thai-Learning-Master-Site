@@ -26,7 +26,7 @@
 | js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
 | js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
-| js/audio.js — TTS + MP3 playback wrapper (speak / playWord / playSentence / playSlot). Fires `speechSynthesis.speak()` and HTMLAudioElement `.play()` in the caller's gesture tick (iOS requirement). Resolves the active voice folder per call from State (free → ploy, premium → user preference / serafina). playWord/playSentence/playSlot return Promises that resolve on the audio element's `ended` event so callers can await a sequence. Fallback chain on missing/error: active voice → default voice (ploy) → TTS. | Audio | TOPICS, State (for tier + voice preference), window.speechSynthesis |
+| js/audio.js — TTS + MP3 playback wrapper (speak / playWord / playSentence / playSlot / playSentenceBuilderWord / playSentenceBuilderFull). Fires `speechSynthesis.speak()` and HTMLAudioElement `.play()` in the caller's gesture tick (iOS requirement). Resolves the active voice folder per call from State (free → ploy, premium → user preference / serafina). playWord/playSentence/playSlot return Promises that resolve on the audio element's `ended` event so callers can await a sequence. Fallback chain on missing/error: active voice → default voice (ploy) → TTS. | Audio | TOPICS, State (for tier + voice preference), window.speechSynthesis |
 
 ### Feature Modules (self-contained, never depend on each other)
 | File | Globals | Depends on |
@@ -64,9 +64,9 @@
 ### Build-time Tools (not loaded by the app)
 | Path | Purpose |
 |------|---------|
-| scripts/generate-audio.js | Node.js script that calls ElevenLabs TTS (model `eleven_v3`) to render one MP3 per Thai word, example sentence, and (for pattern topics) per slot word. Supports two voices: `ploy` (default tier) and `serafina` (premium). CLI: `--voice=ploy\|serafina\|all`, `--force`, `--limit=N`. Reads `scripts/.env` for `ELEVENLABS_API_KEY`. Caches by per-voice filename. |
+| scripts/generate-audio.js | Node.js script that calls ElevenLabs TTS (model `eleven_v3`) to render one MP3 per Thai word, example sentence, (for pattern topics) per slot word, and (for Sentence Builder) per word + full target sentence. Supports two voices: `ploy` (default tier) and `serafina` (premium). CLI: `--voice=ploy\|serafina\|all`, `--force`, `--limit=N`. Reads `scripts/.env` for `ELEVENLABS_API_KEY`. Caches by per-voice filename. |
 | scripts/.env.example | Template for the API key file. Real `scripts/.env` is gitignored. |
-| audio/ploy/, audio/serafina/ | Pre-generated MP3 output, split by voice. Free users hear Ploy; premium users hear Serafina (or whichever voice they pick in Settings). Naming: `{topicId}-{i}-word.mp3`, `{topicId}-{i}-sentence.mp3`, and for pattern topics `{topicId}-{i}-slot-{slotIdx}.mp3`. Committed so the app loads them with no extra build step. |
+| audio/ploy/, audio/serafina/ | Pre-generated MP3 output, split by voice. Free users hear Ploy; premium users hear Serafina (or whichever voice they pick in Settings). Naming: `{topicId}-{i}-word.mp3`, `{topicId}-{i}-sentence.mp3`, for pattern topics `{topicId}-{i}-slot-{slotIdx}.mp3`, and for Sentence Builder `sentence-{exerciseIdx}-word-{wordIdx}.mp3` + `sentence-{exerciseIdx}-full.mp3` (where `exerciseIdx` is the SENTENCES array position). Committed so the app loads them with no extra build step. |
 
 ## Script Load Order
 @supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/app.js

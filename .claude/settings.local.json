@@ -39,7 +39,11 @@
       "Bash(node scripts/test-voice.js)",
       "Bash(node scripts/generate-audio.js --voice=serafina)",
       "Bash(git commit -m 'Fix Listen mode playback speed control *)",
-      "Bash(git commit -m 'Fix Practice Hub topic card layout — Listen full-width primary *)"
+      "Bash(git commit -m 'Fix Practice Hub topic card layout — Listen full-width primary *)",
+      "Bash(git commit -m 'Match game: play Thai audio on correct match *)",
+      "Bash(git commit -m 'Typing Challenge: play Thai audio on correct answer *)",
+      "Bash(git commit -m 'Time Game: speak the time on answer reveal \\(uses browser TTS\\) *)",
+      "Bash(git commit -m 'Sentence Builder: word and full-sentence audio playback *)"
     ]
   }
 }

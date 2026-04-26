@@ -53,8 +53,9 @@ const VOICE_SETTINGS = {
   use_speaker_boost: true,
 };
 
-const TOPICS_FILE = path.join(__dirname, '..', 'data', 'topics.js');
-const REPO_ROOT   = path.join(__dirname, '..');
+const TOPICS_FILE    = path.join(__dirname, '..', 'data', 'topics.js');
+const SENTENCES_FILE = path.join(__dirname, '..', 'data', 'sentences.js');
+const REPO_ROOT      = path.join(__dirname, '..');
 
 // ─── CLI args ────────────────────────────────────────────────────────────
 const argv  = process.argv.slice(2);
@@ -82,6 +83,14 @@ function loadTopics() {
   vm.createContext(sandbox);
   vm.runInContext(src + '\nthis.__TOPICS = TOPICS;', sandbox);
   return sandbox.__TOPICS;
+}
+
+function loadSentences() {
+  const src = fs.readFileSync(SENTENCES_FILE, 'utf8');
+  const sandbox = {};
+  vm.createContext(sandbox);
+  vm.runInContext(src + '\nthis.__SENTENCES = SENTENCES;', sandbox);
+  return sandbox.__SENTENCES;
 }
 
 function sleep(ms) {
@@ -133,6 +142,29 @@ async function synthesizeWithRetry(apiKey, voiceId, text) {
     }
     throw err;
   }
+}
+
+function buildSentenceTasks(sentences) {
+  // Sentence Builder audio: per-word and per-full-sentence files, indexed
+  // by the SENTENCES array position (stable, append-only data).
+  const tasks = [];
+  sentences.forEach((ex, i) => {
+    if (!ex || !Array.isArray(ex.words)) return;
+    ex.words.forEach((w, wIdx) => {
+      if (!w) return;
+      tasks.push({
+        file: `sentence-${i}-word-${wIdx}${OUT_EXT}`,
+        text: w,
+        kind: 'sb-word',
+      });
+    });
+    tasks.push({
+      file: `sentence-${i}-full${OUT_EXT}`,
+      text: ex.words.join(' '),
+      kind: 'sb-full',
+    });
+  });
+  return tasks;
 }
 
 function buildTasks(topics) {
@@ -235,7 +267,13 @@ async function main() {
     process.exit(1);
   }
 
-  const tasks = buildTasks(topics);
+  const sentences = loadSentences();
+  if (!Array.isArray(sentences)) {
+    console.error('Could not load SENTENCES from data/sentences.js.');
+    process.exit(1);
+  }
+
+  const tasks = [...buildTasks(topics), ...buildSentenceTasks(sentences)];
   const voiceKeys = resolveVoices(VOICE_ARG);
 
   console.log('─── ElevenLabs TTS audio generation ───');
