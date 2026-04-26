@@ -133,6 +133,11 @@ const TypingChallenge = (() => {
       State.checkStreak();
 
       if (card) card.classList.add("correct-flash");
+
+      // Audio reinforcement: speak the Thai right when recall succeeds.
+      const pairIndex = topic.pairs.indexOf(pair);
+      if (pairIndex !== -1) Audio.playWord(topic.id, pairIndex);
+
       if (feedback) {
         feedback.className = "typing-feedback correct";
         feedback.innerHTML = `
