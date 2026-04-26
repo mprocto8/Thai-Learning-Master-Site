@@ -143,7 +143,10 @@ const Game = (() => {
       engCard.classList.add("correct", "match-pulse");
 
       // Audio reinforcement: play the Thai pronunciation for the matched pair.
-      Audio.playWord(currentTopic.id, matchedIndex);
+      // `matchedIndex` is a position in the shuffled `pairs` array, but audio
+      // files are named by position in the original `currentTopic.pairs`.
+      const originalIndex = currentTopic.pairs.indexOf(pairs[matchedIndex]);
+      if (originalIndex !== -1) Audio.playWord(currentTopic.id, originalIndex);
 
       // Show XP popup
       const rect = engCard.getBoundingClientRect();
