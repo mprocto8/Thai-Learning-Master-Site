@@ -73,7 +73,7 @@ const Flashcard = (() => {
     const card = deck[currentIndex];
     const progress = (currentIndex / deck.length) * 100;
     const showScript = State.get().showScript;
-    const canPlayAudio = topic.id !== '_mistakes';
+    const canPlayAudio = topic.id !== '_mistakes' || !!card._sourceTopicId;
     const wordBtn = canPlayAudio
       ? `<button class="btn btn-sm flashcard-audio-btn" onclick="event.stopPropagation();Flashcard.playWord()" aria-label="Play audio">🔊</button>`
       : "";
@@ -269,16 +269,28 @@ const Flashcard = (() => {
   });
 
   function playWord() {
-    if (!topic || topic.id === '_mistakes') return;
+    if (!topic) return;
     const card = deck[currentIndex];
     if (!card) return;
+    if (topic.id === '_mistakes') {
+      if (card._sourceTopicId != null && card._sourceIndex != null) {
+        Audio.playWord(card._sourceTopicId, card._sourceIndex);
+      }
+      return;
+    }
     Audio.playWord(topic.id, card.originalIndex);
   }
 
   function playSentence() {
-    if (!topic || topic.id === '_mistakes') return;
+    if (!topic) return;
     const card = deck[currentIndex];
     if (!card) return;
+    if (topic.id === '_mistakes') {
+      if (card._sourceTopicId != null && card._sourceIndex != null) {
+        Audio.playSentence(card._sourceTopicId, card._sourceIndex);
+      }
+      return;
+    }
     Audio.playSentence(topic.id, card.originalIndex);
   }
 

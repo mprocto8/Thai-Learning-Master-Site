@@ -141,8 +141,9 @@ const App = (() => {
       if (!topic) continue;
       for (const idx in fc[topicId]) {
         if (fc[topicId][idx].bucket === 0) {
-          const pair = topic.pairs[parseInt(idx)];
-          if (pair) pairs.push(pair);
+          const pairIdx = parseInt(idx);
+          const pair = topic.pairs[pairIdx];
+          if (pair) pairs.push({ ...pair, _sourceTopicId: topicId, _sourceIndex: pairIdx });
         }
       }
     }
