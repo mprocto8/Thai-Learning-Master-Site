@@ -112,6 +112,9 @@ const Audio = (() => {
       const tryUrl = (url, onFail) => {
         try {
           const el = new window.Audio(url);
+          // Apply playback rate so Listen mode's 0.7x / 0.85x / 1x pills
+          // affect MP3 playback the same way they affect TTS.
+          el.playbackRate = rate;
           el.addEventListener("ended", done);
           el.addEventListener("error", onFail);
           const p = el.play();
