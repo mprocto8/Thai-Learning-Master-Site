@@ -23,7 +23,23 @@
       "Bash(node -e \"const fs=require\\('fs'\\),vm=require\\('vm'\\),path=require\\('path'\\);const src=fs.readFileSync\\(path.join\\('data','topics.js'\\),'utf8'\\);const s={};vm.createContext\\(s\\);vm.runInContext\\(src+'\\\\nthis.__T=TOPICS;',s\\);const t=s.__T;console.log\\('topics:',t.length\\);let w=0,se=0;for\\(const x of t\\){x.pairs.forEach\\(p=>{if\\(p.script\\)w++;if\\(p.example&&p.example.thai\\)se++;}\\);}console.log\\('word files:',w,'sentence files:',se,'total:',w+se\\);\")",
       "Bash(npm install *)",
       "Bash(node scripts/generate-audio.js --limit=3)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const src=fs.readFileSync\\('data/topics.js','utf8'\\); eval\\(src\\); console.log\\('Topics:', TOPICS.length\\); const total=TOPICS.reduce\\(\\(a,t\\)=>a+\\(t.pairs?.length||0\\),0\\); console.log\\('Total pairs:', total\\); const pats=TOPICS.filter\\(t=>t.type==='pattern'\\); console.log\\('Pattern topics:', pats.length\\); pats.forEach\\(p=>console.log\\(' -',p.id, p.pairs.length\\)\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const src=fs.readFileSync\\('data/topics.js','utf8'\\); \\(0,eval\\)\\(src.replace\\('const TOPICS','TOPICS=var_unused;TOPICS'\\)\\); \")",
+      "Bash(node --check data/topics.js)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const src=fs.readFileSync\\('data/topics.js','utf8'\\); const mod=src.replace\\('const TOPICS','global.TOPICS'\\); \\(0,eval\\)\\(mod\\); console.log\\('Topics:',TOPICS.length,'Pairs:',TOPICS.reduce\\(\\(a,t\\)=>a+\\(t.pairs?.length||0\\),0\\)\\); const pats=TOPICS.filter\\(t=>t.type==='pattern'\\); console.log\\('Patterns:',pats.length\\); pats.forEach\\(p=>console.log\\(' ',p.id,p.pairs.length\\)\\);\")",
+      "Bash(node -c \"data/topics.js\")",
+      "Bash(node -c data/topics.js)",
+      "Bash(node -c js/pattern-practice.js)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(node scripts/generate-audio.js)",
+      "Bash(tee /tmp/audio-gen.log)",
+      "Bash(node scripts/test-voice.js)",
+      "Bash(node scripts/generate-audio.js --voice=serafina)",
+      "Bash(git commit -m 'Fix Listen mode playback speed control *)",
+      "Bash(git commit -m 'Fix Practice Hub topic card layout — Listen full-width primary *)"
     ]
   }
 }

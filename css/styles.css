@@ -2351,12 +2351,25 @@ p { color: var(--text-1); }
 
 .practice-topic-actions {
   display: flex;
+  flex-direction: column;
   gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-4) var(--sp-3);
   animation: fadeInUp 0.15s var(--ease);
 }
 
-.practice-topic-actions .btn { flex: 1; }
+.practice-topic-actions-row {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.practice-topic-actions-row .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
 
 .practice-topic-last {
   padding: 0 var(--sp-4) var(--sp-3);
