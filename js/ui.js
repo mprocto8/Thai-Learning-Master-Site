@@ -16,7 +16,15 @@ const UI = (() => {
     if ((window.location.hash || "#dashboard") === "#dashboard" && typeof App !== "undefined") {
       App.saveDashScroll();
     }
-    window.location.hash = hash;
+    const current = window.location.hash || "#dashboard";
+    if (current === hash) {
+      // hashchange won't fire when the hash doesn't change. This matters when
+      // a screen was rendered ad-hoc (e.g. Mistake Review launched from the
+      // dashboard) and a "back" button targets the same hash.
+      handleRoute();
+    } else {
+      window.location.hash = hash;
+    }
   }
 
   function init() {
