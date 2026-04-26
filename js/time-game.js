@@ -215,6 +215,11 @@ const TimeGame = (() => {
     const formalTime = ThaiTime.formal(q.hour, q.minute);
     const colloqTime = ThaiTime.colloquial(q.hour, q.minute);
 
+    // Speak the correct time. No pre-recorded MP3s exist for procedurally-
+    // generated times, so this falls through to browser TTS.
+    const spoken = difficulty === "easy" ? formalTime.thai : colloqTime.thai;
+    Audio.speak(spoken);
+
     // Highlight all buttons
     document.querySelectorAll(".tg-option").forEach(b => {
       b.disabled = true;
@@ -274,6 +279,9 @@ const TimeGame = (() => {
     const q = questions[currentIndex];
     const formalTime = ThaiTime.formal(q.hour, q.minute);
     const colloqTime = ThaiTime.colloquial(q.hour, q.minute);
+
+    // Speak the correct time even on timeout, so the learner hears it.
+    Audio.speak(difficulty === "easy" ? formalTime.thai : colloqTime.thai);
 
     const breakdown = document.getElementById("tg-breakdown");
     if (breakdown) {
