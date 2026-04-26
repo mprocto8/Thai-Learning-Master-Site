@@ -142,6 +142,9 @@ const Game = (() => {
       thaiCard.classList.add("correct", "match-pulse");
       engCard.classList.add("correct", "match-pulse");
 
+      // Audio reinforcement: play the Thai pronunciation for the matched pair.
+      Audio.playWord(currentTopic.id, matchedIndex);
+
       // Show XP popup
       const rect = engCard.getBoundingClientRect();
       UI.showXP(xp, rect.right - 20, rect.top);
