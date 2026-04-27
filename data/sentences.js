@@ -6,8 +6,8 @@
 const SENTENCES = [
 
   // ── Days / Time Expressions ──
-  { english: "Today is Monday", words: ["วันนี้", "คือ", "วันจันทร์"], romanized: "Wan níi khue Wan Jan", requiredTopics: ["days"], difficulty: 1 },
-  { english: "Tomorrow is Friday", words: ["พรุ่งนี้", "คือ", "วันศุกร์"], romanized: "Phrûng níi khue Wan Sùk", requiredTopics: ["days", "time-expressions"], difficulty: 1 },
+  { english: "Today is Monday", words: ["วันนี้", "คือ", "วันจันทร์"], romanized: "Wan-níi khue Wan-jan", requiredTopics: ["days"], difficulty: 1 },
+  { english: "Tomorrow is Friday", words: ["พรุ่งนี้", "คือ", "วันศุกร์"], romanized: "Phrûng-níi khue Wan-Sùk", requiredTopics: ["days", "time-expressions"], difficulty: 1 },
   { english: "Yesterday it rained", words: ["เมื่อวาน", "ฝน", "ตก"], romanized: "Mêua-waan fǒn dtòk", requiredTopics: ["time-expressions"], difficulty: 1 },
   { english: "Saturday I relax", words: ["วันเสาร์", "ฉัน", "พักผ่อน"], romanized: "Wan Sǎo chǎn phák-phàwn", requiredTopics: ["days"], difficulty: 1 },
   { english: "This week is very busy", words: ["อาทิตย์", "นี้", "ยุ่ง", "มาก"], romanized: "Aa-thít níi yûng mâak", requiredTopics: ["time-expressions"], difficulty: 1 },
@@ -23,15 +23,15 @@ const SENTENCES = [
   // ── Months ──
   { english: "January the weather is cool", words: ["เดือน", "มกราคม", "อากาศ", "เย็น"], romanized: "Deuan Mòk-kà-raa-khom aa-gàat yen", requiredTopics: ["months-1-6"], difficulty: 2 },
   { english: "April has Songkran", words: ["เมษายน", "มี", "สงกรานต์"], romanized: "Meh-sǎa-yon mii Sǒng-graan", requiredTopics: ["months-1-6"], difficulty: 1 },
-  { english: "November has Loy Krathong", words: ["พฤศจิกายน", "มี", "ลอยกระทง"], romanized: "Phruét-sà-jì-kaa-yon mii Loi Grà-thong", requiredTopics: ["months-7-12"], difficulty: 2 },
-  { english: "December is New Year", words: ["ธันวาคม", "เป็น", "ปีใหม่"], romanized: "Than-waa-khom pen Bpii Mài", requiredTopics: ["months-7-12"], difficulty: 1 },
+  { english: "November has Loy Krathong", words: ["พฤศจิกายน", "มี", "ลอยกระทง"], romanized: "Phruét-sà-jì-kaa-yon mii Loi-Grà-thong", requiredTopics: ["months-7-12"], difficulty: 2 },
+  { english: "December is New Year", words: ["ธันวาคม", "เป็น", "ปีใหม่"], romanized: "Than-waa-khom pen Bpii-Mài", requiredTopics: ["months-7-12"], difficulty: 1 },
   { english: "This month is very hot", words: ["เดือน", "นี้", "ร้อน", "มาก"], romanized: "Deuan níi rón mâak", requiredTopics: ["months-1-6"], difficulty: 1 },
 
   // ── Pronouns & Questions ──
   { english: "What is your name?", words: ["คุณ", "ชื่อ", "อะไร"], romanized: "Khun chêu à-rai?", requiredTopics: ["pronouns-questions"], difficulty: 1 },
   { english: "My name is Aaron", words: ["ผม", "ชื่อ", "แอรอน"], romanized: "Phǒm chêu Aaron", requiredTopics: ["pronouns-questions"], difficulty: 1 },
   { english: "Where are you?", words: ["คุณ", "อยู่", "ที่ไหน"], romanized: "Khun yùu thîi-nǎi?", requiredTopics: ["pronouns-questions"], difficulty: 1 },
-  { english: "He is Thai", words: ["เขา", "เป็น", "คนไทย"], romanized: "Khǎo pen khon Thai", requiredTopics: ["pronouns-questions"], difficulty: 1 },
+  { english: "He is Thai", words: ["เขา", "เป็น", "คนไทย"], romanized: "Khǎo pen khon-Thai", requiredTopics: ["pronouns-questions"], difficulty: 1 },
   { english: "Let's go eat together", words: ["เรา", "ไป", "กินข้าว", "ด้วยกัน"], romanized: "Rao pai gin-khâao dûay-gan", requiredTopics: ["pronouns-questions"], difficulty: 2 },
   { english: "What are you doing?", words: ["คุณ", "ทำ", "อะไร"], romanized: "Khun tham à-rai?", requiredTopics: ["pronouns-questions"], difficulty: 1 },
 
@@ -44,11 +44,11 @@ const SENTENCES = [
 
   // ── Greetings & Phrases ──
   { english: "Hello, my name is...", words: ["สวัสดี", "ครับ", "ผม", "ชื่อ"], romanized: "Sà-wàt-dii khráp phǒm chêu...", requiredTopics: ["greetings-phrases"], difficulty: 1 },
-  { english: "How are you doing?", words: ["คุณ", "เป็นยังไง", "บ้าง"], romanized: "Khun pen yang-ngai bâang?", requiredTopics: ["greetings-phrases"], difficulty: 1 },
+  { english: "How are you doing?", words: ["คุณ", "เป็นยังไง", "บ้าง"], romanized: "Khun pen-yang-ngai bâang?", requiredTopics: ["greetings-phrases"], difficulty: 1 },
   { english: "Thank you very much", words: ["ขอบคุณ", "มาก", "ครับ"], romanized: "Khàawp-khun mâak khráp", requiredTopics: ["greetings-phrases"], difficulty: 1 },
-  { english: "No problem (female)", words: ["ไม่เป็นไร", "ค่ะ"], romanized: "Mâi pen rai khâ", requiredTopics: ["greetings-phrases"], difficulty: 1 },
-  { english: "See you tomorrow", words: ["เจอกัน", "พรุ่งนี้"], romanized: "Jur-gan phrûng níi", requiredTopics: ["greetings-phrases"], difficulty: 1 },
-  { english: "Are you well?", words: ["คุณ", "สบายดี", "ไหม"], romanized: "Khun sà-baai dii mǎi?", requiredTopics: ["greetings-phrases"], difficulty: 1 },
+  { english: "No problem (female)", words: ["ไม่เป็นไร", "ค่ะ"], romanized: "Mâi-pen-rai khâ", requiredTopics: ["greetings-phrases"], difficulty: 1 },
+  { english: "See you tomorrow", words: ["เจอกัน", "พรุ่งนี้"], romanized: "Jur-gan phrûng-níi", requiredTopics: ["greetings-phrases"], difficulty: 1 },
+  { english: "Are you well?", words: ["คุณ", "สบายดี", "ไหม"], romanized: "Khun sà-baai-dii mǎi?", requiredTopics: ["greetings-phrases"], difficulty: 1 },
 
   // ── Feelings ──
   { english: "I am very tired", words: ["ผม", "เหนื่อย", "มาก"], romanized: "Phǒm nèuay mâak", requiredTopics: ["feelings"], difficulty: 1 },
@@ -88,7 +88,7 @@ const SENTENCES = [
 
   // ── Shopping & Money ──
   { english: "How much is this?", words: ["อันนี้", "เท่าไร"], romanized: "An níi tâo-rai?", requiredTopics: ["shopping-money"], difficulty: 1 },
-  { english: "Too expensive, can you discount?", words: ["แพง", "ไป", "ลด", "ได้ไหม"], romanized: "Phaeng pai lót dâi mǎi?", requiredTopics: ["shopping-money"], difficulty: 2 },
+  { english: "Too expensive, can you discount?", words: ["แพง", "ไป", "ลด", "ได้ไหม"], romanized: "Phaeng pai lót dâi-mǎi?", requiredTopics: ["shopping-money"], difficulty: 2 },
   { english: "Receipt please", words: ["ขอ", "ใบเสร็จ", "ด้วย"], romanized: "Khǎaw bai-sèt dûay", requiredTopics: ["shopping-money"], difficulty: 1 },
   { english: "Water is free", words: ["น้ำ", "ฟรี"], romanized: "Náam frii", requiredTopics: ["shopping-money"], difficulty: 1 },
   { english: "Where do I pay?", words: ["จ่ายเงิน", "ที่ไหน"], romanized: "Jàai-ngoen thîi-nǎi?", requiredTopics: ["shopping-money"], difficulty: 1 },
@@ -98,7 +98,7 @@ const SENTENCES = [
   { english: "Mother cooks delicious food", words: ["แม่", "ทำ", "อาหาร", "อร่อย"], romanized: "Mâae tham aa-hǎan à-ròi", requiredTopics: ["family"], difficulty: 1 },
   { english: "How many children?", words: ["มี", "ลูก", "กี่", "คน"], romanized: "Mii lûuk gìi khon?", requiredTopics: ["family"], difficulty: 1 },
   { english: "Older sister works in Bangkok", words: ["พี่สาว", "ทำงาน", "ที่", "กรุงเทพ"], romanized: "Phîi-sǎao tham-ngaan thîi Grung-thêep", requiredTopics: ["family"], difficulty: 2 },
-  { english: "A good friend is valuable", words: ["เพื่อน", "ดี", "มีค่า", "มาก"], romanized: "Phêuan dii mii khâa mâak", requiredTopics: ["family"], difficulty: 2 },
+  { english: "A good friend is valuable", words: ["เพื่อน", "ดี", "มีค่า", "มาก"], romanized: "Phêuan dii mii-khâa mâak", requiredTopics: ["family"], difficulty: 2 },
 
   // ── Numbers ──
   { english: "Count from one to ten", words: ["นับ", "หนึ่ง", "ถึง", "สิบ"], romanized: "Náp nùeng thǔeng sìp", requiredTopics: ["numbers"], difficulty: 1 },
@@ -122,10 +122,10 @@ const SENTENCES = [
   { english: "Taking the BTS is faster", words: ["นั่ง", "รถไฟฟ้า", "เร็ว", "กว่า"], romanized: "Nâng rót-fai-fáa reo gwàa", requiredTopics: ["getting-around"], difficulty: 2 },
 
   // ── 7-Eleven (Situation) ──
-  { english: "Do you have water?", words: ["มี", "น้ำเปล่า", "ไหม"], romanized: "Mii náam bplào mǎi?", requiredTopics: ["seven-eleven"], difficulty: 1 },
+  { english: "Do you have water?", words: ["มี", "น้ำเปล่า", "ไหม"], romanized: "Mii náam-bplào mǎi?", requiredTopics: ["seven-eleven"], difficulty: 1 },
   { english: "No bag needed", words: ["ไม่", "ต้อง", "ถุง"], romanized: "Mâi dtâwng thǔng", requiredTopics: ["seven-eleven"], difficulty: 1 },
-  { english: "Pay here please", words: ["จ่ายเงิน", "ตรงนี้", "ครับ"], romanized: "Jàai-ngoen trong níi khráp", requiredTopics: ["seven-eleven"], difficulty: 1 },
-  { english: "I'll take this one", words: ["รับ", "อันนี้", "ค่ะ"], romanized: "Ráp an níi khâ", requiredTopics: ["seven-eleven"], difficulty: 1 },
+  { english: "Pay here please", words: ["จ่ายเงิน", "ตรงนี้", "ครับ"], romanized: "Jàai-ngoen trong-níi khráp", requiredTopics: ["seven-eleven"], difficulty: 1 },
+  { english: "I'll take this one", words: ["รับ", "อันนี้", "ค่ะ"], romanized: "Ráp an-níi khâ", requiredTopics: ["seven-eleven"], difficulty: 1 },
   { english: "Can I charge my phone?", words: ["ชาร์จ", "แบต", "ได้", "ไหม"], romanized: "Châat bàet dâi mǎi?", requiredTopics: ["seven-eleven"], difficulty: 1 },
 
   // ── Health & Emergencies ──
