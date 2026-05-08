@@ -43,7 +43,11 @@
       "Bash(git commit -m 'Match game: play Thai audio on correct match *)",
       "Bash(git commit -m 'Typing Challenge: play Thai audio on correct answer *)",
       "Bash(git commit -m 'Time Game: speak the time on answer reveal \\(uses browser TTS\\) *)",
-      "Bash(git commit -m 'Sentence Builder: word and full-sentence audio playback *)"
+      "Bash(git commit -m 'Sentence Builder: word and full-sentence audio playback *)",
+      "Bash(node scripts/generate-audio.js --voice=all)",
+      "Bash(git commit -m 'Generate Sentence Builder audio \\(Ploy + Serafina, 818 files\\) *)",
+      "Bash(git commit -m 'Fix iOS PWA safe area inset for top status bar *)",
+      "Bash(git commit -m 'Apply remaining HIGH confidence sentence tokenization fixes *)"
     ]
   }
 }
