@@ -75,8 +75,8 @@ const SENTENCES = [
   { english: "I don't know", words: ["ฉัน", "ไม่", "รู้"], romanized: "Chǎn mâi rúu", requiredTopics: ["essential-verbs"], difficulty: 1 },
   { english: "I don't understand", words: ["ฉัน", "ไม่", "เข้าใจ"], romanized: "Chǎn mâi khâo-jai", requiredTopics: ["essential-verbs"], difficulty: 1 },
   { english: "Can you speak Thai?", words: ["พูด", "ไทย", "ได้", "ไหม"], romanized: "Phûut Thai dâi mǎi?", requiredTopics: ["essential-verbs"], difficulty: 1 },
-  { english: "It's okay / Never mind", words: ["ไม่", "เป็นไร"], romanized: "Mâi pen rai", requiredTopics: ["essential-verbs"], difficulty: 1 },
-  { english: "Have you eaten yet?", words: ["กิน", "ข้าว", "หรือ", "ยัง"], romanized: "Gin khâao rěu yang?", requiredTopics: ["essential-verbs"], difficulty: 1 },
+  { english: "It's okay / Never mind", words: ["ไม่เป็นไร"], romanized: "Mâi-pen-rai", requiredTopics: ["essential-verbs"], difficulty: 1 },
+  { english: "Have you eaten yet?", words: ["กินข้าว", "หรือ", "ยัง"], romanized: "Gin-khâao rěu yang?", requiredTopics: ["essential-verbs"], difficulty: 1 },
   { english: "Tell me please", words: ["บอก", "ฉัน", "หน่อย"], romanized: "Bàwk chǎn nòi", requiredTopics: ["essential-verbs"], difficulty: 1 },
 
   // ── Food & Eating ──
@@ -130,7 +130,7 @@ const SENTENCES = [
 
   // ── Health & Emergencies ──
   { english: "Where does it hurt?", words: ["เจ็บ", "ที่ไหน"], romanized: "Jèp thîi-nǎi?", requiredTopics: ["health-emergencies"], difficulty: 1 },
-  { english: "I have a headache", words: ["ปวด", "หัว", "มาก"], romanized: "Pùat-hǔa mâak", requiredTopics: ["health-emergencies"], difficulty: 1 },
+  { english: "I have a headache", words: ["ปวดหัว", "มาก"], romanized: "Pùat-hǔa mâak", requiredTopics: ["health-emergencies"], difficulty: 1 },
   { english: "Need to see a doctor", words: ["ต้อง", "ไป", "หา", "หมอ"], romanized: "Dtâwng pai hǎa mǎw", requiredTopics: ["health-emergencies"], difficulty: 1 },
   { english: "Help! Call a doctor!", words: ["ช่วยด้วย", "เรียก", "หมอ"], romanized: "Chûay dûay! Rîak mǎw!", requiredTopics: ["health-emergencies"], difficulty: 1 },
   { english: "I'm not feeling well", words: ["ไม่", "สบาย", "ต้อง", "พักผ่อน"], romanized: "Mâi sà-baai dtâwng phák-phàwn", requiredTopics: ["health-emergencies"], difficulty: 2 },
