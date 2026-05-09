@@ -486,6 +486,8 @@ p { color: var(--text-1); }
   align-items: center;
   gap: var(--sp-3);
   margin-bottom: var(--sp-4);
+  /* iOS PWA notch inset — pushes mode toolbar (Quit / title / progress) below status bar */
+  padding-top: env(safe-area-inset-top);
 }
 
 .game-header h2 { flex: 1; font-size: 1rem; }
