@@ -206,14 +206,17 @@ p { color: var(--text-1); }
   justify-content: center;
   gap: var(--sp-2);
   padding: var(--sp-3) 0;
-  /* Extend bg under iOS notch so sticky bar covers status-bar area */
-  padding-top: calc(var(--sp-3) + env(safe-area-inset-top));
   margin-bottom: var(--sp-4);
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--bg-0);
   border-bottom: 1px solid var(--surface-1);
+}
+
+/* Only add the top safe-area inset when the nav is the first visible shell item. */
+#app > * > .nav-bar:first-child {
+  padding-top: calc(var(--sp-3) + env(safe-area-inset-top));
 }
 
 .nav-btn {
@@ -239,7 +242,19 @@ p { color: var(--text-1); }
   color: var(--accent);
 }
 
-.nav-icon { font-size: 1.3rem; }
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.nav-icon-script {
+  font-size: 1.45rem;
+}
+
 .nav-label { font-size: 0.7rem; }
 
 /* --- Onboarding --- */
@@ -2845,7 +2860,7 @@ p { color: var(--text-1); }
 
 /* Small screens — tighten user header */
 @media (max-width: 380px) {
-  .user-header { padding: var(--sp-2) 0; }
+  .user-header { padding: calc(var(--sp-2) + env(safe-area-inset-top)) 0 var(--sp-2); }
   .user-avatar { width: 30px; height: 30px; font-size: 0.85rem; }
   .user-header-name { font-size: 0.78rem; }
   .user-header-streak { font-size: 0.78rem; }

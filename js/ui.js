@@ -148,7 +148,7 @@ const UI = (() => {
           <span class="nav-icon">⚡</span><span class="nav-label">Practice</span>
         </button>
         <button class="nav-btn ${active === "alphabet" ? "active" : ""}" onclick="UI.navigate('#alphabet')">
-          <span class="nav-icon">ก</span><span class="nav-label">Script</span>
+          <span class="nav-icon nav-icon-script">ก</span><span class="nav-label">Script</span>
         </button>
         <button class="nav-btn ${active === "settings" ? "active" : ""}" onclick="UI.navigate('#settings')">
           <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
