@@ -485,6 +485,8 @@ p { color: var(--text-1); }
   display: flex;
   align-items: center;
   gap: var(--sp-3);
+  /* iOS PWA notch inset: pushes mode toolbars below the status bar */
+  padding-top: env(safe-area-inset-top);
   margin-bottom: var(--sp-4);
 }
 
