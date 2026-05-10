@@ -25,16 +25,36 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 | 4 | 🍂 Months (Jul–Dec) | 6 | Core |
 | 5 | 🌅 Time of Day | 7 | Core |
 | 6 | 🔢 Numbers 1–10 | 10 | Core |
-| 7 | 👨‍👩‍👧 Family | 14 | Core |
-| 8 | 💬 Basic Verbs | 10 | Core |
-| 9 | 🔢 Numbers — Extended | 16 | Core |
-| 10 | 🍽️ Kitchenware | 10 | Core |
-| 11 | 🍉 Fruits | 10 | Core |
-| 12 | 🍖 Meats & Proteins | 8 | Core |
-| 13 | 🧄 Ingredients | 10 | Core |
-| 14 | 🍜 Ordering Food | 8 | Situation |
-| 15 | 🛺 Getting Around | 8 | Situation |
-| 16 | 🏪 7-Eleven | 8 | Situation |
+| 7 | 👤 Pronouns & Questions | 12 | Core |
+| 8 | 🔗 Connectors & Particles | 14 | Core |
+| 9 | ✨ Adjectives | 16 | Core |
+| 10 | 😊 Feelings | 12 | Core |
+| 11 | 🧭 Locations & Directions | 14 | Core |
+| 12 | 💬 Essential Verbs | 20 | Core |
+| 13 | 🙏 Greetings & Phrases | 14 | Core |
+| 14 | 👨‍👩‍👧 Family | 19 | Core |
+| 15 | 🔢 Numbers — Extended | 16 | Core |
+| 16 | 🍽️ Kitchenware | 10 | Core |
+| 17 | 🍉 Fruits | 10 | Core |
+| 18 | 🍖 Meats & Proteins | 8 | Core |
+| 19 | 🧄 Ingredients | 10 | Core |
+| 20 | 🍜 Food & Eating | 16 | Core |
+| 21 | 🛍️ Shopping & Money | 12 | Core |
+| 22 | 🏥 Health & Emergencies | 12 | Situation |
+| 23 | 🍜 Ordering Food | 8 | Situation |
+| 24 | 🛺 Getting Around | 8 | Situation |
+| 25 | 🏪 7-Eleven | 8 | Situation |
+| 26 | 🪪 My Name Is... | 10 | Pattern |
+| 27 | 📋 X is Y | 10 | Pattern |
+| 28 | 🚫 Not [X] | 10 | Pattern |
+| 29 | ❓ Yes/No Question | 10 | Pattern |
+| 30 | 🔚 Question Words at End | 10 | Pattern |
+| 31 | 📍 Where Is It? | 10 | Pattern |
+| 32 | 🙏 Can I Have...? | 10 | Pattern |
+| 33 | 🤲 Can You ___? | 10 | Pattern |
+| 34 | 💰 How Much? | 10 | Pattern |
+| 35 | 🙋 I Want To... | 10 | Pattern |
+| 36 | 🆘 I Need ___ | 10 | Pattern |
 
 ## Setup
 
@@ -224,7 +244,7 @@ Minutes: add นาที (naa-thee) after the number. ครึ่ง (khrueng)
 │   ├── sentence-builder.js Word arrangement game
 │   └── app.js              Dashboard, onboarding, settings, routing
 ├── data/
-│   ├── topics.js           Vocabulary data (16 topics, 146 pairs, all with examples)
+│   ├── topics.js           Vocabulary data (36 topics, 393 pairs, all with examples)
 │   ├── alphabet.js         Thai alphabet data (44 consonants, 21 vowels, 4 tones)
 │   └── sentences.js        Sentence builder data (15 sentences)
 └── README.md
