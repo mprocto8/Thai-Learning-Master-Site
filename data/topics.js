@@ -1,16 +1,16 @@
 /**
- * All topics — 25 topics, ~230 pairs.
+ * All topics — 42 topics, 453 pairs.
  * Every pair: romanized (with tone diacritics), script, english, example.
- * Tone diacritics: ` low, ^ falling, ´ high, ˇ rising, unmarked = mid.
+ * Tone diacritics: à low, â falling, á high, ǎ rising, unmarked/ā mid.
  *
  * Topic types (the `type` field):
  *   - "vocabulary" — standard word/phrase packs (default)
  *   - "situation"  — phrase packs tied to a real-world situation
  *                     (Ordering Food, Getting Around, 7-Eleven, etc.)
  *   - "pattern"    — frame/template topics for Pattern Practice mode.
- *                     Not yet populated; shape documented below.
+ *                     Pattern markers stay constant; only useful variables are slottable.
  *
- * Pattern topic shape (for reference — none exist yet):
+ * Pattern topic shape (for reference):
  *
  *   {
  *     id: "ask-location",
@@ -20,7 +20,7 @@
  *
  *     // The sentence template with a blank slot.
  *     frame: {
- *       romanized: "___ yùu thîi nǎi",
+ *       romanized: "___ yùu thîi-nǎi",
  *       script: "___ อยู่ที่ไหน",
  *       english: "Where is ___?",
  *       explanation: "Use this to ask where any place or thing is located."
@@ -40,18 +40,16 @@
  *     //     Audio.playSentence.
  *     pairs: [
  *       {
- *         romanized: "hông náam yùu thîi nǎi",
+ *         romanized: "hông-náam yùu thîi-nǎi",
  *         script:    "ห้องน้ำอยู่ที่ไหน",
  *         english:   "Where is the bathroom?",
  *         slottable: [
- *           { romanized: "hông náam", script: "ห้องน้ำ", english: "bathroom" },
- *           { romanized: "yùu", script: "อยู่", english: "is located at" },
- *           { romanized: "thîi nǎi", script: "ที่ไหน", english: "where" }
+ *           { romanized: "hông-náam", script: "ห้องน้ำ", english: "bathroom" }
  *         ],
- *         slot: { romanized: "hông náam", script: "ห้องน้ำ", english: "bathroom" },
+ *         slot: { romanized: "hông-náam", script: "ห้องน้ำ", english: "bathroom" },
  *         example: {
  *           thai:      "ขอโทษ ห้องน้ำอยู่ที่ไหน",
- *           romanized: "khǎw thôot, hông náam yùu thîi nǎi",
+ *           romanized: "khǎw-thôot, hông-náam yùu thîi-nǎi",
  *           english:   "Excuse me, where is the bathroom?"
  *         }
  *       },
@@ -1211,6 +1209,324 @@ const TOPICS = [
         slottable: [{ romanized: "wee-laa-phôem", script: "เวลาเพิ่ม", english: "more time" }],
         slot: { romanized: "wee-laa-phôem", script: "เวลาเพิ่ม", english: "more time" },
         example: { thai: "ขอโทษครับ ต้องการเวลาเพิ่ม", romanized: "Khǎw-thôot khráp, tông-gaan wee-laa-phôem", english: "Sorry, I need more time" } }
+    ]
+  },
+
+  // ─── 37. Pattern: I Like ___ (Tier 3 — Daily Interaction) ───
+  {
+    id: "like", emoji: "💚", label: "I Like ___", type: "pattern",
+    frame: {
+      romanized: "chôp + ___",
+      script: "ชอบ + ___",
+      english: "I like ___",
+      explanation: "ชอบ (chôp) works with both nouns and verbs."
+    },
+    pairs: [
+      { romanized: "Chôp aa-hǎan-Thai", script: "ชอบอาหารไทย", english: "I like Thai food",
+        slottable: [{ romanized: "aa-hǎan-Thai", script: "อาหารไทย", english: "Thai food" }],
+        slot: { romanized: "aa-hǎan-Thai", script: "อาหารไทย", english: "Thai food" },
+        example: { thai: "ผมชอบอาหารไทยมาก โดยเฉพาะผัดกะเพรา", romanized: "Phǒm chôp aa-hǎan-Thai mâak, dooi-chà-pháw phàt-grà-phao", english: "I really like Thai food, especially basil stir-fry" } },
+      { romanized: "Chôp gǔay-dtǐao", script: "ชอบก๋วยเตี๋ยว", english: "I like noodles",
+        slottable: [{ romanized: "gǔay-dtǐao", script: "ก๋วยเตี๋ยว", english: "noodles" }],
+        slot: { romanized: "gǔay-dtǐao", script: "ก๋วยเตี๋ยว", english: "noodles" },
+        example: { thai: "ร้านนี้ก๋วยเตี๋ยวอร่อย ฉันชอบ", romanized: "Ráan níi gǔay-dtǐao à-ròi, chǎn chôp", english: "This shop's noodles are good; I like them" } },
+      { romanized: "Chôp phǒn-lá-mái", script: "ชอบผลไม้", english: "I like fruit",
+        slottable: [{ romanized: "phǒn-lá-mái", script: "ผลไม้", english: "fruit" }],
+        slot: { romanized: "phǒn-lá-mái", script: "ผลไม้", english: "fruit" },
+        example: { thai: "เมืองไทยมีผลไม้เยอะ ฉันชอบมาก", romanized: "Meuang-Thai mii phǒn-lá-mái yóe, chǎn chôp mâak", english: "Thailand has lots of fruit; I really like it" } },
+      { romanized: "Chôp doen-thaang", script: "ชอบเดินทาง", english: "I like traveling",
+        slottable: [{ romanized: "doen-thaang", script: "เดินทาง", english: "traveling" }],
+        slot: { romanized: "doen-thaang", script: "เดินทาง", english: "traveling" },
+        example: { thai: "วันหยุดผมชอบเดินทางไปต่างจังหวัด", romanized: "Wan-yùt phǒm chôp doen-thaang pai dtàang-jang-wàt", english: "On holidays I like traveling to other provinces" } },
+      { romanized: "Chôp doen-lên", script: "ชอบเดินเล่น", english: "I like walking around",
+        slottable: [{ romanized: "doen-lên", script: "เดินเล่น", english: "walking around" }],
+        slot: { romanized: "doen-lên", script: "เดินเล่น", english: "walking around" },
+        example: { thai: "ตอนเย็นชอบเดินเล่นแถวสวนลุม", romanized: "Dtawn-yen chôp doen-lên thǎeo Sǔan-Lum", english: "In the evening I like walking around near Lumphini Park" } },
+      { romanized: "Chôp àan-nǎng-sǔue", script: "ชอบอ่านหนังสือ", english: "I like reading",
+        slottable: [{ romanized: "àan-nǎng-sǔue", script: "อ่านหนังสือ", english: "reading" }],
+        slot: { romanized: "àan-nǎng-sǔue", script: "อ่านหนังสือ", english: "reading" },
+        example: { thai: "ก่อนนอนฉันชอบอ่านหนังสือ", romanized: "Gàwn-nawn chǎn chôp àan-nǎng-sǔue", english: "Before bed I like reading" } },
+      { romanized: "Chôp fang-phleeng", script: "ชอบฟังเพลง", english: "I like listening to music",
+        slottable: [{ romanized: "fang-phleeng", script: "ฟังเพลง", english: "listening to music" }],
+        slot: { romanized: "fang-phleeng", script: "ฟังเพลง", english: "listening to music" },
+        example: { thai: "เวลาทำงานผมชอบฟังเพลง", romanized: "Wee-laa tham-ngaan phǒm chôp fang-phleeng", english: "When working I like listening to music" } },
+      { romanized: "Chôp duu-nǎng", script: "ชอบดูหนัง", english: "I like watching movies",
+        slottable: [{ romanized: "duu-nǎng", script: "ดูหนัง", english: "watching movies" }],
+        slot: { romanized: "duu-nǎng", script: "ดูหนัง", english: "watching movies" },
+        example: { thai: "เสาร์นี้ไปดูหนังไหม ผมชอบดูหนัง", romanized: "Sǎo níi pai duu-nǎng mǎi, phǒm chôp duu-nǎng", english: "Want to go to a movie this Saturday? I like watching movies" } },
+      { romanized: "Chôp thá-lee", script: "ชอบทะเล", english: "I like the sea",
+        slottable: [{ romanized: "thá-lee", script: "ทะเล", english: "the sea" }],
+        slot: { romanized: "thá-lee", script: "ทะเล", english: "the sea" },
+        example: { thai: "ฉันชอบทะเล แต่ไม่ชอบแดดแรง", romanized: "Chǎn chôp thá-lee, dtàae mâi chôp dàet raeng", english: "I like the sea, but I don't like strong sun" } },
+      { romanized: "Chôp thîi-nîi", script: "ชอบที่นี่", english: "I like this place",
+        slottable: [{ romanized: "thîi-nîi", script: "ที่นี่", english: "this place" }],
+        slot: { romanized: "thîi-nîi", script: "ที่นี่", english: "this place" },
+        example: { thai: "ที่นี่สบายดี ฉันชอบที่นี่", romanized: "Thîi-nîi sà-baai dii, chǎn chôp thîi-nîi", english: "This place feels nice; I like it here" } }
+    ]
+  },
+
+  // ─── 38. Pattern: I Have ___ (Tier 3 — Daily Interaction) ───
+  {
+    id: "have", emoji: "📦", label: "I Have ___", type: "pattern",
+    frame: {
+      romanized: "mii + ___",
+      script: "มี + ___",
+      english: "I have ___ / There is ___",
+      explanation: "มี (mii) means 'have' or 'there is'. Versatile — works for possessions, available items, abstract things."
+    },
+    pairs: [
+      { romanized: "Mii ngoen", script: "มีเงิน", english: "I have money",
+        slottable: [{ romanized: "ngoen", script: "เงิน", english: "money" }],
+        slot: { romanized: "ngoen", script: "เงิน", english: "money" },
+        example: { thai: "วันนี้มีเงินสดไม่เยอะ", romanized: "Wan-níi mii ngoen-sòt mâi yóe", english: "Today I don't have much cash" } },
+      { romanized: "Mii wee-laa", script: "มีเวลา", english: "I have time",
+        slottable: [{ romanized: "wee-laa", script: "เวลา", english: "time" }],
+        slot: { romanized: "wee-laa", script: "เวลา", english: "time" },
+        example: { thai: "พรุ่งนี้คุณมีเวลาไหม?", romanized: "Phrûng-níi khun mii wee-laa mǎi?", english: "Do you have time tomorrow?" } },
+      { romanized: "Mii hông-wâang", script: "มีห้องว่าง", english: "There is a free room",
+        slottable: [{ romanized: "hông-wâang", script: "ห้องว่าง", english: "free room" }],
+        slot: { romanized: "hông-wâang", script: "ห้องว่าง", english: "free room" },
+        example: { thai: "คืนนี้มีห้องว่างไหมครับ?", romanized: "Khuen-níi mii hông-wâang mǎi khráp?", english: "Is there a room available tonight?" } },
+      { romanized: "Mii kham-thǎam", script: "มีคำถาม", english: "I have a question",
+        slottable: [{ romanized: "kham-thǎam", script: "คำถาม", english: "question" }],
+        slot: { romanized: "kham-thǎam", script: "คำถาม", english: "question" },
+        example: { thai: "ขอโทษครับ ผมมีคำถาม", romanized: "Khǎw-thôot khráp, phǒm mii kham-thǎam", english: "Excuse me, I have a question" } },
+      { romanized: "Mii dtó-wâang", script: "มีโต๊ะว่าง", english: "There is a free table",
+        slottable: [{ romanized: "dtó-wâang", script: "โต๊ะว่าง", english: "free table" }],
+        slot: { romanized: "dtó-wâang", script: "โต๊ะว่าง", english: "free table" },
+        example: { thai: "ร้านนี้มีโต๊ะว่างไหม?", romanized: "Ráan níi mii dtó-wâang mǎi?", english: "Does this restaurant have a free table?" } },
+      { romanized: "Mii phûean", script: "มีเพื่อน", english: "I have a friend",
+        slottable: [{ romanized: "phûean", script: "เพื่อน", english: "friend" }],
+        slot: { romanized: "phûean", script: "เพื่อน", english: "friend" },
+        example: { thai: "ผมมีเพื่อนอยู่กรุงเทพ", romanized: "Phǒm mii phûean yùu Grung-thêep", english: "I have a friend in Bangkok" } },
+      { romanized: "Mii bpan-hǎa", script: "มีปัญหา", english: "There is a problem",
+        slottable: [{ romanized: "bpan-hǎa", script: "ปัญหา", english: "problem" }],
+        slot: { romanized: "bpan-hǎa", script: "ปัญหา", english: "problem" },
+        example: { thai: "ถ้ามีปัญหา โทรหาผมนะ", romanized: "Thâa mii bpan-hǎa, thoo hǎa phǒm ná", english: "If there's a problem, call me" } },
+      { romanized: "Mii rót", script: "มีรถ", english: "I have a car",
+        slottable: [{ romanized: "rót", script: "รถ", english: "car" }],
+        slot: { romanized: "rót", script: "รถ", english: "car" },
+        example: { thai: "คุณมีรถไหม หรือไปแท็กซี่?", romanized: "Khun mii rót mǎi, rěu pai tháek-sîi?", english: "Do you have a car, or are we taking a taxi?" } },
+      { romanized: "Mii ngaan-thîi-tông-tham", script: "มีงานที่ต้องทำ", english: "I have work to do",
+        slottable: [{ romanized: "ngaan-thîi-tông-tham", script: "งานที่ต้องทำ", english: "work to do" }],
+        slot: { romanized: "ngaan-thîi-tông-tham", script: "งานที่ต้องทำ", english: "work to do" },
+        example: { thai: "วันนี้มีงานที่ต้องทำเยอะมาก", romanized: "Wan-níi mii ngaan thîi tông tham yóe mâak", english: "Today I have a lot of work to do" } },
+      { romanized: "Mii náam-yen", script: "มีน้ำเย็น", english: "There is cold water",
+        slottable: [{ romanized: "náam-yen", script: "น้ำเย็น", english: "cold water" }],
+        slot: { romanized: "náam-yen", script: "น้ำเย็น", english: "cold water" },
+        example: { thai: "ในตู้เย็นมีน้ำเย็น", romanized: "Nai dtûu-yen mii náam-yen", english: "There is cold water in the fridge" } }
+    ]
+  },
+
+  // ─── 39. Pattern: Going To ___ (Tier 3 — Daily Interaction) ───
+  {
+    id: "go-to", emoji: "🚶", label: "Going To ___", type: "pattern",
+    frame: {
+      romanized: "pai + ___",
+      script: "ไป + ___",
+      english: "Going (to) ___",
+      explanation: "ไป (pai) means 'go'. Use with a place or another verb to express destination or purpose."
+    },
+    pairs: [
+      { romanized: "Pai tham-ngaan", script: "ไปทำงาน", english: "Going to work",
+        slottable: [{ romanized: "tham-ngaan", script: "ทำงาน", english: "work" }],
+        slot: { romanized: "tham-ngaan", script: "ทำงาน", english: "work" },
+        example: { thai: "ตอนเช้าผมไปทำงานด้วยบีทีเอส", romanized: "Dtawn-cháo phǒm pai tham-ngaan dûay BTS", english: "In the morning I go to work by BTS" } },
+      { romanized: "Pai bâan", script: "ไปบ้าน", english: "Going home / to the house",
+        slottable: [{ romanized: "bâan", script: "บ้าน", english: "home / house" }],
+        slot: { romanized: "bâan", script: "บ้าน", english: "home / house" },
+        example: { thai: "เลิกงานแล้วไปบ้านเลย", romanized: "Lôek-ngaan láew pai bâan loei", english: "After work, I'm going straight home" } },
+      { romanized: "Pai gin-khâao", script: "ไปกินข้าว", english: "Going to eat",
+        slottable: [{ romanized: "gin-khâao", script: "กินข้าว", english: "eat" }],
+        slot: { romanized: "gin-khâao", script: "กินข้าว", english: "eat" },
+        example: { thai: "เที่ยงแล้ว ไปกินข้าวไหม?", romanized: "Thîiang láew, pai gin-khâao mǎi?", english: "It's noon already, want to go eat?" } },
+      { romanized: "Pai dtà-làat", script: "ไปตลาด", english: "Going to the market",
+        slottable: [{ romanized: "dtà-làat", script: "ตลาด", english: "market" }],
+        slot: { romanized: "dtà-làat", script: "ตลาด", english: "market" },
+        example: { thai: "เย็นนี้ฉันจะไปตลาด", romanized: "Yen-níi chǎn jà pai dtà-làat", english: "This evening I'm going to the market" } },
+      { romanized: "Pai roong-rian", script: "ไปโรงเรียน", english: "Going to school",
+        slottable: [{ romanized: "roong-rian", script: "โรงเรียน", english: "school" }],
+        slot: { romanized: "roong-rian", script: "โรงเรียน", english: "school" },
+        example: { thai: "ลูกไปโรงเรียนกี่โมง?", romanized: "Lûuk pai roong-rian gìi moong?", english: "What time does your child go to school?" } },
+      { romanized: "Pai thîao", script: "ไปเที่ยว", english: "Going traveling / going out",
+        slottable: [{ romanized: "thîao", script: "เที่ยว", english: "travel / go out" }],
+        slot: { romanized: "thîao", script: "เที่ยว", english: "travel / go out" },
+        example: { thai: "เสาร์นี้ไปเที่ยวไหนดี?", romanized: "Sǎo níi pai thîao nǎi dii?", english: "Where should we go out this Saturday?" } },
+      { romanized: "Pai nawn", script: "ไปนอน", english: "Going to sleep",
+        slottable: [{ romanized: "nawn", script: "นอน", english: "sleep" }],
+        slot: { romanized: "nawn", script: "นอน", english: "sleep" },
+        example: { thai: "เหนื่อยมากแล้ว ไปนอนก่อนนะ", romanized: "Nùeai mâak láew, pai nawn gàwn ná", english: "I'm really tired, I'm going to sleep first" } },
+      { romanized: "Pai súue-khǎawng", script: "ไปซื้อของ", english: "Going shopping",
+        slottable: [{ romanized: "súue-khǎawng", script: "ซื้อของ", english: "shopping / buying things" }],
+        slot: { romanized: "súue-khǎawng", script: "ซื้อของ", english: "shopping / buying things" },
+        example: { thai: "หลังเลิกงานจะไปซื้อของ", romanized: "Lǎng lôek-ngaan jà pai súue-khǎawng", english: "After work I'm going shopping" } },
+      { romanized: "Pai jur-phûean", script: "ไปเจอเพื่อน", english: "Going to see a friend",
+        slottable: [{ romanized: "jur-phûean", script: "เจอเพื่อน", english: "see a friend" }],
+        slot: { romanized: "jur-phûean", script: "เจอเพื่อน", english: "see a friend" },
+        example: { thai: "คืนนี้ผมไปเจอเพื่อนที่สยาม", romanized: "Khuen-níi phǒm pai jur-phûean thîi Sà-yǎam", english: "Tonight I'm going to see a friend at Siam" } },
+      { romanized: "Pai sà-nǎam-bin", script: "ไปสนามบิน", english: "Going to the airport",
+        slottable: [{ romanized: "sà-nǎam-bin", script: "สนามบิน", english: "airport" }],
+        slot: { romanized: "sà-nǎam-bin", script: "สนามบิน", english: "airport" },
+        example: { thai: "พรุ่งนี้เช้าต้องไปสนามบิน", romanized: "Phrûng-níi cháo tông pai sà-nǎam-bin", english: "Tomorrow morning I have to go to the airport" } }
+    ]
+  },
+
+  // ─── 40. Pattern: Eat / Drink ___ (Tier 3 — Daily Interaction) ───
+  {
+    id: "eat-drink", emoji: "🍴", label: "Eat / Drink ___", type: "pattern",
+    frame: {
+      romanized: "gin + ___ / dùem + ___",
+      script: "กิน + ___ / ดื่ม + ___",
+      english: "Eat / drink ___",
+      explanation: "กิน (gin) for eating, ดื่ม (dùem) for drinking. Some Thai uses กิน for both casually."
+    },
+    pairs: [
+      { romanized: "Gin khâao", script: "กินข้าว", english: "Eat rice / eat a meal",
+        slottable: [{ romanized: "khâao", script: "ข้าว", english: "rice / meal" }],
+        slot: { romanized: "khâao", script: "ข้าว", english: "rice / meal" },
+        example: { thai: "กินข้าวหรือยัง?", romanized: "Gin khâao rěu-yang?", english: "Have you eaten yet?" } },
+      { romanized: "Gin phàt-thai", script: "กินผัดไทย", english: "Eat pad thai",
+        slottable: [{ romanized: "phàt-thai", script: "ผัดไทย", english: "pad thai" }],
+        slot: { romanized: "phàt-thai", script: "ผัดไทย", english: "pad thai" },
+        example: { thai: "มาครั้งแรกต้องกินผัดไทย", romanized: "Maa khráng-râek tông gin phàt-thai", english: "First time here, you have to eat pad thai" } },
+      { romanized: "Gin phǒn-lá-mái", script: "กินผลไม้", english: "Eat fruit",
+        slottable: [{ romanized: "phǒn-lá-mái", script: "ผลไม้", english: "fruit" }],
+        slot: { romanized: "phǒn-lá-mái", script: "ผลไม้", english: "fruit" },
+        example: { thai: "หลังอาหารชอบกินผลไม้", romanized: "Lǎng aa-hǎan chôp gin phǒn-lá-mái", english: "After meals I like eating fruit" } },
+      { romanized: "Dùem náam", script: "ดื่มน้ำ", english: "Drink water",
+        slottable: [{ romanized: "náam", script: "น้ำ", english: "water" }],
+        slot: { romanized: "náam", script: "น้ำ", english: "water" },
+        example: { thai: "อากาศร้อน ต้องดื่มน้ำเยอะๆ", romanized: "Aa-gàat rón, tông dùem náam yóe-yóe", english: "It's hot; you need to drink lots of water" } },
+      { romanized: "Dùem gaa-fae", script: "ดื่มกาแฟ", english: "Drink coffee",
+        slottable: [{ romanized: "gaa-fae", script: "กาแฟ", english: "coffee" }],
+        slot: { romanized: "gaa-fae", script: "กาแฟ", english: "coffee" },
+        example: { thai: "ตอนเช้าผมดื่มกาแฟทุกวัน", romanized: "Dtawn-cháo phǒm dùem gaa-fae thúk-wan", english: "In the morning I drink coffee every day" } },
+      { romanized: "Dùem chaa", script: "ดื่มชา", english: "Drink tea",
+        slottable: [{ romanized: "chaa", script: "ชา", english: "tea" }],
+        slot: { romanized: "chaa", script: "ชา", english: "tea" },
+        example: { thai: "ตอนบ่ายชอบดื่มชาเย็น", romanized: "Dtawn-bàai chôp dùem chaa-yen", english: "In the afternoon I like drinking iced tea" } },
+      { romanized: "Dùem bia", script: "ดื่มเบียร์", english: "Drink beer",
+        slottable: [{ romanized: "bia", script: "เบียร์", english: "beer" }],
+        slot: { romanized: "bia", script: "เบียร์", english: "beer" },
+        example: { thai: "เย็นวันศุกร์ไปดื่มเบียร์กันไหม?", romanized: "Yen Wan-Sùk pai dùem bia gan mǎi?", english: "Friday evening, want to go drink beer together?" } },
+      { romanized: "Gin yaa", script: "กินยา", english: "Take medicine",
+        slottable: [{ romanized: "yaa", script: "ยา", english: "medicine" }],
+        slot: { romanized: "yaa", script: "ยา", english: "medicine" },
+        example: { thai: "ไม่สบายต้องกินยาแล้วพักผ่อน", romanized: "Mâi sà-baai tông gin yaa láew phák-phàwn", english: "If you're sick, take medicine and rest" } },
+      { romanized: "Gin sôm-dtam", script: "กินส้มตำ", english: "Eat papaya salad",
+        slottable: [{ romanized: "sôm-dtam", script: "ส้มตำ", english: "papaya salad" }],
+        slot: { romanized: "sôm-dtam", script: "ส้มตำ", english: "papaya salad" },
+        example: { thai: "ส้มตำร้านนี้เผ็ดมาก กินได้ไหม?", romanized: "Sôm-dtam ráan níi phèt mâak, gin dâai mǎi?", english: "This shop's papaya salad is very spicy; can you eat it?" } },
+      { romanized: "Dùem náam-phǒn-lá-mái", script: "ดื่มน้ำผลไม้", english: "Drink juice",
+        slottable: [{ romanized: "náam-phǒn-lá-mái", script: "น้ำผลไม้", english: "juice" }],
+        slot: { romanized: "náam-phǒn-lá-mái", script: "น้ำผลไม้", english: "juice" },
+        example: { thai: "เด็กๆ ชอบดื่มน้ำผลไม้", romanized: "Dèk-dèk chôp dùem náam-phǒn-lá-mái", english: "Kids like drinking juice" } }
+    ]
+  },
+
+  // ─── 41. Pattern: More Than (Tier 3 — Daily Interaction) ───
+  {
+    id: "comparative", emoji: "⚖️", label: "More Than", type: "pattern",
+    frame: {
+      romanized: "___ + [adj] + gwàa + ___",
+      script: "___ + [adj] + กว่า + ___",
+      english: "[A] is more [adj] than [B]",
+      explanation: "Use กว่า (gwàa) after the adjective to compare. Subject before, comparison object after."
+    },
+    pairs: [
+      { romanized: "An-níi à-ròi gwàa an-nán", script: "อันนี้อร่อยกว่าอันนั้น", english: "This one is tastier than that one",
+        slottable: [{ romanized: "à-ròi", script: "อร่อย", english: "tasty" }],
+        slot: { romanized: "à-ròi", script: "อร่อย", english: "tasty" },
+        example: { thai: "ลองอันนี้สิ อร่อยกว่าอันนั้น", romanized: "Laawng an-níi sì, à-ròi gwàa an-nán", english: "Try this one; it's tastier than that one" } },
+      { romanized: "Rót reo gwàa rót-mee", script: "รถเร็วกว่ารถเมล์", english: "Cars are faster than buses",
+        slottable: [{ romanized: "reo", script: "เร็ว", english: "fast" }],
+        slot: { romanized: "reo", script: "เร็ว", english: "fast" },
+        example: { thai: "ถ้าไม่รถติด รถเร็วกว่ารถเมล์", romanized: "Thâa mâi rót-tìt, rót reo gwàa rót-mee", english: "If there's no traffic, cars are faster than buses" } },
+      { romanized: "Wan-níi dii gwàa mêua-waan", script: "วันนี้ดีกว่าเมื่อวาน", english: "Today is better than yesterday",
+        slottable: [{ romanized: "dii", script: "ดี", english: "good / better" }],
+        slot: { romanized: "dii", script: "ดี", english: "good / better" },
+        example: { thai: "วันนี้รู้สึกดีกว่าเมื่อวาน", romanized: "Wan-níi rúu-sùek dii gwàa mêua-waan", english: "Today I feel better than yesterday" } },
+      { romanized: "Grung-thêep rón gwàa Chiang-mài", script: "กรุงเทพร้อนกว่าเชียงใหม่", english: "Bangkok is hotter than Chiang Mai",
+        slottable: [{ romanized: "rón", script: "ร้อน", english: "hot" }],
+        slot: { romanized: "rón", script: "ร้อน", english: "hot" },
+        example: { thai: "หน้าร้อนกรุงเทพร้อนกว่าเชียงใหม่", romanized: "Nâa-rón Grung-thêep rón gwàa Chiang-mài", english: "In hot season Bangkok is hotter than Chiang Mai" } },
+      { romanized: "BTS sà-dùak gwàa tháek-sîi", script: "บีทีเอสสะดวกกว่าแท็กซี่", english: "The BTS is more convenient than a taxi",
+        slottable: [{ romanized: "sà-dùak", script: "สะดวก", english: "convenient" }],
+        slot: { romanized: "sà-dùak", script: "สะดวก", english: "convenient" },
+        example: { thai: "ตอนรถติด บีทีเอสสะดวกกว่าแท็กซี่", romanized: "Dtawn rót-tìt, BTS sà-dùak gwàa tháek-sîi", english: "When traffic is bad, the BTS is more convenient than a taxi" } },
+      { romanized: "Ráan níi thuuk gwàa ráan nán", script: "ร้านนี้ถูกกว่าร้านนั้น", english: "This shop is cheaper than that shop",
+        slottable: [{ romanized: "thuuk", script: "ถูก", english: "cheap" }],
+        slot: { romanized: "thuuk", script: "ถูก", english: "cheap" },
+        example: { thai: "ซื้อที่นี่ดีกว่า ร้านนี้ถูกกว่า", romanized: "Súue thîi-nîi dii gwàa, ráan níi thuuk gwàa", english: "Better buy here; this shop is cheaper" } },
+      { romanized: "Hông níi yài gwàa hông nán", script: "ห้องนี้ใหญ่กว่าห้องนั้น", english: "This room is bigger than that room",
+        slottable: [{ romanized: "yài", script: "ใหญ่", english: "big" }],
+        slot: { romanized: "yài", script: "ใหญ่", english: "big" },
+        example: { thai: "ห้องนี้ใหญ่กว่า แต่แพงกว่า", romanized: "Hông níi yài gwàa, dtàae phaeng gwàa", english: "This room is bigger, but more expensive" } },
+      { romanized: "An-níi ngâai gwàa an-nán", script: "อันนี้ง่ายกว่าอันนั้น", english: "This one is easier than that one",
+        slottable: [{ romanized: "ngâai", script: "ง่าย", english: "easy" }],
+        slot: { romanized: "ngâai", script: "ง่าย", english: "easy" },
+        example: { thai: "บทเรียนนี้ง่ายกว่าบทที่แล้ว", romanized: "Bòt-rian níi ngâai gwàa bòt thîi-láew", english: "This lesson is easier than the last one" } },
+      { romanized: "Thaang níi glâi gwàa thaang nán", script: "ทางนี้ใกล้กว่าทางนั้น", english: "This way is closer than that way",
+        slottable: [{ romanized: "glâi", script: "ใกล้", english: "near / close" }],
+        slot: { romanized: "glâi", script: "ใกล้", english: "near / close" },
+        example: { thai: "ไปทางนี้ดีกว่า ทางนี้ใกล้กว่า", romanized: "Pai thaang níi dii gwàa, thaang níi glâi gwàa", english: "Better go this way; this way is closer" } },
+      { romanized: "Phûut cháa gwàa níi", script: "พูดช้ากว่านี้", english: "Speak slower than this",
+        slottable: [{ romanized: "cháa", script: "ช้า", english: "slow" }],
+        slot: { romanized: "cháa", script: "ช้า", english: "slow" },
+        example: { thai: "ขอโทษครับ พูดช้ากว่านี้ได้ไหม?", romanized: "Khǎw-thôot khráp, phûut cháa gwàa níi dâai mǎi?", english: "Sorry, can you speak slower than this?" } }
+    ]
+  },
+
+  // ─── 42. Pattern: Today / Yesterday / Tomorrow ___ (Tier 3 — Daily Interaction) ───
+  {
+    id: "time-marker", emoji: "🕐", label: "Today / Yesterday / Tomorrow ___", type: "pattern",
+    frame: {
+      romanized: "[time word] + ___",
+      script: "[time word] + ___",
+      english: "[Time word], [statement]",
+      explanation: "Time markers go at the START in Thai, before the rest of the sentence."
+    },
+    pairs: [
+      { romanized: "Wan-níi fǒn-dtòk", script: "วันนี้ฝนตก", english: "Today it's raining",
+        slottable: [{ romanized: "fǒn-dtòk", script: "ฝนตก", english: "it's raining" }],
+        slot: { romanized: "fǒn-dtòk", script: "ฝนตก", english: "it's raining" },
+        example: { thai: "วันนี้ฝนตก อย่าลืมร่มนะ", romanized: "Wan-níi fǒn-dtòk, yàa luem rôm ná", english: "It's raining today; don't forget an umbrella" } },
+      { romanized: "Phrûng-níi chǎn jà-doen-thaang", script: "พรุ่งนี้ฉันจะเดินทาง", english: "Tomorrow I'm traveling",
+        slottable: [{ romanized: "chǎn-jà-doen-thaang", script: "ฉันจะเดินทาง", english: "I'm traveling" }],
+        slot: { romanized: "chǎn-jà-doen-thaang", script: "ฉันจะเดินทาง", english: "I'm traveling" },
+        example: { thai: "พรุ่งนี้ฉันจะเดินทางไปเชียงใหม่", romanized: "Phrûng-níi chǎn jà doen-thaang pai Chiang-mài", english: "Tomorrow I'm traveling to Chiang Mai" } },
+      { romanized: "Mêua-waan gin aa-hǎan-Thai", script: "เมื่อวานกินอาหารไทย", english: "Yesterday I ate Thai food",
+        slottable: [{ romanized: "gin-aa-hǎan-Thai", script: "กินอาหารไทย", english: "ate Thai food" }],
+        slot: { romanized: "gin-aa-hǎan-Thai", script: "กินอาหารไทย", english: "ate Thai food" },
+        example: { thai: "เมื่อวานกินอาหารไทยกับเพื่อน", romanized: "Mêua-waan gin aa-hǎan-Thai gàp phûean", english: "Yesterday I ate Thai food with a friend" } },
+      { romanized: "Dtawn-cháo gin gaa-fae", script: "ตอนเช้ากินกาแฟ", english: "In the morning I drink coffee",
+        slottable: [{ romanized: "gin-gaa-fae", script: "กินกาแฟ", english: "drink coffee" }],
+        slot: { romanized: "gin-gaa-fae", script: "กินกาแฟ", english: "drink coffee" },
+        example: { thai: "ตอนเช้าผมกินกาแฟก่อนทำงาน", romanized: "Dtawn-cháo phǒm gin gaa-fae gàwn tham-ngaan", english: "In the morning I drink coffee before work" } },
+      { romanized: "Dtawn-yen wîng", script: "ตอนเย็นวิ่ง", english: "In the evening I run",
+        slottable: [{ romanized: "wîng", script: "วิ่ง", english: "run" }],
+        slot: { romanized: "wîng", script: "วิ่ง", english: "run" },
+        example: { thai: "ตอนเย็นชอบวิ่งที่สวน", romanized: "Dtawn-yen chôp wîng thîi sǔan", english: "In the evening I like running at the park" } },
+      { romanized: "Khuen-níi jà-nawn-reo", script: "คืนนี้จะนอนเร็ว", english: "Tonight I'll sleep early",
+        slottable: [{ romanized: "jà-nawn-reo", script: "จะนอนเร็ว", english: "will sleep early" }],
+        slot: { romanized: "jà-nawn-reo", script: "จะนอนเร็ว", english: "will sleep early" },
+        example: { thai: "คืนนี้จะนอนเร็ว พรุ่งนี้ต้องตื่นเช้า", romanized: "Khuen-níi jà nawn reo, phrûng-níi tông dtèun cháo", english: "Tonight I'll sleep early; tomorrow I have to wake up early" } },
+      { romanized: "Aa-thít-nâa tham-ngaan", script: "อาทิตย์หน้าทำงาน", english: "Next week I work",
+        slottable: [{ romanized: "tham-ngaan", script: "ทำงาน", english: "work" }],
+        slot: { romanized: "tham-ngaan", script: "ทำงาน", english: "work" },
+        example: { thai: "อาทิตย์หน้าทำงานทุกวัน", romanized: "Aa-thít-nâa tham-ngaan thúk-wan", english: "Next week I work every day" } },
+      { romanized: "Wan-Sǎo pai-thîao", script: "วันเสาร์ไปเที่ยว", english: "On Saturday I'm going out",
+        slottable: [{ romanized: "pai-thîao", script: "ไปเที่ยว", english: "go out / travel" }],
+        slot: { romanized: "pai-thîao", script: "ไปเที่ยว", english: "go out / travel" },
+        example: { thai: "วันเสาร์ไปเที่ยวกับเพื่อน", romanized: "Wan-Sǎo pai-thîao gàp phûean", english: "On Saturday I'm going out with friends" } },
+      { romanized: "Dtawn-bàai mii bprà-chum", script: "ตอนบ่ายมีประชุม", english: "In the afternoon I have a meeting",
+        slottable: [{ romanized: "mii-bprà-chum", script: "มีประชุม", english: "have a meeting" }],
+        slot: { romanized: "mii-bprà-chum", script: "มีประชุม", english: "have a meeting" },
+        example: { thai: "ตอนบ่ายมีประชุม เลยไม่ว่าง", romanized: "Dtawn-bàai mii bprà-chum, loei mâi wâang", english: "In the afternoon I have a meeting, so I'm not free" } },
+      { romanized: "Bpii-nâa yàak-rian-phaa-sǎa-Thai", script: "ปีหน้าอยากเรียนภาษาไทย", english: "Next year I want to learn Thai",
+        slottable: [{ romanized: "yàak-rian-phaa-sǎa-Thai", script: "อยากเรียนภาษาไทย", english: "want to learn Thai" }],
+        slot: { romanized: "yàak-rian-phaa-sǎa-Thai", script: "อยากเรียนภาษาไทย", english: "want to learn Thai" },
+        example: { thai: "ปีหน้าอยากเรียนภาษาไทยจริงจัง", romanized: "Bpii-nâa yàak rian phaa-sǎa-Thai jing-jang", english: "Next year I want to study Thai seriously" } }
     ]
   }
 ];

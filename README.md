@@ -55,6 +55,12 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 | 34 | 💰 How Much? | 10 | Pattern |
 | 35 | 🙋 I Want To... | 10 | Pattern |
 | 36 | 🆘 I Need ___ | 10 | Pattern |
+| 37 | 💚 I Like ___ | 10 | Pattern |
+| 38 | 📦 I Have ___ | 10 | Pattern |
+| 39 | 🚶 Going To ___ | 10 | Pattern |
+| 40 | 🍴 Eat / Drink ___ | 10 | Pattern |
+| 41 | ⚖️ More Than | 10 | Pattern |
+| 42 | 🕐 Today / Yesterday / Tomorrow ___ | 10 | Pattern |
 
 ## Setup
 
@@ -244,7 +250,7 @@ Minutes: add นาที (naa-thee) after the number. ครึ่ง (khrueng)
 │   ├── sentence-builder.js Word arrangement game
 │   └── app.js              Dashboard, onboarding, settings, routing
 ├── data/
-│   ├── topics.js           Vocabulary data (36 topics, 393 pairs, all with examples)
+│   ├── topics.js           Vocabulary data (42 topics, 453 pairs, all with examples)
 │   ├── alphabet.js         Thai alphabet data (44 consonants, 21 vowels, 4 tones)
 │   └── sentences.js        Sentence builder data (15 sentences)
 └── README.md
