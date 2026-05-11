@@ -250,7 +250,7 @@ Minutes: add นาที (naa-thee) after the number. ครึ่ง (khrueng)
 │   ├── sentence-builder.js Word arrangement game
 │   └── app.js              Dashboard, onboarding, settings, routing
 ├── data/
-│   ├── topics.js           Vocabulary data (42 topics, 453 pairs, all with examples)
+│   ├── topics.js           Vocabulary data (47 topics, 503 pairs, all with examples)
 │   ├── alphabet.js         Thai alphabet data (44 consonants, 21 vowels, 4 tones)
 │   └── sentences.js        Sentence builder data (15 sentences)
 └── README.md
