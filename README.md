@@ -61,6 +61,14 @@ A premium, fully static Thai vocabulary and script learning web app. No framewor
 | 40 | 🍴 Eat / Drink ___ | 10 | Pattern |
 | 41 | ⚖️ More Than | 10 | Pattern |
 | 42 | 🕐 Today / Yesterday / Tomorrow ___ | 10 | Pattern |
+| 43 | 🌸 A Little / A Bit | 10 | Pattern |
+| 44 | ✅ Already / Done | 10 | Pattern |
+| 45 | ⏳ Haven't ___ Yet | 10 | Pattern |
+| 46 | 🔮 Will ___ | 10 | Pattern |
+| 47 | 👥 With ___ | 10 | Pattern |
+| 48 | 🤔 ..., Right? | 10 | Pattern |
+| 49 | 💥 Very / Too | 10 | Pattern |
+| 50 | 🙇 Please ___ For Me | 10 | Pattern |
 
 ## Setup
 
@@ -250,7 +258,7 @@ Minutes: add นาที (naa-thee) after the number. ครึ่ง (khrueng)
 │   ├── sentence-builder.js Word arrangement game
 │   └── app.js              Dashboard, onboarding, settings, routing
 ├── data/
-│   ├── topics.js           Vocabulary data (47 topics, 503 pairs, all with examples)
+│   ├── topics.js           Vocabulary data (50 topics, 533 pairs, all with examples)
 │   ├── alphabet.js         Thai alphabet data (44 consonants, 21 vowels, 4 tones)
 │   └── sentences.js        Sentence builder data (15 sentences)
 └── README.md

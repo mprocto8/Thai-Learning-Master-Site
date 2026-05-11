@@ -1,5 +1,5 @@
 /**
- * All topics — 47 topics, 503 pairs.
+ * All topics — 50 topics, 533 pairs.
  * Every pair: romanized (with tone diacritics), script, english, example.
  * Tone diacritics: à low, â falling, á high, ǎ rising, unmarked/ā mid.
  *
@@ -1792,6 +1792,165 @@ const TOPICS = [
         slottable: [{ romanized: "lûuk-kháa", script: "ลูกค้า", english: "client / customer" }],
         slot: { romanized: "lûuk-kháa", script: "ลูกค้า", english: "client / customer" },
         example: { thai: "เที่ยงนี้กินข้าวกับลูกค้า", romanized: "Thîiang níi gin khâao gàp lûuk-kháa", english: "At noon today I'm eating with a client" } }
+    ]
+  },
+
+  // ─── 48. Pattern: ..., Right? (Tier 5 — Natural Thai) ───
+  {
+    id: "tag-question", emoji: "🤔", label: "..., Right?", type: "pattern",
+    frame: {
+      romanized: "___ + châi mǎi?",
+      script: "___ + ใช่ไหม?",
+      english: "..., right? / isn't it?",
+      explanation: "Add ใช่ไหม (châi mǎi) to seek agreement — like English 'right?' or 'isn't it?'. Softens statements and invites confirmation."
+    },
+    pairs: [
+      { romanized: "À-ròi châi mǎi?", script: "อร่อยใช่ไหม", english: "It's tasty, right?",
+        slottable: [{ romanized: "à-ròi", script: "อร่อย", english: "delicious / tasty" }],
+        slot: { romanized: "à-ròi", script: "อร่อย", english: "delicious / tasty" },
+        example: { thai: "ร้านนี้อร่อยใช่ไหม", romanized: "Ráan níi à-ròi châi mǎi?", english: "This restaurant is tasty, right?" } },
+      { romanized: "Dii châi mǎi?", script: "ดีใช่ไหม", english: "It's good, right?",
+        slottable: [{ romanized: "dii", script: "ดี", english: "good" }],
+        slot: { romanized: "dii", script: "ดี", english: "good" },
+        example: { thai: "หนังเรื่องนี้ดีใช่ไหม", romanized: "Nǎng rûueang níi dii châi mǎi?", english: "This movie is good, right?" } },
+      { romanized: "Phaeng châi mǎi?", script: "แพงใช่ไหม", english: "It's expensive, right?",
+        slottable: [{ romanized: "phaeng", script: "แพง", english: "expensive" }],
+        slot: { romanized: "phaeng", script: "แพง", english: "expensive" },
+        example: { thai: "อันนี้แพงใช่ไหม", romanized: "An-níi phaeng châi mǎi?", english: "This one is expensive, right?" } },
+      { romanized: "Rúu châi mǎi?", script: "รู้ใช่ไหม", english: "You know, right?",
+        slottable: [{ romanized: "rúu", script: "รู้", english: "know" }],
+        slot: { romanized: "rúu", script: "รู้", english: "know" },
+        example: { thai: "พรุ่งนี้เริ่มเก้าโมง รู้ใช่ไหม", romanized: "Phrûng-níi rôem gâao moong, rúu châi mǎi?", english: "Tomorrow starts at nine; you know, right?" } },
+      { romanized: "Khǎo jà pai châi mǎi?", script: "เขาจะไปใช่ไหม", english: "He/she is going, right?",
+        slottable: [{ romanized: "khǎo jà pai", script: "เขาจะไป", english: "he/she will go" }],
+        slot: { romanized: "khǎo jà pai", script: "เขาจะไป", english: "he/she will go" },
+        example: { thai: "งานคืนนี้เขาจะไปใช่ไหม", romanized: "Ngaan khuen-níi khǎo jà pai châi mǎi?", english: "He's going to tonight's event, right?" } },
+      { romanized: "Châi châi mǎi?", script: "ใช่ใช่ไหม", english: "That's right, isn't it?",
+        slottable: [{ romanized: "châi", script: "ใช่", english: "yes / right" }],
+        slot: { romanized: "châi", script: "ใช่", english: "yes / right" },
+        example: { thai: "ทางนี้ใช่ใช่ไหม", romanized: "Thaang níi châi châi mǎi?", english: "This is the right way, isn't it?" } },
+      { romanized: "Thùuk châi mǎi?", script: "ถูกใช่ไหม", english: "Correct, right?",
+        slottable: [{ romanized: "thùuk", script: "ถูก", english: "correct" }],
+        slot: { romanized: "thùuk", script: "ถูก", english: "correct" },
+        example: { thai: "คำตอบนี้ถูกใช่ไหม", romanized: "Kham-dtàwp níi thùuk châi mǎi?", english: "This answer is correct, right?" } },
+      { romanized: "Mâi yâak châi mǎi?", script: "ไม่ยากใช่ไหม", english: "It's not hard, right?",
+        slottable: [{ romanized: "mâi yâak", script: "ไม่ยาก", english: "not hard" }],
+        slot: { romanized: "mâi yâak", script: "ไม่ยาก", english: "not hard" },
+        example: { thai: "บทนี้ไม่ยากใช่ไหม", romanized: "Bòt níi mâi yâak châi mǎi?", english: "This lesson isn't hard, right?" } },
+      { romanized: "Jà maa châi mǎi?", script: "จะมาใช่ไหม", english: "You're coming, right?",
+        slottable: [{ romanized: "jà maa", script: "จะมา", english: "will come" }],
+        slot: { romanized: "jà maa", script: "จะมา", english: "will come" },
+        example: { thai: "เย็นนี้จะมาใช่ไหม", romanized: "Yen-níi jà maa châi mǎi?", english: "You're coming this evening, right?" } },
+      { romanized: "Khâo-jai châi mǎi?", script: "เข้าใจใช่ไหม", english: "You understand, right?",
+        slottable: [{ romanized: "khâo-jai", script: "เข้าใจ", english: "understand" }],
+        slot: { romanized: "khâo-jai", script: "เข้าใจ", english: "understand" },
+        example: { thai: "อธิบายแบบนี้เข้าใจใช่ไหม", romanized: "À-thí-baai bàep níi khâo-jai châi mǎi?", english: "Explained like this, you understand, right?" } }
+    ]
+  },
+
+  // ─── 49. Pattern: Very / Too (Tier 5 — Natural Thai) ───
+  {
+    id: "very-too", emoji: "💥", label: "Very / Too", type: "pattern",
+    frame: {
+      romanized: "___ + mâak (very) / ___ + gəən-pai (too)",
+      script: "___ + มาก / ___ + เกินไป",
+      english: "very ___ / too ___",
+      explanation: "มาก (mâak) means 'very'. เกินไป (gəən-pai) means 'too much / excessively'. Both go AFTER the adjective. The distinction matters — 'very expensive' vs 'too expensive' are different reactions."
+    },
+    pairs: [
+      { romanized: "Phaeng mâak", script: "แพงมาก", english: "Very expensive",
+        slottable: [{ romanized: "phaeng", script: "แพง", english: "expensive" }],
+        slot: { romanized: "phaeng", script: "แพง", english: "expensive" },
+        example: { thai: "โรงแรมนี้แพงมาก", romanized: "Roong-raem níi phaeng mâak", english: "This hotel is very expensive" } },
+      { romanized: "Phaeng gəən-pai", script: "แพงเกินไป", english: "Too expensive",
+        slottable: [{ romanized: "phaeng", script: "แพง", english: "expensive" }],
+        slot: { romanized: "phaeng", script: "แพง", english: "expensive" },
+        example: { thai: "อันนี้แพงเกินไป ไม่เอา", romanized: "An-níi phaeng gəən-pai, mâi ao", english: "This is too expensive; I don't want it" } },
+      { romanized: "Rón mâak", script: "ร้อนมาก", english: "Very hot",
+        slottable: [{ romanized: "rón", script: "ร้อน", english: "hot" }],
+        slot: { romanized: "rón", script: "ร้อน", english: "hot" },
+        example: { thai: "วันนี้อากาศร้อนมาก", romanized: "Wan-níi aa-gàat rón mâak", english: "The weather is very hot today" } },
+      { romanized: "Rón gəən-pai", script: "ร้อนเกินไป", english: "Too hot",
+        slottable: [{ romanized: "rón", script: "ร้อน", english: "hot" }],
+        slot: { romanized: "rón", script: "ร้อน", english: "hot" },
+        example: { thai: "น้ำร้อนเกินไป ดื่มไม่ได้", romanized: "Náam rón gəən-pai, dùuem mâi dâai", english: "The water is too hot; I can't drink it" } },
+      { romanized: "À-ròi mâak", script: "อร่อยมาก", english: "Very delicious",
+        slottable: [{ romanized: "à-ròi", script: "อร่อย", english: "delicious" }],
+        slot: { romanized: "à-ròi", script: "อร่อย", english: "delicious" },
+        example: { thai: "ผัดไทยร้านนี้อร่อยมาก", romanized: "Phàt-Thai ráan níi à-ròi mâak", english: "The pad thai at this shop is really delicious" } },
+      { romanized: "Glai gəən-pai", script: "ไกลเกินไป", english: "Too far",
+        slottable: [{ romanized: "glai", script: "ไกล", english: "far" }],
+        slot: { romanized: "glai", script: "ไกล", english: "far" },
+        example: { thai: "เดินไปไม่ไหว ไกลเกินไป", romanized: "Doen pai mâi wǎi, glai gəən-pai", english: "I can't walk there; it's too far" } },
+      { romanized: "Dii mâak", script: "ดีมาก", english: "Very good",
+        slottable: [{ romanized: "dii", script: "ดี", english: "good" }],
+        slot: { romanized: "dii", script: "ดี", english: "good" },
+        example: { thai: "วันนี้คุณพูดไทยดีมาก", romanized: "Wan-níi khun phûut Thai dii mâak", english: "Today you spoke Thai very well" } },
+      { romanized: "Phèt gəən-pai", script: "เผ็ดเกินไป", english: "Too spicy",
+        slottable: [{ romanized: "phèt", script: "เผ็ด", english: "spicy" }],
+        slot: { romanized: "phèt", script: "เผ็ด", english: "spicy" },
+        example: { thai: "ส้มตำจานนี้เผ็ดเกินไป", romanized: "Sôm-dtam jaan níi phèt gəən-pai", english: "This plate of som tam is too spicy" } },
+      { romanized: "Sǔuai mâak", script: "สวยมาก", english: "Very beautiful",
+        slottable: [{ romanized: "sǔuai", script: "สวย", english: "beautiful" }],
+        slot: { romanized: "sǔuai", script: "สวย", english: "beautiful" },
+        example: { thai: "วิวตรงนี้สวยมาก", romanized: "Wiw dtrong-níi sǔuai mâak", english: "The view here is very beautiful" } },
+      { romanized: "Dùek gəən-pai", script: "ดึกเกินไป", english: "Too late at night",
+        slottable: [{ romanized: "dùek", script: "ดึก", english: "late at night" }],
+        slot: { romanized: "dùek", script: "ดึก", english: "late at night" },
+        example: { thai: "ตอนนี้ดึกเกินไป โทรพรุ่งนี้ดีกว่า", romanized: "Dtawn-níi dùek gəən-pai, thoo phrûng-níi dii gwàa", english: "It's too late now; better to call tomorrow" } }
+    ]
+  },
+
+  // ─── 50. Pattern: Please ___ For Me (Tier 5 — Natural Thai) ───
+  {
+    id: "polite-request", emoji: "🙇", label: "Please ___ For Me", type: "pattern",
+    frame: {
+      romanized: "chûai + ___ + hâi nòi",
+      script: "ช่วย + ___ + ให้หน่อย",
+      english: "Please ___ for me",
+      explanation: "Wraps a verb with ช่วย...ให้หน่อย — the deeply polite Thai construction for asking favors. The way locals ask for help in formal situations."
+    },
+    pairs: [
+      { romanized: "Chûai phûut hâi nòi", script: "ช่วยพูดให้หน่อย", english: "Please speak for me",
+        slottable: [{ romanized: "phûut", script: "พูด", english: "speak" }],
+        slot: { romanized: "phûut", script: "พูด", english: "speak" },
+        example: { thai: "ผมพูดไทยไม่เก่ง ช่วยพูดให้หน่อยครับ", romanized: "Phǒm phûut Thai mâi gèng, chûai phûut hâi nòi khráp", english: "I don't speak Thai well; please speak for me" } },
+      { romanized: "Chûai thàai-rûup hâi nòi", script: "ช่วยถ่ายรูปให้หน่อย", english: "Please take a photo for me",
+        slottable: [{ romanized: "thàai-rûup", script: "ถ่ายรูป", english: "take a photo" }],
+        slot: { romanized: "thàai-rûup", script: "ถ่ายรูป", english: "take a photo" },
+        example: { thai: "ช่วยถ่ายรูปให้หน่อยได้ไหมครับ", romanized: "Chûai thàai-rûup hâi nòi dâai mǎi khráp?", english: "Could you please take a photo for me?" } },
+      { romanized: "Chûai à-thí-baai hâi nòi", script: "ช่วยอธิบายให้หน่อย", english: "Please explain it to me",
+        slottable: [{ romanized: "à-thí-baai", script: "อธิบาย", english: "explain" }],
+        slot: { romanized: "à-thí-baai", script: "อธิบาย", english: "explain" },
+        example: { thai: "ตรงนี้ไม่เข้าใจ ช่วยอธิบายให้หน่อย", romanized: "Dtrong-níi mâi khâo-jai, chûai à-thí-baai hâi nòi", english: "I don't understand this part; please explain it to me" } },
+      { romanized: "Chûai sòng hâi nòi", script: "ช่วยส่งให้หน่อย", english: "Please send it for me",
+        slottable: [{ romanized: "sòng", script: "ส่ง", english: "send" }],
+        slot: { romanized: "sòng", script: "ส่ง", english: "send" },
+        example: { thai: "ไฟล์นี้ช่วยส่งให้หน่อยนะ", romanized: "Fai níi chûai sòng hâi nòi ná", english: "Please send this file for me" } },
+      { romanized: "Chûai khǐian hâi nòi", script: "ช่วยเขียนให้หน่อย", english: "Please write it for me",
+        slottable: [{ romanized: "khǐian", script: "เขียน", english: "write" }],
+        slot: { romanized: "khǐian", script: "เขียน", english: "write" },
+        example: { thai: "ชื่อภาษาไทยช่วยเขียนให้หน่อยครับ", romanized: "Chêu phaa-sǎa-Thai chûai khǐian hâi nòi khráp", english: "Please write the Thai name for me" } },
+      { romanized: "Chûai rîiak tháek-sîi hâi nòi", script: "ช่วยเรียกแท็กซี่ให้หน่อย", english: "Please call a taxi for me",
+        slottable: [{ romanized: "rîiak tháek-sîi", script: "เรียกแท็กซี่", english: "call a taxi" }],
+        slot: { romanized: "rîiak tháek-sîi", script: "เรียกแท็กซี่", english: "call a taxi" },
+        example: { thai: "ฝนตกหนัก ช่วยเรียกแท็กซี่ให้หน่อยได้ไหม", romanized: "Fǒn dtòk nàk, chûai rîiak tháek-sîi hâi nòi dâai mǎi?", english: "It's raining heavily; could you call a taxi for me?" } },
+      { romanized: "Chûai bpòoet hâi nòi", script: "ช่วยเปิดให้หน่อย", english: "Please open it for me",
+        slottable: [{ romanized: "bpòoet", script: "เปิด", english: "open" }],
+        slot: { romanized: "bpòoet", script: "เปิด", english: "open" },
+        example: { thai: "ประตูนี้เปิดยาก ช่วยเปิดให้หน่อย", romanized: "Bprà-dtuu níi bpòoet yâak, chûai bpòoet hâi nòi", english: "This door is hard to open; please open it for me" } },
+      { romanized: "Chûai yók hâi nòi", script: "ช่วยยกให้หน่อย", english: "Please give me a hand lifting this",
+        slottable: [{ romanized: "yók", script: "ยก", english: "lift / carry" }],
+        slot: { romanized: "yók", script: "ยก", english: "lift / carry" },
+        example: { thai: "กระเป๋าหนักมาก ช่วยยกให้หน่อยครับ", romanized: "Grà-bpǎo nàk mâak, chûai yók hâi nòi khráp", english: "The bag is very heavy; please give me a hand lifting it" } },
+      { romanized: "Chûai raw hâi nòi", script: "ช่วยรอให้หน่อย", english: "Please wait for me",
+        slottable: [{ romanized: "raw", script: "รอ", english: "wait" }],
+        slot: { romanized: "raw", script: "รอ", english: "wait" },
+        example: { thai: "ผมกำลังไป ช่วยรอให้หน่อย", romanized: "Phǒm gam-lang pai, chûai raw hâi nòi", english: "I'm on my way; please wait for me" } },
+      { romanized: "Chûai súue hâi nòi", script: "ช่วยซื้อให้หน่อย", english: "Please buy it for me",
+        slottable: [{ romanized: "súue", script: "ซื้อ", english: "buy" }],
+        slot: { romanized: "súue", script: "ซื้อ", english: "buy" },
+        example: { thai: "ถ้าไปเซเว่น ช่วยซื้อน้ำให้หน่อย", romanized: "Thâa pai Se-wên, chûai súue náam hâi nòi", english: "If you go to 7-Eleven, please buy water for me" } }
     ]
   }
 ];
