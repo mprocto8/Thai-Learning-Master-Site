@@ -41,6 +41,7 @@
 | js/sentence-builder.js — word arrangement game | SentenceBuilder | State, UI, SENTENCES |
 | js/pathways.js — guided learning paths + badges | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — practice mode launcher | PracticeHub | State, UI, TOPICS |
+| js/topic-detail.js - topic review screen with item list, pair audio, and mode launchers | TopicDetail | State, UI, TOPICS, Audio |
 | js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
 | js/listen-choose.js — TTS listening comprehension, 4-option MCQ | ListenChoose | State, UI, TOPICS, Audio |
 

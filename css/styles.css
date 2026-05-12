@@ -2402,6 +2402,18 @@ p { color: var(--text-1); }
 }
 
 .practice-topic-header:hover { background: var(--bg-2); }
+.practice-topic-header::after {
+  content: "Review";
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.74;
+  transition: opacity 0.2s var(--ease);
+}
+.practice-topic-header:hover::after,
+.practice-topic-header:focus-visible::after {
+  opacity: 1;
+}
 
 .practice-topic-emoji { font-size: 1.2rem; flex-shrink: 0; }
 
@@ -2437,6 +2449,240 @@ p { color: var(--text-1); }
   padding: 0 var(--sp-4) var(--sp-3);
   font-size: 0.68rem;
   color: var(--text-2);
+}
+
+/* --- Topic Detail / Review --- */
+.topic-detail-screen {
+  padding: var(--sp-4) 0 calc(var(--sp-8) + 72px);
+}
+
+.topic-detail-count {
+  color: var(--text-2);
+  font-size: 0.82rem;
+}
+
+.topic-detail-hero {
+  background: var(--bg-1);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-4);
+}
+
+.topic-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.topic-detail-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.topic-detail-title-block {
+  min-width: 0;
+  flex: 1;
+}
+
+.topic-detail-title-block h1 {
+  font-size: 1.45rem;
+  line-height: 1.15;
+  margin: 0 0 var(--sp-2);
+}
+
+.topic-detail-badges {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+
+.topic-detail-type-badge {
+  background: var(--blue-glow);
+  color: var(--blue);
+  border-radius: var(--r-sm);
+  padding: 2px 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.topic-detail-type-pattern .topic-detail-type-badge {
+  background: var(--teal-glow);
+  color: var(--teal);
+}
+
+.topic-detail-type-situation .topic-detail-type-badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.topic-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.topic-detail-stat {
+  background: var(--bg-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-3);
+}
+
+.topic-detail-stat-value {
+  display: block;
+  color: var(--text-0);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.topic-detail-stat-label {
+  display: block;
+  color: var(--text-2);
+  font-size: 0.72rem;
+  margin-top: 2px;
+}
+
+.topic-detail-progress {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.topic-detail-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.topic-detail-frame {
+  background: var(--teal-glow);
+  border: 1px solid var(--teal);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  text-align: center;
+}
+
+.topic-detail-frame-label {
+  color: var(--teal);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-2);
+}
+
+.topic-detail-frame-script {
+  color: var(--text-0);
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.topic-detail-frame-romanized {
+  color: var(--text-1);
+  font-weight: 600;
+  margin-top: var(--sp-1);
+}
+
+.topic-detail-frame-english,
+.topic-detail-frame-explanation {
+  color: var(--text-2);
+  font-size: 0.86rem;
+  margin-top: var(--sp-2);
+}
+
+.topic-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+
+.topic-detail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  background: var(--bg-1);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-3);
+}
+
+.topic-detail-row:nth-child(even) {
+  background: var(--bg-2);
+}
+
+.topic-detail-audio {
+  flex: 0 0 42px;
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+  background: var(--surface-2);
+  color: var(--text-0);
+  border: 1px solid var(--surface-2);
+}
+
+.topic-detail-audio:hover {
+  background: var(--teal-glow);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.topic-detail-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.topic-detail-script {
+  color: var(--text-0);
+  font-size: 1.16rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.topic-detail-romanized {
+  color: var(--text-1);
+  font-size: 0.88rem;
+  margin-top: 2px;
+}
+
+.topic-detail-english {
+  color: var(--text-2);
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+.topic-detail-actions {
+  position: sticky;
+  bottom: calc(var(--sp-3) + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-2);
+  background: var(--bg-0);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-2);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
+}
+
+.topic-detail-actions .btn {
+  min-width: 0;
+  padding-left: var(--sp-2);
+  padding-right: var(--sp-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .topic-detail-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* --- Tone Reference Card --- */

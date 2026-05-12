@@ -3,7 +3,6 @@
  * Quick 5 feature: random 5-word speed round from any topic.
  */
 const PracticeHub = (() => {
-  let expandedTopic = null;
   // Section collapse state — persisted in-memory across re-renders of this
   // screen. Intentionally not saved to State; cheap UI state.
   const sectionCollapsed = { vocabulary: false, patterns: false, situations: false };
@@ -104,13 +103,16 @@ const PracticeHub = (() => {
   function renderTopicRow(t, s) {
     const mastery = State.getTopicMastery(t.id);
     const ts = s.topicStats[t.id];
-    const isExpanded = expandedTopic === t.id;
     const type = topicType(t);
     const isPattern = type === "pattern";
 
     return `
-      <div class="practice-topic topic-type-${type} ${isExpanded ? 'expanded' : ''}">
-        <div class="practice-topic-header" onclick="PracticeHub.toggleTopic('${t.id}')">
+      <div class="practice-topic topic-type-${type}">
+        <div class="practice-topic-header"
+             onclick="UI.navigate('#topic/${t.id}')"
+             role="button" tabindex="0"
+             aria-label="Review ${t.label}"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#topic/${t.id}');}">
           <span class="practice-topic-emoji">${t.emoji}</span>
           <div class="practice-topic-info">
             <span class="practice-topic-name">${t.label}</span>
@@ -120,7 +122,7 @@ const PracticeHub = (() => {
           ${t.essential ? '<span class="essential-badge">CORE</span>' : ''}
           <div class="practice-topic-ring">${UI.progressRing(mastery, 32, 3)}</div>
         </div>
-        ${isExpanded ? `
+        ${`
           <div class="practice-topic-actions">
             ${isPattern ? `
               <button class="btn btn-lg practice-listen-primary" onclick="UI.navigate('#pattern/${t.id}')">
@@ -145,7 +147,7 @@ const PracticeHub = (() => {
             `}
           </div>
           ${ts ? `<div class="practice-topic-last">Last played: ${UI.timeAgo(ts.lastPlayed)}</div>` : ''}
-        ` : ''}
+        `}
       </div>
     `;
   }

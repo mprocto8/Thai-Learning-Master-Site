@@ -18,6 +18,7 @@ const App = (() => {
     UI.registerRoute("#dashboard", renderDashboard);
     UI.registerRoute("#pathways", () => Pathways.show());
     UI.registerRoute("#practice", () => PracticeHub.show());
+    UI.registerRoute("#topic", routeTopic);
     UI.registerRoute("#game", routeGame);
     UI.registerRoute("#flashcard", routeFlashcard);
     UI.registerRoute("#speed", routeSpeed);
@@ -523,6 +524,12 @@ const App = (() => {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Game.start(topicId);
     else UI.navigate("#dashboard");
+  }
+
+  function routeTopic() {
+    const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (topicId) TopicDetail.show(topicId);
+    else UI.navigate("#practice");
   }
 
   function routeFlashcard() {
