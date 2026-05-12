@@ -494,14 +494,16 @@ const App = (() => {
         <span class="dash-topic-row-emoji">${t.emoji}</span>
         <span class="dash-topic-row-name">${t.label}${t.essential ? ' <span class="essential-badge">CORE</span>' : ''}${_typeBadge(type)}</span>
         <span class="dash-topic-row-mastery">${Math.round(mastery * 100)}%</span>
-        <button class="btn btn-sm dash-topic-row-primary" onclick="UI.navigate('${_primaryRoute(t)}')" title="${isPattern ? 'Pattern Practice' : 'Listen & Choose'}">${isPattern ? '🧩' : '🔊'}</button>
-        ${isPattern ? `
-          <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
-        ` : `
-          <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
-          <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
-          <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">⚡</button>
-        `}
+        <div class="dash-topic-row-actions">
+          <button class="btn btn-sm dash-topic-row-primary" onclick="UI.navigate('${_primaryRoute(t)}')" title="${isPattern ? 'Pattern Practice' : 'Listen & Choose'}">${isPattern ? '&#129513;' : '&#128266;'}</button>
+          ${isPattern ? `
+            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+          ` : `
+            <button class="btn btn-sm btn-primary" onclick="UI.navigate('#game/${t.id}')">Match</button>
+            <button class="btn btn-sm btn-secondary" onclick="UI.navigate('#flashcard/${t.id}')">Cards</button>
+            <button class="btn btn-sm btn-accent" onclick="UI.navigate('#speed/${t.id}')">&#9889;</button>
+          `}
+        </div>
       </div>
     `;
   }

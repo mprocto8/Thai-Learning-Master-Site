@@ -286,7 +286,7 @@ const SentenceBuilder = (() => {
         }
       });
 
-      UI.toast("Not quite — try again!", "info");
+      UI.toast("Not quite - try again!", "info");
 
       // Allow retry after brief delay
       setTimeout(() => {
@@ -309,8 +309,8 @@ const SentenceBuilder = (() => {
     UI.render(`
       <div class="sb-complete-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">â† Back</button>
-          <h2>ðŸ“ Build</h2>
+          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">&larr; Back</button>
+          <h2>&#128221; Build</h2>
           <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
         </div>
 
@@ -319,20 +319,20 @@ const SentenceBuilder = (() => {
         </div>
 
         <div class="pattern-feedback sb-complete-card correct">
-          <div class="pattern-feedback-title">âœ“ Correct! +15 XP</div>
+          <div class="pattern-feedback-title">&check; Correct! +15 XP</div>
           <div class="sb-complete-thai">${thai}</div>
           <div class="sb-complete-romanized">${currentSentence.romanized}</div>
           <div class="sb-complete-english">${currentSentence.english}</div>
           <div class="pattern-feedback-actions sb-complete-actions">
-            <button class="btn btn-sm pattern-replay-btn sb-complete-replay" onclick="SentenceBuilder.replayCompletion()" aria-label="Replay completed sentence">ðŸ”Š</button>
-            <button class="btn btn-primary" onclick="SentenceBuilder.continueNext()">Continue â†’ <span class="kbd">space</span></button>
+            <button class="btn btn-sm pattern-replay-btn sb-complete-replay" onclick="SentenceBuilder.replayCompletion()" aria-label="Replay completed sentence">&#128266;</button>
+            <button class="btn btn-primary" onclick="SentenceBuilder.continueNext()">Continue &rarr; <span class="kbd">space</span></button>
           </div>
         </div>
 
         <div class="game-score-bar">
-          <span>âœ… ${roundCorrect}</span>
-          <span>âŒ ${roundTotal - roundCorrect}</span>
-          <span>âš¡ ${score} XP</span>
+          <span>&#9989; ${roundCorrect}</span>
+          <span>&#10060; ${roundTotal - roundCorrect}</span>
+          <span>&#9889; ${score} XP</span>
         </div>
       </div>
     `);

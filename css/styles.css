@@ -3662,46 +3662,70 @@ p { color: var(--text-1); }
 .dash-topic-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--sp-2);
   margin-top: var(--sp-2);
 }
 .dash-topic-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    "emoji name mastery"
+    "emoji actions actions";
   align-items: center;
-  gap: 0.5rem;
-  min-height: 48px;
-  padding: 0.4rem 0.6rem;
+  column-gap: var(--sp-3);
+  row-gap: var(--sp-2);
+  min-height: 72px;
+  padding: var(--sp-3);
   background: var(--surface-1);
   border-radius: var(--r-sm);
 }
 .dash-topic-row-emoji {
+  grid-area: emoji;
   font-size: 1.2rem;
-  width: 2rem;
+  width: 2.25rem;
   text-align: center;
 }
 .dash-topic-row-name {
-  flex: 1;
+  grid-area: name;
+  min-width: 0;
   font-size: 0.9rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.4rem;
   flex-wrap: wrap;
+  line-height: 1.25;
 }
 .dash-topic-row-mastery {
+  grid-area: mastery;
   font-size: 0.8rem;
   color: var(--text-2);
-  min-width: 2.5rem;
   text-align: right;
+  white-space: nowrap;
+}
+.dash-topic-row-actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.dash-topic-row-actions .btn {
+  width: 100%;
+  min-width: 0;
+  padding: var(--sp-2);
+  white-space: nowrap;
 }
 .dash-topic-row-primary {
   background: var(--accent);
   color: #fff;
   font-weight: 600;
-  padding: 0.2rem 0.55rem;
-  font-size: 0.75rem;
 }
 .dash-topic-row.topic-type-pattern .dash-topic-row-primary { background: var(--teal); color: #0f1117; }
+
+.dash-topic-row.topic-type-pattern .dash-topic-row-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 
 /* --- Pattern Practice screen --- */
 .pattern-screen {
