@@ -39,7 +39,8 @@ const State = (() => {
     xpToday: 0,
     roundsToday: 0,
     autoPlayAudio: true,
-    autoAdvancePatternPractice: false
+    autoAdvancePatternPractice: false,
+    autoAdvanceSentenceBuilder: false
   });
 
   let _state = null;
@@ -513,6 +514,7 @@ const State = (() => {
       darkMode: !!s.darkMode,
       topicView: s.topicView || "grid",
       autoAdvancePatternPractice: !!s.autoAdvancePatternPractice,
+      autoAdvanceSentenceBuilder: !!s.autoAdvanceSentenceBuilder,
       // voicePreference is set via State.setVoicePreference (premium-only).
       // It lives on the profile, not local state — preserve any existing value.
       voicePreference: existingSettings.voicePreference || null
@@ -611,6 +613,9 @@ const State = (() => {
       if (typeof settings.topicView === "string") s.topicView = settings.topicView;
       if (typeof settings.autoAdvancePatternPractice === "boolean") {
         s.autoAdvancePatternPractice = settings.autoAdvancePatternPractice;
+      }
+      if (typeof settings.autoAdvanceSentenceBuilder === "boolean") {
+        s.autoAdvanceSentenceBuilder = settings.autoAdvanceSentenceBuilder;
       }
     }
 

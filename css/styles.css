@@ -1899,6 +1899,46 @@ p { color: var(--text-1); }
   flex: 1;
 }
 
+.sb-complete-screen {
+  padding-top: var(--sp-4);
+}
+
+.sb-complete-card {
+  margin: var(--sp-6) auto;
+  max-width: 680px;
+  padding: var(--sp-6);
+}
+
+.sb-complete-thai {
+  color: var(--text-0);
+  font-size: clamp(2rem, 8vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.18;
+  margin: var(--sp-3) 0 var(--sp-2);
+}
+
+.sb-complete-romanized {
+  color: var(--text-1);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: var(--sp-2);
+}
+
+.sb-complete-english {
+  color: var(--text-2);
+  font-size: 0.98rem;
+  margin-bottom: var(--sp-4);
+}
+
+.sb-complete-actions {
+  align-items: center;
+}
+
+.sb-complete-replay {
+  min-height: 42px;
+  min-width: 46px;
+}
+
 /* --- Nav for 5 items --- */
 .nav-bar {
   gap: var(--sp-1);

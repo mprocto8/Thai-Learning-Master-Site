@@ -16,8 +16,13 @@ const SentenceBuilder = (() => {
   let roundSentences = [];
   let hintRevealed = false;
   let completedInRound = new Set();
+  let completionShowing = false;
+  let completionToken = 0;
 
   function show() {
+    currentSentence = null;
+    completionShowing = false;
+    completionToken++;
     // Determine which sentences are available based on topic mastery (40% threshold)
     availableSentences = SENTENCES.filter(s => {
       return s.requiredTopics.some(topicId => State.getTopicMastery(topicId) >= 0.4);
@@ -79,6 +84,8 @@ const SentenceBuilder = (() => {
     roundTotal = 0;
     score = 0;
     completedInRound = new Set();
+    completionShowing = false;
+    completionToken++;
     // Pick up to 8 random sentences
     roundSentences = [...availableSentences].sort(() => Math.random() - 0.5).slice(0, Math.min(8, availableSentences.length));
     nextSentence();
@@ -92,6 +99,7 @@ const SentenceBuilder = (() => {
 
     currentSentence = roundSentences[roundIndex];
     hintRevealed = false;
+    completionShowing = false;
     // Shuffle words — use indices to handle duplicate words
     shuffledWords = currentSentence.words.map((w, i) => ({ word: w, origIdx: i, placed: false }));
     shuffledWords.sort(() => Math.random() - 0.5);
@@ -267,15 +275,7 @@ const SentenceBuilder = (() => {
 
       // Animate success
       document.querySelectorAll(".sb-slot").forEach(s => s.classList.add("correct"));
-
-      // Reward audio: the full sentence in natural rhythm.
-      const exerciseIdx = SENTENCES.indexOf(currentSentence);
-      if (exerciseIdx !== -1) Audio.playSentenceBuilderFull(exerciseIdx);
-
-      setTimeout(() => {
-        roundIndex++;
-        nextSentence();
-      }, 800);
+      showCompletion();
     } else {
       // Highlight wrong positions
       document.querySelectorAll(".sb-slot").forEach((slot, i) => {
@@ -297,8 +297,91 @@ const SentenceBuilder = (() => {
     }
   }
 
+  function showCompletion() {
+    if (!currentSentence) return;
+    completionShowing = true;
+    completionToken++;
+    const token = completionToken;
+    const exerciseIdx = SENTENCES.indexOf(currentSentence);
+    const thai = currentSentence.words.join(" ");
+    const s = State.get();
+
+    UI.render(`
+      <div class="sb-complete-screen">
+        <div class="game-header">
+          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">â† Back</button>
+          <h2>ðŸ“ Build</h2>
+          <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
+        </div>
+
+        <div class="flashcard-progress">
+          <div class="flashcard-progress-bar" style="width:${((roundIndex + 1) / roundSentences.length) * 100}%"></div>
+        </div>
+
+        <div class="pattern-feedback sb-complete-card correct">
+          <div class="pattern-feedback-title">âœ“ Correct! +15 XP</div>
+          <div class="sb-complete-thai">${thai}</div>
+          <div class="sb-complete-romanized">${currentSentence.romanized}</div>
+          <div class="sb-complete-english">${currentSentence.english}</div>
+          <div class="pattern-feedback-actions sb-complete-actions">
+            <button class="btn btn-sm pattern-replay-btn sb-complete-replay" onclick="SentenceBuilder.replayCompletion()" aria-label="Replay completed sentence">ðŸ”Š</button>
+            <button class="btn btn-primary" onclick="SentenceBuilder.continueNext()">Continue â†’ <span class="kbd">space</span></button>
+          </div>
+        </div>
+
+        <div class="game-score-bar">
+          <span>âœ… ${roundCorrect}</span>
+          <span>âŒ ${roundTotal - roundCorrect}</span>
+          <span>âš¡ ${score} XP</span>
+        </div>
+      </div>
+    `);
+
+    if (exerciseIdx !== -1) {
+      const played = Audio.playSentenceBuilderFull(exerciseIdx);
+      if (s.autoAdvanceSentenceBuilder) {
+        played.then(() => {
+          setTimeout(() => {
+            if (token === completionToken && completionShowing) continueNext();
+          }, 800);
+        });
+      }
+    } else if (s.autoAdvanceSentenceBuilder) {
+      setTimeout(() => {
+        if (token === completionToken && completionShowing) continueNext();
+      }, 800);
+    }
+  }
+
+  function replayCompletion() {
+    if (!completionShowing || !currentSentence) return;
+    const exerciseIdx = SENTENCES.indexOf(currentSentence);
+    if (exerciseIdx !== -1) Audio.playSentenceBuilderFull(exerciseIdx);
+  }
+
+  function continueNext() {
+    if (!completionShowing) return;
+    completionToken++;
+    completionShowing = false;
+    roundIndex++;
+    nextSentence();
+  }
+
+  function _onKeydown(e) {
+    if (!completionShowing) return;
+    if (e.code === "Space" || e.key === " ") {
+      e.preventDefault();
+      continueNext();
+    }
+  }
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", _onKeydown);
+  }
+
   function finishRound() {
     currentSentence = null;
+    completionShowing = false;
+    completionToken++;
     State.addXP(50);
     const accuracy = roundTotal > 0 ? Math.round((roundCorrect / roundTotal) * 100) : 0;
     const streakMaintained = State.hasPlayedToday();
@@ -336,5 +419,5 @@ const SentenceBuilder = (() => {
     `);
   }
 
-  return { show, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer };
+  return { show, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer, replayCompletion, continueNext };
 })();

@@ -614,6 +614,15 @@ const App = (() => {
             <div class="setting-hint">When off, tap Continue (or press space) after each round.</div>
           </div>
 
+          <div class="setting-item">
+            <label>Auto-advance Sentence Builder</label>
+            <div class="toggle-group">
+              <button class="btn btn-sm ${s.autoAdvanceSentenceBuilder ? 'btn-active' : ''}" onclick="App.toggleSentenceBuilderAutoAdvance(true)">On</button>
+              <button class="btn btn-sm ${!s.autoAdvanceSentenceBuilder ? 'btn-active' : ''}" onclick="App.toggleSentenceBuilderAutoAdvance(false)">Off</button>
+            </div>
+            <div class="setting-hint">When off, tap Continue (or press space) after each completed sentence.</div>
+          </div>
+
           ${renderVoiceSection(s)}
 
           ${renderAccountSection(s)}
@@ -672,6 +681,11 @@ const App = (() => {
 
   function togglePatternAutoAdvance(on) {
     State.set("autoAdvancePatternPractice", !!on);
+    renderSettings();
+  }
+
+  function toggleSentenceBuilderAutoAdvance(on) {
+    State.set("autoAdvanceSentenceBuilder", !!on);
     renderSettings();
   }
 
@@ -1023,7 +1037,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
-    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, setVoice, toggleDashSection,
+    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, setVoice, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm
