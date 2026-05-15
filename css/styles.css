@@ -320,6 +320,216 @@ p { color: var(--text-1); }
 .dash-greeting h1 { margin-bottom: var(--sp-1); }
 .dash-subtitle { font-size: 0.95rem; }
 
+.home-v2-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.home-streak-strip {
+  flex-shrink: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-full);
+  background: var(--bg-1);
+  color: var(--text-1);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.home-session-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-5);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--accent-glow), rgba(245, 158, 11, 0.08));
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.home-session-card:hover,
+.home-session-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.home-session-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.home-session-label,
+.home-card-label,
+.home-mini-label {
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.home-session-time {
+  color: var(--text-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.home-session-card h2 {
+  margin: 0;
+  color: var(--text-0);
+  font-size: 1.35rem;
+}
+
+.home-session-card p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.home-session-button {
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: var(--sp-1);
+}
+
+.home-capabilities-card,
+.home-wotd-card {
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+  border: 1px solid var(--surface-1);
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+}
+
+.home-capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.home-capability {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--text-1);
+  font-size: 0.9rem;
+}
+
+.home-capability-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-full);
+  background: var(--surface-1);
+  font-weight: 800;
+}
+
+.home-capability.done .home-capability-icon {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.home-capability.next .home-capability-icon {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.home-capability.muted {
+  color: var(--text-2);
+}
+
+.home-quick-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.home-mini-card {
+  position: relative;
+  min-height: 104px;
+  padding: var(--sp-4);
+  border: 1px solid var(--surface-1);
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+  color: var(--text-0);
+  text-align: left;
+  cursor: pointer;
+}
+
+.home-mini-card strong {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: 1rem;
+}
+
+.home-mini-sub {
+  display: block;
+  margin-top: var(--sp-1);
+  color: var(--text-2);
+  font-size: 0.74rem;
+  line-height: 1.25;
+}
+
+.home-mini-badge {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  background: var(--coral);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.home-wotd-card {
+  position: relative;
+  text-align: center;
+}
+
+.home-wotd-audio {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-2);
+}
+
+.home-wotd-script {
+  margin-top: var(--sp-4);
+  color: var(--accent);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.home-wotd-romanized {
+  margin-top: var(--sp-1);
+  color: var(--text-2);
+  font-size: 1rem;
+}
+
+.home-wotd-english {
+  margin-top: var(--sp-1);
+  color: var(--text-0);
+  font-size: 0.95rem;
+}
+
 .dash-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;

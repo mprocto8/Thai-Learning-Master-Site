@@ -5,6 +5,33 @@ const App = (() => {
   let _dashScrollY = 0;
   // Dashboard section collapse state — in-memory only.
   const _dashCollapsed = { vocabulary: false, patterns: false, situations: false };
+  const CAPABILITY_MAP = {
+    'pronoun-name': 'Introduce yourself',
+    'simple-statement': 'Make basic statements',
+    'negation': 'Use negation',
+    'yes-no-question': 'Ask yes/no questions',
+    'question-word-end': 'Place question words',
+    'ask-location': 'Ask where things are',
+    'ask-for': 'Ask for things politely',
+    'can-you': 'Ask "can you?"',
+    'how-much': 'Ask prices',
+    'want-to': 'Express wants',
+    'need': 'Express needs',
+    'like': 'Express likes',
+    'have': 'Talk about possessions',
+    'go-to': 'Talk about destinations',
+    'eat-drink': 'Order food and drink',
+    'comparative': 'Compare things',
+    'time-marker': 'Use time markers',
+    'soften': 'Sound polite',
+    'already-done': 'Mark completed actions',
+    'not-yet': 'Mark unfinished actions',
+    'future': 'Use future tense',
+    'with-someone': 'Talk about company',
+    'tag-question': 'Ask for confirmation',
+    'very-too': 'Use intensifiers',
+    'polite-request': 'Make polite requests'
+  };
 
   function _topicType(t) {
     return t.type || "vocabulary";
@@ -189,79 +216,73 @@ const App = (() => {
         bestTopic = t;
       }
     }
-    if (!bestTopic) return null;
+    if (!bestTopic) bestTopic = TOPICS.find(t => t.id === "greetings-phrases") || TOPICS[0];
+    if (!bestTopic || !bestTopic.pairs.length) return null;
     const seed = new Date().toDateString();
     const idx = hashString(seed) % bestTopic.pairs.length;
-    return { pair: bestTopic.pairs[idx], topic: bestTopic };
+    return { pair: bestTopic.pairs[idx], topic: bestTopic, index: idx };
+  }
+
+  function getTopicRoute(topicId) {
+    const topic = TOPICS.find(t => t.id === topicId);
+    return _topicType(topic || {}) === "pattern" ? `#pattern/${topicId}` : `#game/${topicId}`;
+  }
+
+  function getCurrentPathwaySession() {
+    const pathways = (typeof PATHWAYS !== "undefined" ? PATHWAYS : []).filter(p => !p.usesAlphabet && p.topics && p.topics.length);
+    const started = pathways.find(p => {
+      const prog = State.getPathwayProgress(p.id);
+      const hasProgress = prog.mastered > 0 || p.topics.some(topicId => {
+        const ts = State.get().topicStats[topicId];
+        return ts && ts.played > 0;
+      });
+      return hasProgress && !prog.isComplete;
+    });
+    const target = started || pathways.find(p => !State.getPathwayProgress(p.id).isComplete) || pathways[pathways.length - 1];
+    if (!target) return null;
+    const prog = State.getPathwayProgress(target.id);
+    const nextTopicId = prog.nextTopic || target.topics[0];
+    const topic = TOPICS.find(t => t.id === nextTopicId);
+    return {
+      pathway: target,
+      topic,
+      route: topic ? getTopicRoute(topic.id) : "#learn",
+      isReplay: prog.isComplete,
+      progress: prog
+    };
+  }
+
+  function getHomeCapabilities() {
+    const items = Object.keys(CAPABILITY_MAP).map(topicId => {
+      const mastery = State.getTopicMastery(topicId);
+      const topic = TOPICS.find(t => t.id === topicId);
+      return { topicId, topic, label: CAPABILITY_MAP[topicId], done: mastery >= 0.7 };
+    }).filter(item => item.topic);
+    const completed = items.filter(item => item.done);
+    const next = items.find(item => !item.done);
+    return { completed, next };
   }
 
   function renderDashboard() {
     const s = State.get();
-    const level = State.getLevel();
-    const nextLevel = State.getNextLevel();
-    const progress = State.getLevelProgress();
-    const streakAtRisk = State.isStreakAtRisk();
-    const streakUrgent = State.isStreakUrgent();
-    const badges = s.badges || [];
-    const topicView = s.topicView || 'grid';
     const mistakePairs = getMistakePairs();
     const wotd = getWordOfTheDay();
     const listenTopic = getTodayListenTopic();
-
-    // Find smart suggestion: lowest mastery topic from active pathway, or last played
-    let suggestedTopic = null;
-    let suggestReason = "";
-
-    // Try pathway-based suggestion first
-    for (const p of PATHWAYS) {
-      if (p.usesAlphabet) continue;
-      const prog = State.getPathwayProgress(p.id);
-      if (prog.nextTopic) {
-        const t = TOPICS.find(tp => tp.id === prog.nextTopic);
-        if (t) {
-          suggestedTopic = t;
-          suggestReason = `Next in ${p.label}`;
-          break;
-        }
-      }
-    }
-
-    // Fallback: last played
-    if (!suggestedTopic) {
-      let lastTime = 0;
-      for (const t of TOPICS) {
-        const ts = s.topicStats[t.id];
-        if (ts && ts.lastPlayed > lastTime) {
-          suggestedTopic = t;
-          lastTime = ts.lastPlayed;
-          suggestReason = "Continue where you left off";
-        }
-      }
-    }
+    const session = getCurrentPathwaySession();
+    const capabilities = getHomeCapabilities();
+    const dayNumber = (s.topicStats && Object.keys(s.topicStats).length) || 1;
 
     UI.render(`
       <div class="dashboard">
         ${UI.navBar("dashboard")}
 
-        <div class="dash-header">
+        <div class="dash-header home-v2-header">
           <div class="dash-greeting">
-            <h1>สวัสดี, ${s.userName}!</h1>
+            <h1>สวัสดี ${s.userName || "Learner"}</h1>
             <p class="dash-subtitle">${getGreeting()}</p>
           </div>
+          <div class="home-streak-strip">🔥 ${s.streak || 0} day streak · Day ${dayNumber}</div>
         </div>
-
-        ${listenTopic ? `
-          <div class="today-listen-card" onclick="App.startTodayListen()" role="button" tabindex="0"
-            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();App.startTodayListen();}">
-            <div class="today-listen-icon">🎧</div>
-            <div class="today-listen-body">
-              <div class="today-listen-eyebrow">Today's Listening Practice</div>
-              <div class="today-listen-title">${listenTopic.emoji} ${listenTopic.label}</div>
-              <div class="today-listen-sub">Tap to start · or press <kbd>L</kbd></div>
-            </div>
-            <span class="today-listen-arrow">▶</span>
-          </div>
-        ` : ''}
 
         ${!State.isLoggedIn() ? `
           <div class="guest-nudge" onclick="UI.navigate('#login')">
@@ -274,127 +295,66 @@ const App = (() => {
           </div>
         ` : ''}
 
-        <div class="dash-stats">
-          <div class="stat-card streak-card ${streakUrgent ? 'urgent' : streakAtRisk ? 'at-risk' : ''}">
-            <div class="stat-icon">🔥</div>
-            <div class="stat-value">${s.streak}</div>
-            <div class="stat-label">Day Streak</div>
-            ${streakUrgent ? '<div class="streak-warning urgent">🚨 Streak expires soon! Play now!</div>' :
-              streakAtRisk ? '<div class="streak-warning">⚠️ Play today to keep your streak!</div>' : ''}
-          </div>
-          <div class="stat-card level-card">
-            <div class="stat-icon">${level.emoji}</div>
-            <div class="stat-value">${level.name}</div>
-            <div class="stat-label">${s.xp} XP</div>
-            <div class="xp-bar">
-              <div class="xp-bar-fill" style="width:${progress * 100}%"></div>
+        ${session ? `
+          <section class="home-session-card" onclick="UI.navigate('${session.route}')" role="button" tabindex="0"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('${session.route}');}">
+            <div class="home-session-meta">
+              <span class="home-session-label">TODAY'S SESSION</span>
+              <span class="home-session-time">~10 min</span>
             </div>
-            ${nextLevel ? `<div class="xp-next">${nextLevel.minXP - s.xp} XP to ${nextLevel.name}</div>` : '<div class="xp-next">Max level!</div>'}
+            <h2>${session.isReplay ? "Replay" : "Continue"} ${session.pathway.label}</h2>
+            <p>${session.topic ? `Next up: ${session.topic.label}. Build the pattern, hear it, then lock it in.` : "Pick up the next guided step in Learn."}</p>
+            <button class="btn btn-primary home-session-button" onclick="event.stopPropagation();UI.navigate('${session.route}')">Start session →</button>
+          </section>
+        ` : ''}
+
+        <section class="home-capabilities-card">
+          <div class="home-card-label">YOU CAN NOW</div>
+          <div class="home-capability-list">
+            ${capabilities.completed.length ? capabilities.completed.map(item => `
+              <div class="home-capability done">
+                <span class="home-capability-icon">✓</span>
+                <span>${item.label}</span>
+              </div>
+            `).join("") : `
+              <div class="home-capability muted">
+                <span class="home-capability-icon">·</span>
+                <span>Start your first pathway to unlock capabilities</span>
+              </div>
+            `}
+            ${capabilities.next ? `
+              <div class="home-capability next">
+                <span class="home-capability-icon">→</span>
+                <span>${capabilities.next.label}</span>
+              </div>
+            ` : ''}
           </div>
+        </section>
+
+        <div class="home-quick-row">
+          <button class="home-mini-card" onclick="${mistakePairs.length ? "App.reviewMistakes()" : "UI.navigate('#library')"}">
+            <span class="home-mini-label">REVIEW</span>
+            <strong>Mistakes (${mistakePairs.length})</strong>
+            ${mistakePairs.length > 0 ? `<span class="home-mini-badge">${mistakePairs.length}</span>` : ''}
+          </button>
+          <button class="home-mini-card" onclick="App.startTodayListen()">
+            <span class="home-mini-label">DAILY</span>
+            <strong>Listen drill</strong>
+            <span class="home-mini-sub">${listenTopic ? listenTopic.label : "Today's topic"}</span>
+          </button>
         </div>
 
         ${wotd ? `
-          <div class="wotd-card" onclick="App.flipWotd()" id="wotd-card" style="background:var(--surface-1);border-radius:12px;padding:1.2rem;text-align:center;margin-bottom:1rem;cursor:pointer;border:1px solid var(--accent);transition:transform 0.3s">
+          <section class="home-wotd-card" id="wotd-card">
             <div id="wotd-front">
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.3rem">Word of the Day</div>
-              <div style="font-size:1.8rem;color:var(--accent)">${wotd.pair.script}</div>
-              <div style="font-size:1rem;color:var(--text-muted)">${wotd.pair.romanized}</div>
-              <div style="font-size:0.95rem;margin-top:0.3rem">${wotd.pair.english}</div>
-              ${wotd.pair.example ? `<div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;font-style:italic">${wotd.pair.example.thai} — ${wotd.pair.example.english}</div>` : ''}
+              <div class="home-card-label">WORD OF THE DAY</div>
+              <button class="btn btn-sm home-wotd-audio" onclick="App.playWotd()" aria-label="Hear word of the day">🔊</button>
+              <div class="home-wotd-script">${wotd.pair.script}</div>
+              <div class="home-wotd-romanized">${wotd.pair.romanized}</div>
+              <div class="home-wotd-english">${wotd.pair.english}</div>
             </div>
-            <div id="wotd-back" style="display:none">
-              <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem">
-                <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();App.flipWotd()">🔁 New word</button>
-                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();UI.navigate('#game/${wotd.topic.id}')">→ Study ${wotd.topic.label}</button>
-              </div>
-            </div>
-          </div>
+          </section>
         ` : ''}
-
-        ${suggestedTopic ? `
-          <div class="continue-card" onclick="UI.navigate('#game/${suggestedTopic.id}')">
-            <span class="continue-emoji">${suggestedTopic.emoji}</span>
-            <div class="continue-text">
-              <strong>${suggestReason}</strong>
-              <span>${suggestedTopic.label}</span>
-            </div>
-            <span class="continue-arrow">→</span>
-          </div>
-        ` : ''}
-
-        <div class="dash-quick-actions">
-          <button class="btn btn-primary dash-quick5" onclick="PracticeHub.quick5()">🎲 Quick 5</button>
-          <button class="btn btn-secondary" onclick="UI.navigate('#practice')">⚡ All Topics</button>
-          <button class="btn btn-secondary" onclick="UI.navigate('#pathways')">🗺️ Pathways</button>
-        </div>
-
-        ${mistakePairs.length > 0 ? `
-          <div style="text-align:center;margin-bottom:1rem">
-            <button class="btn" style="background:var(--danger,#ef4444);color:#fff;width:100%;max-width:400px" onclick="App.reviewMistakes()">📚 Review Mistakes (${mistakePairs.length} cards)</button>
-          </div>
-        ` : ''}
-
-        ${badges.length > 0 ? `
-          <div class="badge-shelf dash-badges">
-            <h3 class="section-title">Badges</h3>
-            <div class="badge-list">
-              ${badges.map(id => {
-                const p = PATHWAYS.find(pw => pw.id === id);
-                return p ? `<div class="badge-item"><span class="badge-emoji">${p.badge.emoji}</span><span class="badge-label">${p.badge.label}</span></div>` : '';
-              }).join("")}
-            </div>
-          </div>
-        ` : ''}
-
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <h2 class="section-title" style="margin:0">Topics</h2>
-          <div style="display:flex;gap:0.25rem">
-            <button class="btn btn-sm ${topicView === 'grid' ? 'btn-active' : ''}" onclick="App.setTopicView('grid')" title="Grid view">⊞ Grid</button>
-            <button class="btn btn-sm ${topicView === 'list' ? 'btn-active' : ''}" onclick="App.setTopicView('list')" title="List view">☰ List</button>
-          </div>
-        </div>
-
-        ${renderDashTopicSections(s, topicView)}
-
-        <div class="dash-see-all">
-          <button class="btn btn-secondary" onclick="UI.navigate('#practice')">See all ${TOPICS.length} topics →</button>
-        </div>
-
-        <h2 class="section-title">Learn More</h2>
-        <div class="dash-cta-grid">
-          <div class="dash-cta-card" onclick="UI.navigate('#clock')">
-            <span class="cta-icon">🕐</span>
-            <div class="cta-text">
-              <strong>Thai Clock</strong>
-              <span>Live time in Thai</span>
-            </div>
-            <span class="continue-arrow">→</span>
-          </div>
-          <div class="dash-cta-card" onclick="UI.navigate('#tones')">
-            <span class="cta-icon">🎵</span>
-            <div class="cta-text">
-              <strong>Thai Tones</strong>
-              <span>5 tones with pitch contours</span>
-            </div>
-            <span class="continue-arrow">→</span>
-          </div>
-          <div class="dash-cta-card" onclick="UI.navigate('#sentences')">
-            <span class="cta-icon">📝</span>
-            <div class="cta-text">
-              <strong>Sentence Builder</strong>
-              <span>Arrange words into sentences</span>
-            </div>
-            <span class="continue-arrow">→</span>
-          </div>
-          <div class="dash-cta-card" onclick="UI.navigate('#alphabet')">
-            <span class="cta-icon cta-char">ก</span>
-            <div class="cta-text">
-              <strong>Thai Script</strong>
-              <span>44 consonants, ${typeof THAI_VOWELS !== 'undefined' ? THAI_VOWELS.length : 21} vowels, 4 tones</span>
-            </div>
-            <span class="continue-arrow">→</span>
-          </div>
-        </div>
       </div>
     `);
 
@@ -757,6 +717,12 @@ const App = (() => {
     }
   }
 
+  function playWotd() {
+    const wotd = getWordOfTheDay();
+    if (!wotd || !wotd.topic) return;
+    Audio.playWord(wotd.topic.id, wotd.index).catch(() => {});
+  }
+
   function setTopicView(view) {
     State.set("topicView", view);
     renderDashboard();
@@ -1049,7 +1015,7 @@ const App = (() => {
 
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
-    confirmReset, reviewMistakes, flipWotd, setTopicView, saveDashScroll,
+    confirmReset, reviewMistakes, flipWotd, playWotd, setTopicView, saveDashScroll,
     startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, setVoice, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
