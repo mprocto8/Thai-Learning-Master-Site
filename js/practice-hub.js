@@ -32,7 +32,7 @@ const PracticeHub = (() => {
         ${UI.navBar("practice")}
 
         <div class="section-header">
-          <h1>⚡ Practice</h1>
+          <h1>📚 Library</h1>
           <p>Choose a topic and start learning</p>
         </div>
 

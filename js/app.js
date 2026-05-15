@@ -16,13 +16,17 @@ const App = (() => {
 
     // Register routes
     UI.registerRoute("#dashboard", renderDashboard);
+    UI.registerRoute("#home", renderDashboard);
     UI.registerRoute("#pathways", () => Pathways.show());
+    UI.registerRoute("#learn", () => Pathways.show());
     UI.registerRoute("#practice", () => PracticeHub.show());
+    UI.registerRoute("#library", () => PracticeHub.show());
     UI.registerRoute("#topic", routeTopic);
     UI.registerRoute("#game", routeGame);
     UI.registerRoute("#flashcard", routeFlashcard);
     UI.registerRoute("#speed", routeSpeed);
     UI.registerRoute("#alphabet", () => Alphabet.show());
+    UI.registerRoute("#script", () => Alphabet.show());
     UI.registerRoute("#clock", () => { Clock.show(); UI.setCleanup(() => Clock.cleanup()); });
     UI.registerRoute("#time-game", () => TimeGame.show());
     UI.registerRoute("#tones", () => ToneTrainer.show());

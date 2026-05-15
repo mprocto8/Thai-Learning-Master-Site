@@ -16,7 +16,7 @@ const Pathways = (() => {
         ${UI.navBar("pathways")}
 
         <div class="section-header">
-          <h1>🗺️ Learning Pathways</h1>
+          <h1>🗺️ Learn</h1>
           <p>Follow guided paths to build real-world Thai skills</p>
         </div>
 

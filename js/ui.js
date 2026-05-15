@@ -12,8 +12,8 @@ const UI = (() => {
   }
 
   function navigate(hash) {
-    // QOL 6: save scroll position when leaving dashboard
-    if ((window.location.hash || "#dashboard") === "#dashboard" && typeof App !== "undefined") {
+    // QOL 6: save scroll position when leaving home/dashboard
+    if (["#dashboard", "#home"].includes(window.location.hash || "#dashboard") && typeof App !== "undefined") {
       App.saveDashScroll();
     }
     const current = window.location.hash || "#dashboard";
@@ -132,23 +132,23 @@ const UI = (() => {
     }
   }
 
-  /* Nav bar — 5 sections: Home, Pathways, Practice, Script, Settings.
+  /* Nav bar — 4 sections: Home, Learn, Library, Settings.
      When logged in, a compact header bar is rendered above. */
   function navBar(active = "") {
+    const homeActive = active === "dashboard" || active === "home";
+    const learnActive = active === "pathways" || active === "learn";
+    const libraryActive = active === "practice" || active === "library";
     return `
       ${headerBar()}
       <nav class="nav-bar">
-        <button class="nav-btn ${active === "dashboard" ? "active" : ""}" onclick="UI.navigate('#dashboard')">
+        <button class="nav-btn ${homeActive ? "active" : ""}" onclick="UI.navigate('#home')">
           <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
         </button>
-        <button class="nav-btn ${active === "pathways" ? "active" : ""}" onclick="UI.navigate('#pathways')">
-          <span class="nav-icon">🗺️</span><span class="nav-label">Pathways</span>
+        <button class="nav-btn ${learnActive ? "active" : ""}" onclick="UI.navigate('#learn')">
+          <span class="nav-icon">🗺️</span><span class="nav-label">Learn</span>
         </button>
-        <button class="nav-btn ${active === "practice" ? "active" : ""}" onclick="UI.navigate('#practice')">
-          <span class="nav-icon">⚡</span><span class="nav-label">Practice</span>
-        </button>
-        <button class="nav-btn ${active === "alphabet" ? "active" : ""}" onclick="UI.navigate('#alphabet')">
-          <span class="nav-icon nav-icon-script">ก</span><span class="nav-label">Script</span>
+        <button class="nav-btn ${libraryActive ? "active" : ""}" onclick="UI.navigate('#library')">
+          <span class="nav-icon">📚</span><span class="nav-label">Library</span>
         </button>
         <button class="nav-btn ${active === "settings" ? "active" : ""}" onclick="UI.navigate('#settings')">
           <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
