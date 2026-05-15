@@ -2537,6 +2537,88 @@ p { color: var(--text-1); }
   width: 100%;
 }
 
+.pathway-tier {
+  margin-bottom: var(--sp-6);
+}
+
+.pathway-tier-title {
+  margin: 0 0 var(--sp-3);
+  color: var(--text-1);
+  font-size: 0.96rem;
+}
+
+.pathway-tier .pathway-cards {
+  margin-bottom: 0;
+}
+
+.learn-pathway-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--surface-1);
+}
+
+.learn-pathway-card.mastered,
+.learn-pathway-card.not-started {
+  opacity: 0.78;
+}
+
+.learn-pathway-card.in-progress {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.learn-pathway-topline,
+.learn-pathway-main,
+.learn-pathway-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.learn-pathway-topline {
+  justify-content: space-between;
+}
+
+.learn-pathway-tier {
+  color: var(--text-2);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.learn-status-badge {
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.learn-status-badge.mastered {
+  background: var(--green-glow);
+  color: var(--green);
+}
+
+.learn-status-badge.in-progress {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.learn-status-badge.not-started {
+  background: var(--surface-1);
+  color: var(--text-2);
+}
+
+.learn-pathway-main {
+  align-items: flex-start;
+}
+
+.learn-pathway-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 /* --- Practice Hub --- */
 .practice-screen {
   padding-top: var(--sp-4);

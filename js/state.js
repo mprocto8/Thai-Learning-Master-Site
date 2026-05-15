@@ -248,20 +248,36 @@ const State = (() => {
 
     const topics = pathway.topics;
     let mastered = 0;
+    let total = 0;
     let nextTopic = null;
     for (const topicId of topics) {
-      if (getTopicMastery(topicId) >= 0.7) {
-        mastered++;
-      } else if (!nextTopic) {
+      const topic = typeof TOPICS !== "undefined" ? TOPICS.find(t => t.id === topicId) : null;
+      const topicTotal = topic && topic.pairs ? topic.pairs.length : 1;
+      const mastery = getTopicMastery(topicId);
+      total += topicTotal;
+      mastered += Math.min(topicTotal, Math.round(mastery * topicTotal));
+      if (mastery < 0.7 && !nextTopic) {
         nextTopic = topicId;
       }
     }
+    const complete = topics.length > 0 && topics.every(topicId => getTopicMastery(topicId) >= 0.7);
     return {
-      mastered, total: topics.length,
-      percentComplete: topics.length > 0 ? mastered / topics.length : 0,
-      isComplete: mastered === topics.length,
+      mastered, total,
+      percentComplete: total > 0 ? mastered / total : 0,
+      isComplete: complete,
       nextTopic
     };
+  }
+
+  function resetPathwayProgress(pathwayId) {
+    const pathway = typeof PATHWAYS !== "undefined" ? PATHWAYS.find(p => p.id === pathwayId) : null;
+    if (!pathway || !pathway.topics) return;
+    update(s => {
+      for (const topicId of pathway.topics) {
+        if (s.topicStats) delete s.topicStats[topicId];
+      }
+      if (s.badges) s.badges = s.badges.filter(id => id !== pathwayId);
+    });
   }
 
   function earnBadge(pathwayId) {
@@ -713,7 +729,7 @@ const State = (() => {
     recordTopicRound, getTopicMastery,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,
     getSpeedBest, setSpeedBest,
-    getPathwayProgress, earnBadge, hasBadge,
+    getPathwayProgress, resetPathwayProgress, earnBadge, hasBadge,
     markTutorialSeen, isTutorialSeen,
     resetAll, LEVELS,
     // Auth
