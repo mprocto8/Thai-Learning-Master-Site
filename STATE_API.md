@@ -58,7 +58,8 @@ getSpeedBest(topicId) → int
 setSpeedBest(topicId, score) → void — only saves if new high
 
 ### Pathways & Badges
-getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, nextTopic }
+getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, nextTopic } — for IA v2 pattern pathways, `mastered/total` approximates mastered pairs from topic mastery while preserving existing topic-level progress.
+resetPathwayProgress(pathwayId) → void — deletes `topicStats` for the pathway's topic(s) and removes that pathway badge only. XP, streak, other topics, flashcard/audio data, and account settings are kept.
 earnBadge(pathwayId) → void
 hasBadge(pathwayId) → bool
 

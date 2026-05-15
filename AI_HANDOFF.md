@@ -10,10 +10,11 @@
 
 **Current state (as of this writing):**
 - 333+ vocabulary pairs across 30 topics
-- Tier 1 of 5 patterns shipped (5 pattern topics, 50 pairs)
+- Tier 1-5 pattern pathways shipped in the v2 IA (25 pattern topics)
 - ~1,600 audio MP3s across two voice tiers (Ploy default, Serafina premium)
 - Full auth + sync + tier framework in place
 - Eight learning modes
+- Primary tabs are now Home, Learn, Library, Settings. Old code/docs that refer to Pathways and Practice as primary tabs are deprecated; legacy routes still exist for bookmarks.
 
 **Stage:** Active development. Solo developer (the user) building via AI-assisted workflows, primarily Claude Code with occasional other tools.
 
@@ -94,6 +95,8 @@ UI.registerRoute("#game", () => {
 ```
 
 `UI.navigate("#dashboard")` programmatically changes the hash.
+
+IA v2 uses `#home`, `#learn`, `#library`, and `#settings` as primary destinations. Keep legacy `#dashboard`, `#pathways`, `#practice`, and `#script` routes working unless a future cleanup explicitly removes them.
 
 ### State as single source of truth
 Anything that needs to persist or sync goes through State. Examples:

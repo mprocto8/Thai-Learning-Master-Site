@@ -17,7 +17,7 @@
 | data/topics.js — 50 topic packs (vocabulary / situation / pattern), 533 pairs total. Pattern pairs carry a `slottable` array of eligible blank positions (pattern markers excluded); Pattern Practice picks one at random per round. A legacy `slot` field == `slottable[0]` is kept for backward compat. | TOPICS |
 | data/alphabet.js — 44 consonants, 21 vowels, 4 tone marks | THAI_CONSONANTS, THAI_VOWELS, THAI_TONE_MARKS |
 | data/sentences.js — 15 sentence builder exercises | SENTENCES |
-| data/pathways.js — 5 learning pathways with badges | PATHWAYS |
+| data/pathways.js — 25 pattern pathways grouped into Tier 1-5 for the Learn tab; each pathway maps to an existing pattern topic ID so progress remains keyed to `topicStats` | PATHWAYS |
 
 ### Core (most tasks touch these)
 | File | Globals | Depends on |
@@ -39,8 +39,8 @@
 | js/time-game.js — tell-the-time quiz | TimeGame | State, UI, ThaiTime |
 | js/tone-trainer.js — 5 Thai tones: browse + quiz | ToneTrainer | State, UI |
 | js/sentence-builder.js — word arrangement game | SentenceBuilder | State, UI, SENTENCES |
-| js/pathways.js — guided learning paths + badges | Pathways | State, UI, PATHWAYS, TOPICS |
-| js/practice-hub.js — practice mode launcher | PracticeHub | State, UI, TOPICS |
+| js/pathways.js — Learn tab with Tier 1-5 pattern pathways, status badges, pair-count progress, and replay for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
+| js/practice-hub.js — Library tab with Script group, tools, and topic launcher | PracticeHub | State, UI, TOPICS, alphabet data |
 | js/topic-detail.js - topic review screen with item list, pair audio, and mode launchers | TopicDetail | State, UI, TOPICS, Audio |
 | js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
 | js/listen-choose.js — TTS listening comprehension, 4-option MCQ | ListenChoose | State, UI, TOPICS, Audio |
@@ -48,7 +48,7 @@
 ### App Shell
 | File | Globals | Depends on |
 |------|---------|------------|
-| js/app.js — dashboard, onboarding, settings, routes | App | State, UI, all modules |
+| js/app.js — Home v2 dashboard, onboarding, settings, routes | App | State, UI, all modules |
 
 ### Styles
 | File | Purpose |
@@ -59,7 +59,7 @@
 1. Feature modules never depend on each other — all communication through State or UI
 2. State is the single source of truth — no module touches localStorage directly
 3. UI.render(html) replaces #app innerHTML — one screen at a time
-4. Routes are hash-based: #dashboard, #game/days, #flashcard/months-1, etc.
+4. Routes are hash-based: primary tabs are #home, #learn, #library, #settings. Back-compat routes #dashboard, #pathways, #practice, and #script still work.
 5. CSS custom properties for theming — dark mode toggles a class on body
 
 ### Build-time Tools (not loaded by the app)
@@ -71,6 +71,12 @@
 
 ## Script Load Order
 @supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/app.js
+
+## IA v2 Tab Structure
+- Home (`#home`, legacy `#dashboard`) — focused dashboard with one primary pathway session CTA, capabilities, quick review/daily actions, and Word of the Day.
+- Learn (`#learn`, legacy `#pathways`) — Tier 1-5 pattern pathways. Completed pathways can be replayed, which resets mastery for that pathway only.
+- Library (`#library`, legacy `#practice`) — topic library and tools. Script learning now appears as the top Library group and routes to the existing Script/Tone screens.
+- Settings (`#settings`) — unchanged.
 
 ## Auth & Sync (optional layer)
 - Supabase provides email/password auth + cross-device progress sync.
