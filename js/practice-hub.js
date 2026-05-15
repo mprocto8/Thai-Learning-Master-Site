@@ -5,7 +5,7 @@
 const PracticeHub = (() => {
   // Section collapse state — persisted in-memory across re-renders of this
   // screen. Intentionally not saved to State; cheap UI state.
-  const sectionCollapsed = { vocabulary: false, patterns: false, situations: false };
+  const sectionCollapsed = { script: false, vocabulary: false, patterns: false, situations: false };
 
   function show() {
     renderHub();
@@ -52,10 +52,6 @@ const PracticeHub = (() => {
             <span class="practice-tool-icon">📝</span>
             <div><strong>Sentence Builder</strong><span class="practice-tool-sub">Arrange words into sentences</span></div>
           </div>
-          <div class="practice-tool-card" onclick="UI.navigate('#tones')">
-            <span class="practice-tool-icon">🎵</span>
-            <div><strong>Tone Trainer</strong><span class="practice-tool-sub">Master the 5 Thai tones</span></div>
-          </div>
           <div class="practice-tool-card" onclick="UI.navigate('#clock')">
             <span class="practice-tool-icon">🕐</span>
             <div><strong>Thai Clock</strong><span class="practice-tool-sub">Tell time in Thai</span></div>
@@ -66,11 +62,56 @@ const PracticeHub = (() => {
           </div>
         </div>
 
+        ${renderScriptSection()}
         ${renderSection("vocabulary", "Vocabulary", vocabularyTopics, s)}
         ${patternTopics.length > 0 ? renderSection("patterns", "Patterns", patternTopics, s) : ""}
         ${situationTopics.length > 0 ? renderSection("situations", "Situations", situationTopics, s) : ""}
       </div>
     `);
+  }
+
+  function renderScriptSection() {
+    const collapsed = !!sectionCollapsed.script;
+    const scriptItems = [
+      { icon: "ก", label: "Thai Script", meta: "Consonants, vowels, and tone marks", route: "#script" },
+      { icon: "พ", label: "Consonants", meta: `${typeof THAI_CONSONANTS !== "undefined" ? THAI_CONSONANTS.length : 44} letters`, route: "#script" },
+      { icon: "า", label: "Vowels", meta: `${typeof THAI_VOWELS !== "undefined" ? THAI_VOWELS.length : 21} vowels`, route: "#script" },
+      { icon: "่", label: "Tone Marks", meta: `${typeof THAI_TONE_MARKS !== "undefined" ? THAI_TONE_MARKS.length : 4} marks`, route: "#script" },
+      { icon: "🎵", label: "Tone Trainer", meta: "Master the 5 Thai tones", route: "#tones" }
+    ];
+
+    return `
+      <div class="practice-section library-script-section" data-section="script">
+        <h2 class="section-title practice-section-title practice-section-header"
+            onclick="PracticeHub.toggleSection('script')"
+            role="button" tabindex="0"
+            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();PracticeHub.toggleSection('script');}">
+          <span class="section-caret ${collapsed ? 'collapsed' : ''}">▾</span>
+          <span>Script</span>
+          <span class="section-count">${scriptItems.length}</span>
+        </h2>
+        ${collapsed ? "" : `
+          <div class="practice-topic-list">
+            ${scriptItems.map(item => `
+              <div class="practice-topic topic-type-script">
+                <div class="practice-topic-header"
+                     onclick="UI.navigate('${item.route}')"
+                     role="button" tabindex="0"
+                     aria-label="Open ${item.label}"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('${item.route}');}">
+                  <span class="practice-topic-emoji script-topic-icon">${item.icon}</span>
+                  <div class="practice-topic-info">
+                    <span class="practice-topic-name">${item.label}</span>
+                    <span class="practice-topic-meta">${item.meta}</span>
+                  </div>
+                  <span class="script-badge">SCRIPT</span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `}
+      </div>
+    `;
   }
 
   function renderSection(key, label, topics, s) {

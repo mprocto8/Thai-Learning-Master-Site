@@ -41,7 +41,7 @@ const Alphabet = (() => {
 
     UI.render(`
       <div class="alphabet-screen">
-        ${UI.navBar("alphabet")}
+        ${UI.navBar("library")}
 
         <div class="section-header">
           <h1>ก Thai Script</h1>

@@ -98,7 +98,7 @@ const ToneTrainer = (() => {
 
     UI.render(`
       <div class="tone-screen">
-        ${UI.navBar("alphabet")}
+        ${UI.navBar("library")}
 
         <div class="section-header">
           <h1>🎵 Thai Tones</h1>

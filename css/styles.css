@@ -3910,6 +3910,29 @@ p { color: var(--text-1); }
 .practice-topic.topic-type-pattern { border-left: 3px solid var(--teal); }
 .dash-topic-row.topic-type-pattern { border-left: 3px solid var(--teal); padding-left: calc(0.6rem - 3px); }
 
+.practice-topic.topic-type-script {
+  border-left: 3px solid var(--accent);
+}
+
+.script-topic-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.script-badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
 /* --- Collapsible section headers (dashboard + practice hub) --- */
 .dash-topic-section { margin-top: var(--sp-4); }
 .dash-topic-section-header,
