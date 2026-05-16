@@ -140,5 +140,106 @@ const SENTENCES = [
   { english: "Spoon and fork", words: ["ช้อน", "กับ", "ส้อม"], romanized: "Cháwn gàp sâwm", requiredTopics: ["kitchenware"], difficulty: 1 },
   { english: "Mango is very sweet", words: ["มะม่วง", "หวาน", "มาก"], romanized: "Mà-mûang wǎan mâak", requiredTopics: ["fruits"], difficulty: 1 },
   { english: "Chicken fried rice", words: ["ข้าวผัด", "ไก่"], romanized: "Khâao-phàt gài", requiredTopics: ["meats-proteins"], difficulty: 1 },
-  { english: "Stir-fried basil with pork", words: ["ผัด", "กะเพรา", "หมู"], romanized: "Phàt grà-phao mǔu", requiredTopics: ["ingredients"], difficulty: 1 }
+  { english: "Stir-fried basil with pork", words: ["ผัด", "กะเพรา", "หมู"], romanized: "Phàt grà-phao mǔu", requiredTopics: ["ingredients"], difficulty: 1 },
+
+  // ── Pattern-Aligned Exercises ──
+  { english: "My name is John", words: ["ผม", "ชื่อ", "จอห์น"], romanized: "Phǒm chêu Jawn", requiredTopics: ["pronoun-name"], patternId: "pronoun-name", difficulty: 1 },
+  { english: "My name is Ploy", words: ["ฉัน", "ชื่อ", "พลอย"], romanized: "Chǎn chêu Phloi", requiredTopics: ["pronoun-name"], patternId: "pronoun-name", difficulty: 1 },
+  { english: "Hello, my name is Mali", words: ["สวัสดี", "ฉัน", "ชื่อ", "มะลิ"], romanized: "Sà-wàt-dii chǎn chêu Má-lí", requiredTopics: ["pronoun-name"], patternId: "pronoun-name", difficulty: 2 },
+
+  { english: "The food is delicious", words: ["อาหาร", "อร่อย"], romanized: "Aa-hǎan à-ròi", requiredTopics: ["simple-statement"], patternId: "simple-statement", difficulty: 1 },
+  { english: "The water is cold", words: ["น้ำ", "เย็น"], romanized: "Náam yen", requiredTopics: ["simple-statement"], patternId: "simple-statement", difficulty: 1 },
+  { english: "Today is fun", words: ["วันนี้", "สนุก", "มาก"], romanized: "Wan-níi sanùk mâak", requiredTopics: ["simple-statement"], patternId: "simple-statement", difficulty: 2 },
+
+  { english: "Not spicy", words: ["ไม่", "เผ็ด"], romanized: "Mâi phèt", requiredTopics: ["negation"], patternId: "negation", difficulty: 1 },
+  { english: "I don't understand", words: ["ไม่", "เข้าใจ"], romanized: "Mâi khâo-jai", requiredTopics: ["negation"], patternId: "negation", difficulty: 1 },
+  { english: "I don't want this one", words: ["ไม่", "เอา", "อันนี้"], romanized: "Mâi ao an-níi", requiredTopics: ["negation"], patternId: "negation", difficulty: 2 },
+
+  { english: "Is it spicy?", words: ["เผ็ด", "ไหม"], romanized: "Phèt mǎi?", requiredTopics: ["yes-no-question"], patternId: "yes-no-question", difficulty: 1 },
+  { english: "Do you understand?", words: ["เข้าใจ", "ไหม"], romanized: "Khâo-jai mǎi?", requiredTopics: ["yes-no-question"], patternId: "yes-no-question", difficulty: 1 },
+  { english: "Do you want to go today?", words: ["วันนี้", "ไป", "ไหม"], romanized: "Wan-níi pai mǎi?", requiredTopics: ["yes-no-question"], patternId: "yes-no-question", difficulty: 2 },
+
+  { english: "What is your name?", words: ["คุณ", "ชื่อ", "อะไร"], romanized: "Khun chêu à-rai?", requiredTopics: ["question-word-end"], patternId: "question-word-end", difficulty: 1 },
+  { english: "Where are you going?", words: ["ไป", "ไหน"], romanized: "Pai nǎi?", requiredTopics: ["question-word-end"], patternId: "question-word-end", difficulty: 1 },
+  { english: "Today you eat what?", words: ["วันนี้", "กิน", "อะไร"], romanized: "Wan-níi gin à-rai?", requiredTopics: ["question-word-end"], patternId: "question-word-end", difficulty: 2 },
+
+  { english: "Where is the bathroom?", words: ["ห้องน้ำ", "อยู่ที่ไหน"], romanized: "Hông-náam yùu thîi-nǎi?", requiredTopics: ["ask-location"], patternId: "ask-location", difficulty: 1 },
+  { english: "Where is the hotel?", words: ["โรงแรม", "อยู่ที่ไหน"], romanized: "Roong-raem yùu thîi-nǎi?", requiredTopics: ["ask-location"], patternId: "ask-location", difficulty: 1 },
+  { english: "Excuse me, where is the BTS?", words: ["ขอโทษ", "บีทีเอส", "อยู่ที่ไหน"], romanized: "Khǎw-thôot BTS yùu thîi-nǎi?", requiredTopics: ["ask-location"], patternId: "ask-location", difficulty: 2 },
+
+  { english: "Can I have water?", words: ["ขอ", "น้ำ"], romanized: "Khǎw náam", requiredTopics: ["ask-for"], patternId: "ask-for", difficulty: 1 },
+  { english: "Can I have the menu, please?", words: ["ขอ", "เมนู", "หน่อย"], romanized: "Khǎw mee-nuu nòi", requiredTopics: ["ask-for"], patternId: "ask-for", difficulty: 1 },
+  { english: "Can I have one more bottle of water?", words: ["ขอ", "น้ำ", "อีก", "ขวด"], romanized: "Khǎw náam ìik khùat", requiredTopics: ["ask-for"], patternId: "ask-for", difficulty: 2 },
+
+  { english: "Can you help?", words: ["ช่วย", "ได้ไหม"], romanized: "Chûai dâai mǎi?", requiredTopics: ["can-you"], patternId: "can-you", difficulty: 1 },
+  { english: "Can you speak slowly?", words: ["พูด", "ช้าๆ", "ได้ไหม"], romanized: "Phûut cháa-cháa dâai mǎi?", requiredTopics: ["can-you"], patternId: "can-you", difficulty: 1 },
+  { english: "Can you call a taxi?", words: ["เรียก", "แท็กซี่", "ได้ไหม"], romanized: "Rîiak tháek-sîi dâai mǎi?", requiredTopics: ["can-you"], patternId: "can-you", difficulty: 2 },
+
+  { english: "How much is this one?", words: ["อันนี้", "เท่าไหร่"], romanized: "An-níi thâo-rài?", requiredTopics: ["how-much"], patternId: "how-much", difficulty: 1 },
+  { english: "How much is the bill?", words: ["เช็กบิล", "เท่าไหร่"], romanized: "Chék-bin thâo-rài?", requiredTopics: ["how-much"], patternId: "how-much", difficulty: 1 },
+  { english: "How much is the total today?", words: ["วันนี้", "ทั้งหมด", "เท่าไหร่"], romanized: "Wan-níi tháng-mòt thâo-rài?", requiredTopics: ["how-much"], patternId: "how-much", difficulty: 2 },
+
+  { english: "I want to eat", words: ["อยาก", "กิน"], romanized: "Yàak gin", requiredTopics: ["want-to"], patternId: "want-to", difficulty: 1 },
+  { english: "I want to learn Thai", words: ["อยาก", "เรียน", "ภาษาไทย"], romanized: "Yàak rian phaa-sǎa-Thai", requiredTopics: ["want-to"], patternId: "want-to", difficulty: 1 },
+  { english: "Today I want to order food", words: ["วันนี้", "อยาก", "สั่ง", "อาหาร"], romanized: "Wan-níi yàak sàng aa-hǎan", requiredTopics: ["want-to"], patternId: "want-to", difficulty: 2 },
+
+  { english: "I need water", words: ["ต้องการ", "น้ำ"], romanized: "Tông-gaan náam", requiredTopics: ["need"], patternId: "need", difficulty: 1 },
+  { english: "I need a doctor", words: ["ต้องการ", "หมอ"], romanized: "Tông-gaan mǎw", requiredTopics: ["need"], patternId: "need", difficulty: 1 },
+  { english: "I need more time today", words: ["วันนี้", "ต้องการ", "เวลา", "เพิ่ม"], romanized: "Wan-níi tông-gaan wee-laa phôem", requiredTopics: ["need"], patternId: "need", difficulty: 2 },
+
+  { english: "I like Thai food", words: ["ชอบ", "อาหารไทย"], romanized: "Chôp aa-hǎan-Thai", requiredTopics: ["like"], patternId: "like", difficulty: 1 },
+  { english: "I like listening to music", words: ["ชอบ", "ฟัง", "เพลง"], romanized: "Chôp fang phleeng", requiredTopics: ["like"], patternId: "like", difficulty: 1 },
+  { english: "I like walking around here", words: ["ชอบ", "เดินเล่น", "ที่นี่"], romanized: "Chôp doen-lên thîi-nîi", requiredTopics: ["like"], patternId: "like", difficulty: 2 },
+
+  { english: "I have money", words: ["มี", "เงิน"], romanized: "Mii ngoen", requiredTopics: ["have"], patternId: "have", difficulty: 1 },
+  { english: "I have a question", words: ["มี", "คำถาม"], romanized: "Mii kham-thǎam", requiredTopics: ["have"], patternId: "have", difficulty: 1 },
+  { english: "Today I have free time", words: ["วันนี้", "มี", "เวลา", "ว่าง"], romanized: "Wan-níi mii wee-laa wâang", requiredTopics: ["have"], patternId: "have", difficulty: 2 },
+
+  { english: "Going home", words: ["ไป", "บ้าน"], romanized: "Pai bâan", requiredTopics: ["go-to"], patternId: "go-to", difficulty: 1 },
+  { english: "Going to the market", words: ["ไป", "ตลาด"], romanized: "Pai dtà-làat", requiredTopics: ["go-to"], patternId: "go-to", difficulty: 1 },
+  { english: "Tomorrow going to the airport", words: ["พรุ่งนี้", "ไป", "สนามบิน"], romanized: "Phrûng-níi pai sà-nǎam-bin", requiredTopics: ["go-to"], patternId: "go-to", difficulty: 2 },
+
+  { english: "Eat rice", words: ["กิน", "ข้าว"], romanized: "Gin khâao", requiredTopics: ["eat-drink"], patternId: "eat-drink", difficulty: 1 },
+  { english: "Drink coffee", words: ["ดื่ม", "กาแฟ"], romanized: "Dùem gaa-fae", requiredTopics: ["eat-drink"], patternId: "eat-drink", difficulty: 1 },
+  { english: "In the morning drink water", words: ["ตอนเช้า", "ดื่ม", "น้ำ"], romanized: "Dtawn-cháo dùem náam", requiredTopics: ["eat-drink"], patternId: "eat-drink", difficulty: 2 },
+
+  { english: "This one is tastier than that one", words: ["อันนี้", "อร่อยกว่า", "อันนั้น"], romanized: "An-níi à-ròi gwàa an-nán", requiredTopics: ["comparative"], patternId: "comparative", difficulty: 1 },
+  { english: "Today is better than yesterday", words: ["วันนี้", "ดีกว่า", "เมื่อวาน"], romanized: "Wan-níi dii gwàa mêua-waan", requiredTopics: ["comparative"], patternId: "comparative", difficulty: 2 },
+  { english: "The BTS is more convenient than a taxi", words: ["บีทีเอส", "สะดวกกว่า", "แท็กซี่"], romanized: "BTS sà-dùak gwàa tháek-sîi", requiredTopics: ["comparative"], patternId: "comparative", difficulty: 2 },
+
+  { english: "Today it's raining", words: ["วันนี้", "ฝนตก"], romanized: "Wan-níi fǒn-dtòk", requiredTopics: ["time-marker"], patternId: "time-marker", difficulty: 1 },
+  { english: "Yesterday I ate Thai food", words: ["เมื่อวาน", "กิน", "อาหารไทย"], romanized: "Mêua-waan gin aa-hǎan-Thai", requiredTopics: ["time-marker"], patternId: "time-marker", difficulty: 1 },
+  { english: "Tomorrow I will go to the market", words: ["พรุ่งนี้", "จะ", "ไป", "ตลาด"], romanized: "Phrûng-níi jà pai dtà-làat", requiredTopics: ["time-marker"], patternId: "time-marker", difficulty: 2 },
+
+  { english: "A little slower", words: ["ช้า", "หน่อย"], romanized: "Cháa nòi", requiredTopics: ["soften"], patternId: "soften", difficulty: 1 },
+  { english: "Wait a moment", words: ["รอ", "หน่อย"], romanized: "Raw nòi", requiredTopics: ["soften"], patternId: "soften", difficulty: 1 },
+  { english: "Can I have some water?", words: ["ขอ", "น้ำ", "หน่อย"], romanized: "Khǎw náam nòi", requiredTopics: ["soften"], patternId: "soften", difficulty: 2 },
+
+  { english: "Already eaten", words: ["กิน", "แล้ว"], romanized: "Gin láew", requiredTopics: ["already-done"], patternId: "already-done", difficulty: 1 },
+  { english: "Already arrived", words: ["ถึง", "แล้ว"], romanized: "Thǔeng láew", requiredTopics: ["already-done"], patternId: "already-done", difficulty: 1 },
+  { english: "I understand now", words: ["เข้าใจ", "แล้ว", "ครับ"], romanized: "Khâo-jai láew khráp", requiredTopics: ["already-done"], patternId: "already-done", difficulty: 2 },
+
+  { english: "Haven't eaten yet", words: ["ยังไม่", "กิน"], romanized: "Yang mâi gin", requiredTopics: ["not-yet"], patternId: "not-yet", difficulty: 1 },
+  { english: "Not finished yet", words: ["ยังไม่", "เสร็จ"], romanized: "Yang mâi sèt", requiredTopics: ["not-yet"], patternId: "not-yet", difficulty: 1 },
+  { english: "I don't understand yet", words: ["ยังไม่", "เข้าใจ", "ครับ"], romanized: "Yang mâi khâo-jai khráp", requiredTopics: ["not-yet"], patternId: "not-yet", difficulty: 2 },
+
+  { english: "Will go", words: ["จะ", "ไป"], romanized: "Jà pai", requiredTopics: ["future"], patternId: "future", difficulty: 1 },
+  { english: "Will call", words: ["จะ", "โทร"], romanized: "Jà thoo", requiredTopics: ["future"], patternId: "future", difficulty: 1 },
+  { english: "Tomorrow I will study Thai", words: ["พรุ่งนี้", "จะ", "เรียน", "ภาษาไทย"], romanized: "Phrûng-níi jà rian phaa-sǎa-Thai", requiredTopics: ["future"], patternId: "future", difficulty: 2 },
+
+  { english: "With friends", words: ["กับ", "เพื่อน"], romanized: "Gàp phûean", requiredTopics: ["with-someone"], patternId: "with-someone", difficulty: 1 },
+  { english: "Going with family", words: ["ไป", "กับ", "ครอบครัว"], romanized: "Pai gàp khrâwp-khrua", requiredTopics: ["with-someone"], patternId: "with-someone", difficulty: 1 },
+  { english: "Today eating with mom", words: ["วันนี้", "กินข้าว", "กับ", "แม่"], romanized: "Wan-níi gin-khâao gàp mâae", requiredTopics: ["with-someone"], patternId: "with-someone", difficulty: 2 },
+
+  { english: "It's tasty, right?", words: ["อร่อย", "ใช่ไหม"], romanized: "À-ròi châi mǎi?", requiredTopics: ["tag-question"], patternId: "tag-question", difficulty: 1 },
+  { english: "It's expensive, right?", words: ["แพง", "ใช่ไหม"], romanized: "Phaeng châi mǎi?", requiredTopics: ["tag-question"], patternId: "tag-question", difficulty: 1 },
+  { english: "You understand now, right?", words: ["เข้าใจ", "แล้ว", "ใช่ไหม"], romanized: "Khâo-jai láew châi mǎi?", requiredTopics: ["tag-question"], patternId: "tag-question", difficulty: 2 },
+
+  { english: "Very expensive", words: ["แพง", "มาก"], romanized: "Phaeng mâak", requiredTopics: ["very-too"], patternId: "very-too", difficulty: 1 },
+  { english: "Too spicy", words: ["เผ็ด", "เกินไป"], romanized: "Phèt gəən-pai", requiredTopics: ["very-too"], patternId: "very-too", difficulty: 1 },
+  { english: "Today the weather is very hot", words: ["วันนี้", "อากาศ", "ร้อน", "มาก"], romanized: "Wan-níi aa-gàat rón mâak", requiredTopics: ["very-too"], patternId: "very-too", difficulty: 2 },
+
+  { english: "Please speak for me", words: ["ช่วย", "พูด", "ให้หน่อย"], romanized: "Chûai phûut hâi nòi", requiredTopics: ["polite-request"], patternId: "polite-request", difficulty: 1 },
+  { english: "Please take a photo for me", words: ["ช่วย", "ถ่ายรูป", "ให้หน่อย"], romanized: "Chûai thàai-rûup hâi nòi", requiredTopics: ["polite-request"], patternId: "polite-request", difficulty: 1 },
+  { english: "Please call a taxi for me", words: ["ช่วย", "เรียก", "แท็กซี่", "ให้หน่อย"], romanized: "Chûai rîiak tháek-sîi hâi nòi", requiredTopics: ["polite-request"], patternId: "polite-request", difficulty: 2 }
 ];

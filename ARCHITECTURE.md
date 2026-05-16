@@ -16,7 +16,7 @@
 |------|---------|
 | data/topics.js — 50 topic packs (vocabulary / situation / pattern), 533 pairs total. Pattern pairs carry a `slottable` array of eligible blank positions (pattern markers excluded); Pattern Practice picks one at random per round. A legacy `slot` field == `slottable[0]` is kept for backward compat. | TOPICS |
 | data/alphabet.js — 44 consonants, 21 vowels, 4 tone marks | THAI_CONSONANTS, THAI_VOWELS, THAI_TONE_MARKS |
-| data/sentences.js — 15 sentence builder exercises | SENTENCES |
+| data/sentences.js — 174 sentence builder exercises: 99 general phrase exercises plus 75 pattern-aligned exercises. Pattern-aligned entries include `patternId` matching a pattern topic ID so mastery flows can find the Sentence Builder practice for each pattern. | SENTENCES |
 | data/pathways.js — 25 pattern pathways grouped into Tier 1-5 for the Learn tab; each pathway maps to an existing pattern topic ID so progress remains keyed to `topicStats` | PATHWAYS |
 
 ### Core (most tasks touch these)
