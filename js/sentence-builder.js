@@ -18,6 +18,8 @@ const SentenceBuilder = (() => {
   let completedInRound = new Set();
   let completionShowing = false;
   let completionToken = 0;
+  let patternRoundStats = {};
+  let currentHadMistake = false;
 
   function show() {
     currentSentence = null;
@@ -84,6 +86,7 @@ const SentenceBuilder = (() => {
     roundTotal = 0;
     score = 0;
     completedInRound = new Set();
+    patternRoundStats = {};
     completionShowing = false;
     completionToken++;
     // Pick up to 8 random sentences
@@ -99,6 +102,7 @@ const SentenceBuilder = (() => {
 
     currentSentence = roundSentences[roundIndex];
     hintRevealed = false;
+    currentHadMistake = false;
     completionShowing = false;
     // Shuffle words — use indices to handle duplicate words
     shuffledWords = currentSentence.words.map((w, i) => ({ word: w, origIdx: i, placed: false }));
@@ -272,11 +276,19 @@ const SentenceBuilder = (() => {
       State.addXP(15);
       State.checkStreak();
       completedInRound.add(roundIndex);
+      if (currentSentence.patternId) {
+        if (!patternRoundStats[currentSentence.patternId]) {
+          patternRoundStats[currentSentence.patternId] = { correct: 0, total: 0 };
+        }
+        patternRoundStats[currentSentence.patternId].total += 1;
+        if (!currentHadMistake) patternRoundStats[currentSentence.patternId].correct += 1;
+      }
 
       // Animate success
       document.querySelectorAll(".sb-slot").forEach(s => s.classList.add("correct"));
       showCompletion();
     } else {
+      currentHadMistake = true;
       // Highlight wrong positions
       document.querySelectorAll(".sb-slot").forEach((slot, i) => {
         if (placedWords[i] && placedWords[i].word !== correctOrder[i]) {
@@ -384,6 +396,12 @@ const SentenceBuilder = (() => {
     completionToken++;
     State.addXP(50);
     const accuracy = roundTotal > 0 ? Math.round((roundCorrect / roundTotal) * 100) : 0;
+    for (const patternId in patternRoundStats) {
+      const stats = patternRoundStats[patternId];
+      if (stats && stats.total > 0) {
+        State.recordModeRound(patternId, "sentenceBuilder", stats.correct, stats.total);
+      }
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
