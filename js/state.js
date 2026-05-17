@@ -33,6 +33,9 @@ const State = (() => {
     alphabetStats: {},   // { [char]: { seen, correct, wrong, lastSeen } }
     flashcardStats: {},  // { [topicId]: { [index]: { bucket, lastSeen } } }
     speedBests: {},      // { [topicId]: score }
+    pathwayProgress: {}, // { [pathwayId]: { listen, patternPractice, sentenceBuilder, legacyMastered } }
+    pathwayMasteryMigrationVersion: 0,
+    pathwayLegacyMigrationCount: 0,
     onboarded: false,
     badges: [],          // earned pathway badge IDs
     tutorialsSeen: {},   // { sectionId: true }
@@ -59,6 +62,12 @@ const State = (() => {
       _state = raw ? { ...defaults(), ...JSON.parse(raw) } : defaults();
     } catch {
       _state = defaults();
+    }
+    _normalizePathwayProgress(_state);
+    if (!_state.pathwayMasteryMigrationVersion) {
+      _state.pathwayLegacyMigrationCount = _migrateLegacyPathwayMastery(_state);
+      _state.pathwayMasteryMigrationVersion = 1;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_state)); } catch {}
     }
     return _state;
   }
@@ -185,6 +194,146 @@ const State = (() => {
     return Math.min(ts.correct / ts.total, 1);
   }
 
+  function _emptyModeProgress() {
+    return { rounds: [], lastRound: null };
+  }
+
+  function _emptyPathwayProgress() {
+    return {
+      listen: _emptyModeProgress(),
+      patternPractice: _emptyModeProgress(),
+      sentenceBuilder: _emptyModeProgress(),
+      legacyMastered: false
+    };
+  }
+
+  function _normalizeModeProgress(modeProgress) {
+    const mp = modeProgress && typeof modeProgress === "object" ? modeProgress : {};
+    const rounds = Array.isArray(mp.rounds) ? mp.rounds.filter(r => r && r.total > 0) : [];
+    return {
+      rounds,
+      lastRound: mp.lastRound || rounds[rounds.length - 1] || null
+    };
+  }
+
+  function _normalizePathwayProgress(s) {
+    if (!s.pathwayProgress || typeof s.pathwayProgress !== "object") s.pathwayProgress = {};
+    for (const pathwayId in s.pathwayProgress) {
+      const pp = s.pathwayProgress[pathwayId] || {};
+      s.pathwayProgress[pathwayId] = {
+        listen: _normalizeModeProgress(pp.listen),
+        patternPractice: _normalizeModeProgress(pp.patternPractice),
+        sentenceBuilder: _normalizeModeProgress(pp.sentenceBuilder),
+        legacyMastered: !!pp.legacyMastered
+      };
+    }
+  }
+
+  function _ensurePathwayProgress(s, pathwayId) {
+    _normalizePathwayProgress(s);
+    if (!s.pathwayProgress[pathwayId]) {
+      s.pathwayProgress[pathwayId] = _emptyPathwayProgress();
+    }
+    return s.pathwayProgress[pathwayId];
+  }
+
+  function _isPatternPathway(pathwayId) {
+    const pathway = typeof PATHWAYS !== "undefined" ? PATHWAYS.find(p => p.id === pathwayId) : null;
+    if (!pathway || pathway.usesAlphabet || !pathway.topics || !pathway.topics.length) return false;
+    const topic = typeof TOPICS !== "undefined" ? TOPICS.find(t => t.id === pathway.topics[0]) : null;
+    return !!(topic && topic.type === "pattern");
+  }
+
+  function _migrateLegacyPathwayMastery(s) {
+    let count = 0;
+    if (typeof PATHWAYS === "undefined") return count;
+    for (const pathway of PATHWAYS) {
+      if (!pathway || pathway.usesAlphabet || !pathway.topics || !pathway.topics.length) continue;
+      const wasComplete = pathway.topics.every(topicId => {
+        const ts = s.topicStats && s.topicStats[topicId];
+        return ts && ts.total > 0 && (ts.correct / ts.total) >= 0.7;
+      });
+      const hadBadge = Array.isArray(s.badges) && s.badges.includes(pathway.id);
+      if (wasComplete || hadBadge) {
+        const pp = _ensurePathwayProgress(s, pathway.id);
+        if (!pp.legacyMastered) count++;
+        pp.legacyMastered = true;
+      }
+    }
+    return count;
+  }
+
+  function _highAccuracyRounds(modeProgress) {
+    const rounds = modeProgress && Array.isArray(modeProgress.rounds) ? modeProgress.rounds : [];
+    return rounds.filter(r => r && r.accuracy >= 0.8);
+  }
+
+  function recordModeRound(pathwayId, modeId, correct, total) {
+    const validModes = ["listen", "patternPractice", "sentenceBuilder"];
+    if (!pathwayId || !validModes.includes(modeId) || total <= 0) return;
+    if (!_isPatternPathway(pathwayId)) return;
+
+    update(s => {
+      const pp = _ensurePathwayProgress(s, pathwayId);
+      const safeTotal = Math.max(0, total || 0);
+      const safeCorrect = Math.min(Math.max(0, correct || 0), safeTotal);
+      const round = {
+        correct: safeCorrect,
+        total: safeTotal,
+        accuracy: safeTotal > 0 ? safeCorrect / safeTotal : 0,
+        timestamp: new Date().toISOString()
+      };
+      pp[modeId].rounds.push(round);
+      pp[modeId].lastRound = round;
+    });
+  }
+
+  function getPathwayMasteryStatus(pathwayId) {
+    const s = get();
+    const pp = _ensurePathwayProgress(s, pathwayId);
+    const modeIds = ["listen", "patternPractice", "sentenceBuilder"];
+    const modes = {};
+    let completedModes = 0;
+    let completedRounds = 0;
+
+    for (const modeId of modeIds) {
+      const highAccuracy = _highAccuracyRounds(pp[modeId]).length;
+      const mastered = highAccuracy >= 3;
+      if (mastered) completedModes++;
+      completedRounds += Math.min(highAccuracy, 3);
+      modes[modeId] = {
+        rounds: pp[modeId].rounds.length,
+        highAccuracyRounds: highAccuracy,
+        requiredRounds: 3,
+        mastered,
+        lastRound: pp[modeId].lastRound || null
+      };
+    }
+
+    const strictMastered = completedModes === modeIds.length;
+    return {
+      pathwayId,
+      modes,
+      completedModes,
+      totalModes: modeIds.length,
+      completedRounds,
+      requiredRounds: modeIds.length * 3,
+      percentComplete: completedRounds / (modeIds.length * 3),
+      mastered: strictMastered,
+      strictMastered,
+      legacyMastered: !!pp.legacyMastered,
+      displayMastered: strictMastered || !!pp.legacyMastered
+    };
+  }
+
+  function isPathwayMastered(pathwayId) {
+    return getPathwayMasteryStatus(pathwayId).strictMastered;
+  }
+
+  function getPathwayLegacyMigrationCount() {
+    return get().pathwayLegacyMigrationCount || 0;
+  }
+
   /* Alphabet stats */
   function recordAlphabetAnswer(char, correct) {
     update(s => {
@@ -247,25 +396,17 @@ const State = (() => {
     }
 
     const topics = pathway.topics;
-    let mastered = 0;
-    let total = 0;
-    let nextTopic = null;
-    for (const topicId of topics) {
-      const topic = typeof TOPICS !== "undefined" ? TOPICS.find(t => t.id === topicId) : null;
-      const topicTotal = topic && topic.pairs ? topic.pairs.length : 1;
-      const mastery = getTopicMastery(topicId);
-      total += topicTotal;
-      mastered += Math.min(topicTotal, Math.round(mastery * topicTotal));
-      if (mastery < 0.7 && !nextTopic) {
-        nextTopic = topicId;
-      }
-    }
-    const complete = topics.length > 0 && topics.every(topicId => getTopicMastery(topicId) >= 0.7);
+    const status = getPathwayMasteryStatus(pathwayId);
+    const mastered = status.completedRounds;
+    const total = status.requiredRounds;
     return {
       mastered, total,
-      percentComplete: total > 0 ? mastered / total : 0,
-      isComplete: complete,
-      nextTopic
+      percentComplete: status.percentComplete,
+      isComplete: status.displayMastered,
+      strictMastered: status.strictMastered,
+      legacyMastered: status.legacyMastered,
+      modeStatus: status.modes,
+      nextTopic: topics && topics[0] ? topics[0] : null
     };
   }
 
@@ -276,6 +417,7 @@ const State = (() => {
       for (const topicId of pathway.topics) {
         if (s.topicStats) delete s.topicStats[topicId];
       }
+      if (s.pathwayProgress) delete s.pathwayProgress[pathwayId];
       if (s.badges) s.badges = s.badges.filter(id => id !== pathwayId);
     });
   }
@@ -560,7 +702,8 @@ const State = (() => {
       flashcard_stats: s.flashcardStats || {},
       speed_bests: s.speedBests || {},
       alphabet_stats: s.alphabetStats || {},
-      tutorials_seen: s.tutorialsSeen || {}
+      tutorials_seen: s.tutorialsSeen || {},
+      pathway_progress: s.pathwayProgress || {}
     };
 
     // Topic progress — one row per topic
@@ -656,6 +799,7 @@ const State = (() => {
       s.flashcardStats = _mergeNestedByLastSeen(s.flashcardStats, gameStats.flashcard_stats || {});
       s.alphabetStats = _mergeByLastSeen(s.alphabetStats, gameStats.alphabet_stats || {});
       s.speedBests = _mergeMax(s.speedBests || {}, gameStats.speed_bests || {});
+      s.pathwayProgress = _mergePathwayProgress(s.pathwayProgress || {}, gameStats.pathway_progress || {});
       // tutorialsSeen: once seen, always seen.
       s.tutorialsSeen = { ...(gameStats.tutorials_seen || {}), ...(s.tutorialsSeen || {}) };
     }
@@ -706,6 +850,51 @@ const State = (() => {
     return out;
   }
 
+  function _roundKey(round) {
+    return [round.timestamp || "", round.correct || 0, round.total || 0].join("|");
+  }
+
+  function _roundTime(round) {
+    if (!round || !round.timestamp) return 0;
+    return new Date(round.timestamp).getTime() || 0;
+  }
+
+  function _mergeModeRounds(localMode, remoteMode) {
+    const rounds = [];
+    const seen = new Set();
+    for (const round of [
+      ...((localMode && localMode.rounds) || []),
+      ...((remoteMode && remoteMode.rounds) || [])
+    ]) {
+      if (!round || !round.total) continue;
+      const key = _roundKey(round);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      rounds.push(round);
+    }
+    rounds.sort((a, b) => _roundTime(a) - _roundTime(b));
+    return {
+      rounds,
+      lastRound: rounds[rounds.length - 1] || null
+    };
+  }
+
+  function _mergePathwayProgress(local, remote) {
+    const out = { ...(local || {}) };
+    const ids = new Set([...Object.keys(local || {}), ...Object.keys(remote || {})]);
+    ids.forEach(pathwayId => {
+      const lp = (local && local[pathwayId]) || {};
+      const rp = (remote && remote[pathwayId]) || {};
+      out[pathwayId] = {
+        listen: _mergeModeRounds(lp.listen, rp.listen),
+        patternPractice: _mergeModeRounds(lp.patternPractice, rp.patternPractice),
+        sentenceBuilder: _mergeModeRounds(lp.sentenceBuilder, rp.sentenceBuilder),
+        legacyMastered: !!(lp.legacyMastered || rp.legacyMastered)
+      };
+    });
+    return out;
+  }
+
   /* ---------- sync indicator dispatcher ---------- */
   function _emitSync(status) {
     try {
@@ -727,6 +916,7 @@ const State = (() => {
     addXP, getLevel, getNextLevel, getLevelProgress,
     checkStreak, isStreakAtRisk, isStreakUrgent, hasPlayedToday,
     recordTopicRound, getTopicMastery,
+    recordModeRound, getPathwayMasteryStatus, isPathwayMastered, getPathwayLegacyMigrationCount,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,
     getSpeedBest, setSpeedBest,
     getPathwayProgress, resetPathwayProgress, earnBadge, hasBadge,
