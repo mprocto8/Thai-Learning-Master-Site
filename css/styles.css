@@ -441,6 +441,24 @@ p { color: var(--text-1); }
   color: var(--green);
 }
 
+.home-capability.done.legacy .home-capability-icon {
+  background: var(--surface-2);
+  color: var(--green);
+}
+
+.home-capability-legacy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-full);
+  background: var(--green-glow);
+  color: var(--green);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
 .home-capability.next .home-capability-icon {
   background: var(--accent-glow);
   color: var(--accent);

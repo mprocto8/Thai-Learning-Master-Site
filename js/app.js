@@ -253,14 +253,34 @@ const App = (() => {
   }
 
   function getHomeCapabilities() {
-    const items = Object.keys(CAPABILITY_MAP).map(topicId => {
-      const mastery = State.getTopicMastery(topicId);
+    const items = (typeof PATHWAYS !== "undefined" ? PATHWAYS : []).map(pathway => {
+      const topicId = pathway.topics && pathway.topics[0];
       const topic = TOPICS.find(t => t.id === topicId);
-      return { topicId, topic, label: CAPABILITY_MAP[topicId], done: mastery >= 0.7 };
+      const status = State.getPathwayMasteryStatus(pathway.id);
+      return {
+        pathwayId: pathway.id,
+        topicId,
+        topic,
+        label: CAPABILITY_MAP[pathway.id] || pathway.label,
+        strictMastered: status.strictMastered,
+        legacyMastered: status.legacyMastered,
+        done: status.displayMastered
+      };
     }).filter(item => item.topic);
     const completed = items.filter(item => item.done);
     const next = items.find(item => !item.done);
     return { completed, next };
+  }
+
+  function renderHomeCapability(item) {
+    const legacy = item.legacyMastered && !item.strictMastered;
+    return `
+      <div class="home-capability done ${legacy ? 'legacy' : 'strict'}">
+        <span class="home-capability-icon">&#10003;</span>
+        <span>${item.label}</span>
+        ${legacy ? '<span class="home-capability-legacy">★</span>' : ''}
+      </div>
+    `;
   }
 
   function renderDashboard() {
@@ -311,12 +331,7 @@ const App = (() => {
         <section class="home-capabilities-card">
           <div class="home-card-label">YOU CAN NOW</div>
           <div class="home-capability-list">
-            ${capabilities.completed.length ? capabilities.completed.map(item => `
-              <div class="home-capability done">
-                <span class="home-capability-icon">✓</span>
-                <span>${item.label}</span>
-              </div>
-            `).join("") : `
+            ${capabilities.completed.length ? capabilities.completed.map(renderHomeCapability).join("") : `
               <div class="home-capability muted">
                 <span class="home-capability-icon">·</span>
                 <span>Start your first pathway to unlock capabilities</span>
