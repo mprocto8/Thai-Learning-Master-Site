@@ -198,6 +198,16 @@ const SupabaseClient = (() => {
     const { error } = await _client
       .from("user_game_stats")
       .upsert(payload, { onConflict: "user_id" });
+    if (error && fields && Object.prototype.hasOwnProperty.call(fields, "pathway_progress")) {
+      // Older deployed databases may not have the pathway_progress column yet.
+      // Keep sync alive for all existing fields until create_tables.sql is applied.
+      const fallback = { ...payload };
+      delete fallback.pathway_progress;
+      const retry = await _client
+        .from("user_game_stats")
+        .upsert(fallback, { onConflict: "user_id" });
+      if (!retry.error) return;
+    }
     if (error) throw error;
   }
 

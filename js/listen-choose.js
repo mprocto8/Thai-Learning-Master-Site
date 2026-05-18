@@ -251,6 +251,9 @@ const ListenChoose = (() => {
     const total = correct + wrong;
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
     State.recordTopicRound(topic.id, correct, total);
+    if (topic.type === "pattern") {
+      State.recordModeRound(topic.id, "listen", correct, total);
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 

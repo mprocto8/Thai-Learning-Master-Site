@@ -8,6 +8,7 @@ lastPlayedDate: null   showScript: false     darkMode: true
 topicStats: {}         alphabetStats: {}     flashcardStats: {}
 speedBests: {}         onboarded: false      badges: []
 tutorialsSeen: {}      autoPlayAudio: true     autoAdvanceSentenceBuilder: false
+pathwayProgress: {}    pathwayMasteryMigrationVersion: 0    pathwayLegacyMigrationCount: 0
 
 ### Settings fields
 - `autoPlayAudio` (bool, default `true`) — when true, Listen & Choose auto-plays the Thai utterance ~300ms after each question loads. Toggled from the Settings screen. Read as `State.get().autoPlayAudio !== false` at playback sites so older saves (without the field) still auto-play.
@@ -46,6 +47,12 @@ hasPlayedToday() → bool
 recordTopicRound(topicId, correct, total) → void
 getTopicMastery(topicId) → float 0-1
 
+### Pathway Mode Mastery
+recordModeRound(pathwayId, modeId, correct, total) → void — records one mode round for pattern pathways only. `modeId` is `"listen"`, `"patternPractice"`, or `"sentenceBuilder"`. Each round stores `{ correct, total, accuracy, timestamp }`.
+getPathwayMasteryStatus(pathwayId) → { modes, completedModes, totalModes, completedRounds, requiredRounds, percentComplete, mastered, strictMastered, legacyMastered, displayMastered } — strict mastery means all three modes have 3+ rounds at ≥80%; `displayMastered` is true for strict or preserved legacy mastery.
+isPathwayMastered(pathwayId) → bool — strict mastery only; true when Listen, Pattern Practice, and Sentence Builder are all mastered.
+getPathwayLegacyMigrationCount() → int — number of pathways marked `legacyMastered` during the one-time local migration.
+
 ### Alphabet
 recordAlphabetAnswer(char, correct) → void
 
@@ -58,8 +65,8 @@ getSpeedBest(topicId) → int
 setSpeedBest(topicId, score) → void — only saves if new high
 
 ### Pathways & Badges
-getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, nextTopic } — for IA v2 pattern pathways, `mastered/total` approximates mastered pairs from topic mastery while preserving existing topic-level progress.
-resetPathwayProgress(pathwayId) → void — deletes `topicStats` for the pathway's topic(s) and removes that pathway badge only. XP, streak, other topics, flashcard/audio data, and account settings are kept.
+getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, strictMastered, legacyMastered, modeStatus, nextTopic } — for IA v2 pattern pathways, `mastered/total` is high-accuracy mode rounds out of 9 required rounds. `isComplete` includes preserved legacy mastery; `strictMastered` does not.
+resetPathwayProgress(pathwayId) → void — deletes `topicStats` and `pathwayProgress` for the pathway's topic(s) and removes that pathway badge only. XP, streak, other topics, flashcard/audio data, and account settings are kept.
 earnBadge(pathwayId) → void
 hasBadge(pathwayId) → bool
 
