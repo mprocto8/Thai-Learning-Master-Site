@@ -46,6 +46,7 @@ const App = (() => {
     UI.registerRoute("#home", renderDashboard);
     UI.registerRoute("#pathways", () => Pathways.show());
     UI.registerRoute("#learn", () => Pathways.show());
+    UI.registerRoute("#pathway", routePathway);
     UI.registerRoute("#practice", () => PracticeHub.show());
     UI.registerRoute("#library", () => PracticeHub.show());
     UI.registerRoute("#topic", routeTopic);
@@ -275,10 +276,27 @@ const App = (() => {
   function renderHomeCapability(item) {
     const legacy = item.legacyMastered && !item.strictMastered;
     return `
-      <div class="home-capability done ${legacy ? 'legacy' : 'strict'}">
+      <div class="home-capability home-capability-link done ${legacy ? 'legacy' : 'strict'}"
+        onclick="UI.navigate('#pathway/${item.pathwayId}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${item.pathwayId}');}">
         <span class="home-capability-icon">&#10003;</span>
-        <span>${item.label}</span>
+        <span class="home-capability-label">${item.label}</span>
         ${legacy ? '<span class="home-capability-legacy">★</span>' : ''}
+        <span class="home-capability-arrow">&rarr;</span>
+      </div>
+    `;
+  }
+
+  function renderHomeNextCapability(item) {
+    return `
+      <div class="home-capability home-capability-link next"
+        onclick="UI.navigate('#pathway/${item.pathwayId}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${item.pathwayId}');}">
+        <span class="home-capability-icon">&rarr;</span>
+        <span class="home-capability-label">${item.label}</span>
+        <span class="home-capability-arrow">&rarr;</span>
       </div>
     `;
   }
@@ -337,12 +355,7 @@ const App = (() => {
                 <span>Start your first pathway to unlock capabilities</span>
               </div>
             `}
-            ${capabilities.next ? `
-              <div class="home-capability next">
-                <span class="home-capability-icon">→</span>
-                <span>${capabilities.next.label}</span>
-              </div>
-            ` : ''}
+            ${capabilities.next ? renderHomeNextCapability(capabilities.next) : ''}
           </div>
         </section>
 
@@ -547,6 +560,12 @@ const App = (() => {
       return;
     }
     PatternPractice.start(topicId);
+  }
+
+  function routePathway() {
+    const pathwayId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (!pathwayId) { UI.navigate("#learn"); return; }
+    Pathways.showDetails(pathwayId);
   }
 
   /* Settings */

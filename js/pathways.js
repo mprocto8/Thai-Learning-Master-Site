@@ -31,6 +31,71 @@ const Pathways = (() => {
     `);
   }
 
+  function getPathwayContext(pathwayId) {
+    const pathway = PATHWAYS.find(p => p.id === pathwayId);
+    if (!pathway) return null;
+    const topicId = pathway.topics && pathway.topics[0];
+    const topic = TOPICS.find(t => t.id === topicId);
+    return { pathway, topic, topicId };
+  }
+
+  function showDetails(pathwayId) {
+    const ctx = getPathwayContext(pathwayId);
+    if (!ctx || !ctx.topic) {
+      UI.navigate("#learn");
+      return;
+    }
+    const { pathway, topic } = ctx;
+    const frame = topic.frame || {};
+    const mastery = State.getPathwayMasteryStatus(pathway.id);
+
+    UI.render(`
+      <div class="pathway-detail-screen">
+        ${UI.navBar("learn")}
+
+        <div class="game-header pathway-detail-header">
+          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#learn')">&larr; Back</button>
+          <span class="learn-status-badge ${mastery.displayMastered ? 'mastered' : 'in-progress'}">
+            ${mastery.strictMastered ? 'Mastered ★' : mastery.legacyMastered ? 'Mastered ★ legacy' : 'In progress'}
+          </span>
+        </div>
+
+        <section class="pathway-detail-hero">
+          <div class="learn-pathway-tier">${TIER_LABELS[pathway.tier] || pathway.tierLabel}</div>
+          <div class="pathway-detail-title-row">
+            <span class="pathway-icon">${pathway.emoji}</span>
+            <h1>${pathway.label}</h1>
+          </div>
+          <p>${pathway.description}</p>
+        </section>
+
+        <section class="pathway-detail-frame">
+          <h2>${topic.label}</h2>
+          ${frame.script ? `<div class="pathway-detail-script">${frame.script}</div>` : ''}
+          ${frame.romanized ? `<div class="pathway-detail-romanized">${frame.romanized}</div>` : ''}
+          ${frame.english ? `<div class="pathway-detail-english">${frame.english}</div>` : ''}
+          ${frame.explanation ? `<p>${frame.explanation}</p>` : ''}
+        </section>
+
+        <section class="pathway-detail-progress">
+          <h2>Mastery Progress</h2>
+          <div class="learn-mode-progress">
+            ${renderModeProgress("Listen", mastery.modes.listen)}
+            ${renderModeProgress("Pattern Practice", mastery.modes.patternPractice)}
+            ${renderModeProgress("Sentence Builder", mastery.modes.sentenceBuilder)}
+          </div>
+        </section>
+
+        <section class="pathway-detail-actions">
+          <button class="btn btn-secondary" onclick="UI.navigate('#listen/${topic.id}')">Practice Listen</button>
+          <button class="btn btn-primary" onclick="UI.navigate('#pattern/${topic.id}')">Practice Pattern</button>
+          <button class="btn btn-secondary" onclick="UI.navigate('#sentences')">Practice Sentences</button>
+          <button class="btn btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart Pathway</button>
+        </section>
+      </div>
+    `);
+  }
+
   function renderTier(tier) {
     const pathways = PATHWAYS.filter(p => p.tier === tier);
     if (!pathways.length) return "";
@@ -140,5 +205,5 @@ const Pathways = (() => {
     setTimeout(() => renderPathways(), 500);
   }
 
-  return { show, toggle, replay, claimBadge };
+  return { show, showDetails, toggle, replay, claimBadge };
 })();
