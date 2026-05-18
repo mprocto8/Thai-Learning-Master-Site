@@ -16,6 +16,8 @@
   --text-2: #8a8578;
   --accent: #f59e0b;
   --accent-glow: rgba(245, 158, 11, 0.15);
+  --warning: #f97316;
+  --warning-glow: rgba(249, 115, 22, 0.16);
   --coral: #f87171;
   --coral-glow: rgba(248, 113, 113, 0.15);
   --green: #34d399;
@@ -158,6 +160,16 @@ p { color: var(--text-1); }
 .btn-danger {
   background: var(--coral-glow);
   color: var(--coral);
+}
+
+.btn-warning {
+  background: var(--warning-glow);
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.btn-warning:hover {
+  background: rgba(249, 115, 22, 0.24);
 }
 
 .btn-sm {
@@ -2797,6 +2809,45 @@ p { color: var(--text-1); }
 .pathway-detail-actions {
   display: grid;
   gap: var(--sp-2);
+}
+
+.pathway-restart-btn {
+  border: 1px solid var(--warning-glow);
+}
+
+.restart-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(15, 17, 23, 0.72);
+}
+
+.restart-dialog {
+  width: min(100%, 420px);
+  padding: var(--sp-5);
+  border: 1px solid var(--warning-glow);
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+  box-shadow: var(--shadow-lg);
+}
+
+.restart-dialog h2 {
+  margin-bottom: var(--sp-2);
+}
+
+.restart-dialog p {
+  margin-bottom: var(--sp-5);
+}
+
+.restart-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
 }
 
 /* --- Practice Hub --- */

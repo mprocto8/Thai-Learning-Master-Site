@@ -340,7 +340,7 @@ const App = (() => {
               <span class="home-session-label">TODAY'S SESSION</span>
               <span class="home-session-time">~10 min</span>
             </div>
-            <h2>${session.isReplay ? "Replay" : "Continue"} ${session.pathway.label}</h2>
+            <h2>${session.isReplay ? "Restart" : "Continue"} ${session.pathway.label}</h2>
             <p>${session.topic ? `Next up: ${session.topic.label}. Build the pattern, hear it, then lock it in.` : "Pick up the next guided step in Learn."}</p>
             <button class="btn btn-primary home-session-button" onclick="event.stopPropagation();UI.navigate('${session.route}')">Start session →</button>
           </section>

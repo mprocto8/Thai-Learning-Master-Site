@@ -90,7 +90,7 @@ const Pathways = (() => {
           <button class="btn btn-secondary" onclick="UI.navigate('#listen/${topic.id}')">Practice Listen</button>
           <button class="btn btn-primary" onclick="UI.navigate('#pattern/${topic.id}')">Practice Pattern</button>
           <button class="btn btn-secondary" onclick="UI.navigate('#sentences')">Practice Sentences</button>
-          <button class="btn btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart Pathway</button>
+          <button class="btn btn-warning pathway-restart-btn" onclick="Pathways.requestRestart('${pathway.id}')">&#8634; Restart Pathway</button>
         </section>
       </div>
     `);
@@ -157,7 +157,7 @@ const Pathways = (() => {
 
         ${isMastered ? `
         <div class="learn-pathway-actions" onclick="event.stopPropagation();">
-          <button class="btn btn-sm btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart</button>
+          <button class="btn btn-sm btn-warning pathway-restart-btn" onclick="Pathways.requestRestart('${pathway.id}')">&#8634; Restart</button>
         </div>
         ` : ''}
       </article>
@@ -181,14 +181,46 @@ const Pathways = (() => {
     `;
   }
 
-  function replay(pathwayId) {
+  function requestRestart(pathwayId) {
     const pathway = PATHWAYS.find(p => p.id === pathwayId);
     if (!pathway) return;
-    const message = `Restart ${pathway.label}? Your mastery progress for this pathway will reset, but XP and streak are kept.`;
-    if (!confirm(message)) return;
+    const existing = document.querySelector(".restart-dialog-backdrop");
+    if (existing) existing.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "restart-dialog-backdrop";
+    overlay.innerHTML = `
+      <div class="restart-dialog" role="dialog" aria-modal="true" aria-labelledby="restart-dialog-title">
+        <h2 id="restart-dialog-title">Restart this pathway?</h2>
+        <p>All progress for ${pathway.label} will reset. Your XP and streak are kept.</p>
+        <div class="restart-dialog-actions">
+          <button class="btn btn-secondary" onclick="Pathways.closeRestartDialog()">Cancel</button>
+          <button class="btn btn-warning" onclick="Pathways.confirmRestart('${pathway.id}')">&#8634; Restart</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  function closeRestartDialog() {
+    const existing = document.querySelector(".restart-dialog-backdrop");
+    if (existing) existing.remove();
+  }
+
+  function confirmRestart(pathwayId) {
+    const pathway = PATHWAYS.find(p => p.id === pathwayId);
+    if (!pathway) return;
     State.resetPathwayProgress(pathwayId);
+    closeRestartDialog();
     UI.toast(`${pathway.label} restarted`, "info");
-    renderPathways();
+    if ((window.location.hash || "").startsWith(`#pathway/${pathwayId}`)) {
+      showDetails(pathwayId);
+    } else {
+      renderPathways();
+    }
+  }
+
+  function replay(pathwayId) {
+    requestRestart(pathwayId);
   }
 
   function toggle() {
@@ -204,5 +236,5 @@ const Pathways = (() => {
     setTimeout(() => renderPathways(), 500);
   }
 
-  return { show, showDetails, toggle, replay, claimBadge };
+  return { show, showDetails, toggle, requestRestart, closeRestartDialog, confirmRestart, replay, claimBadge };
 })();
