@@ -2603,6 +2603,17 @@ p { color: var(--text-1); }
   gap: var(--sp-3);
   padding: var(--sp-4);
   border: 1px solid var(--surface-1);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.learn-pathway-card:hover {
+  border-color: var(--surface-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.learn-pathway-card:active {
+  transform: scale(0.99);
 }
 
 .learn-pathway-card.mastered,

@@ -123,10 +123,12 @@ const Pathways = (() => {
         ? "Mastered ★ legacy"
         : hasProgress ? "In progress" : "Not started";
     const statusClass = isMastered ? "mastered" : hasProgress ? "in-progress" : "not-started";
-    const route = topic && (topic.type || "vocabulary") === "pattern" ? `#pattern/${topic.id}` : `#game/${topicId}`;
 
     return `
-      <article class="pathway-card learn-pathway-card ${statusClass}">
+      <article class="pathway-card learn-pathway-card ${statusClass}"
+        onclick="UI.navigate('#pathway/${pathway.id}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${pathway.id}');}">
         <div class="learn-pathway-topline">
           <span class="learn-pathway-tier">${TIER_LABELS[pathway.tier] || pathway.tierLabel}</span>
           <span class="learn-status-badge ${statusClass}">${status}</span>
@@ -153,14 +155,11 @@ const Pathways = (() => {
           ${renderModeProgress("Sentence Builder", mastery.modes.sentenceBuilder)}
         </div>
 
-        <div class="learn-pathway-actions">
-          ${topic ? `<button class="btn btn-sm btn-secondary" onclick="UI.navigate('#topic/${topic.id}')">Details</button>` : ""}
-          ${isMastered ? `
-            <button class="btn btn-sm btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart</button>
-          ` : `
-            <button class="btn btn-sm btn-primary" onclick="UI.navigate('${route}')">${hasProgress ? "Continue" : "Start"} &rarr;</button>
-          `}
+        ${isMastered ? `
+        <div class="learn-pathway-actions" onclick="event.stopPropagation();">
+          <button class="btn btn-sm btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart</button>
         </div>
+        ` : ''}
       </article>
     `;
   }
