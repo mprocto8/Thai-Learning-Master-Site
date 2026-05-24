@@ -236,6 +236,8 @@ These are mistakes AI assistants have made on this project before:
 
 ## Workflow Conventions
 
+This is a solo developer project. Push directly to main for all changes. Do NOT create feature branches or open PRs unless specifically asked. The user merges branches manually when they appear, which adds friction to the workflow.
+
 ### Commit messages
 Format: `Imperative present tense action`. Examples:
 - `Add Tier 2 survival patterns (6 patterns, 60 pairs)`
