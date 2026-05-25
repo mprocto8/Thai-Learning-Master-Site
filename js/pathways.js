@@ -31,6 +31,71 @@ const Pathways = (() => {
     `);
   }
 
+  function getPathwayContext(pathwayId) {
+    const pathway = PATHWAYS.find(p => p.id === pathwayId);
+    if (!pathway) return null;
+    const topicId = pathway.topics && pathway.topics[0];
+    const topic = TOPICS.find(t => t.id === topicId);
+    return { pathway, topic, topicId };
+  }
+
+  function showDetails(pathwayId) {
+    const ctx = getPathwayContext(pathwayId);
+    if (!ctx || !ctx.topic) {
+      UI.navigate("#learn");
+      return;
+    }
+    const { pathway, topic } = ctx;
+    const frame = topic.frame || {};
+    const mastery = State.getPathwayMasteryStatus(pathway.id);
+
+    UI.render(`
+      <div class="pathway-detail-screen">
+        ${UI.navBar("learn")}
+
+        <div class="game-header pathway-detail-header">
+          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#learn')">&larr; Back</button>
+          <span class="learn-status-badge ${mastery.displayMastered ? 'mastered' : 'in-progress'}">
+            ${mastery.strictMastered ? 'Mastered ★' : mastery.legacyMastered ? 'Mastered ★ legacy' : 'In progress'}
+          </span>
+        </div>
+
+        <section class="pathway-detail-hero">
+          <div class="learn-pathway-tier">${TIER_LABELS[pathway.tier] || pathway.tierLabel}</div>
+          <div class="pathway-detail-title-row">
+            <span class="pathway-icon">${pathway.emoji}</span>
+            <h1>${pathway.label}</h1>
+          </div>
+          <p>${pathway.description}</p>
+        </section>
+
+        <section class="pathway-detail-frame">
+          <h2>${topic.label}</h2>
+          ${frame.script ? `<div class="pathway-detail-script">${frame.script}</div>` : ''}
+          ${frame.romanized ? `<div class="pathway-detail-romanized">${frame.romanized}</div>` : ''}
+          ${frame.english ? `<div class="pathway-detail-english">${frame.english}</div>` : ''}
+          ${frame.explanation ? `<p>${frame.explanation}</p>` : ''}
+        </section>
+
+        <section class="pathway-detail-progress">
+          <h2>Mastery Progress</h2>
+          <div class="learn-mode-progress">
+            ${renderModeProgress("Listen", mastery.modes.listen)}
+            ${renderModeProgress("Pattern Practice", mastery.modes.patternPractice)}
+            ${renderModeProgress("Sentence Builder", mastery.modes.sentenceBuilder)}
+          </div>
+        </section>
+
+        <section class="pathway-detail-actions">
+          <button class="btn btn-secondary" onclick="UI.navigate('#listen/${topic.id}')">Practice Listen</button>
+          <button class="btn btn-primary" onclick="UI.navigate('#pattern/${topic.id}')">Practice Pattern</button>
+          <button class="btn btn-secondary" onclick="UI.navigate('#sentences')">Practice Sentences</button>
+          <button class="btn btn-warning pathway-restart-btn" onclick="Pathways.requestRestart('${pathway.id}')">&#8634; Restart Pathway</button>
+        </section>
+      </div>
+    `);
+  }
+
   function renderTier(tier) {
     const pathways = PATHWAYS.filter(p => p.tier === tier);
     if (!pathways.length) return "";
@@ -58,10 +123,12 @@ const Pathways = (() => {
         ? "Mastered ★ legacy"
         : hasProgress ? "In progress" : "Not started";
     const statusClass = isMastered ? "mastered" : hasProgress ? "in-progress" : "not-started";
-    const route = topic && (topic.type || "vocabulary") === "pattern" ? `#pattern/${topic.id}` : `#game/${topicId}`;
 
     return `
-      <article class="pathway-card learn-pathway-card ${statusClass}">
+      <article class="pathway-card learn-pathway-card ${statusClass}"
+        onclick="UI.navigate('#pathway/${pathway.id}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${pathway.id}');}">
         <div class="learn-pathway-topline">
           <span class="learn-pathway-tier">${TIER_LABELS[pathway.tier] || pathway.tierLabel}</span>
           <span class="learn-status-badge ${statusClass}">${status}</span>
@@ -88,14 +155,11 @@ const Pathways = (() => {
           ${renderModeProgress("Sentence Builder", mastery.modes.sentenceBuilder)}
         </div>
 
-        <div class="learn-pathway-actions">
-          ${topic ? `<button class="btn btn-sm btn-secondary" onclick="UI.navigate('#topic/${topic.id}')">Details</button>` : ""}
-          ${isMastered ? `
-            <button class="btn btn-sm btn-secondary" onclick="Pathways.replay('${pathway.id}')">Restart</button>
-          ` : `
-            <button class="btn btn-sm btn-primary" onclick="UI.navigate('${route}')">${hasProgress ? "Continue" : "Start"} &rarr;</button>
-          `}
+        ${isMastered ? `
+        <div class="learn-pathway-actions" onclick="event.stopPropagation();">
+          <button class="btn btn-sm btn-warning pathway-restart-btn" onclick="Pathways.requestRestart('${pathway.id}')">&#8634; Restart</button>
         </div>
+        ` : ''}
       </article>
     `;
   }
@@ -117,14 +181,46 @@ const Pathways = (() => {
     `;
   }
 
-  function replay(pathwayId) {
+  function requestRestart(pathwayId) {
     const pathway = PATHWAYS.find(p => p.id === pathwayId);
     if (!pathway) return;
-    const message = `Restart ${pathway.label}? Your mastery progress for this pathway will reset, but XP and streak are kept.`;
-    if (!confirm(message)) return;
+    const existing = document.querySelector(".restart-dialog-backdrop");
+    if (existing) existing.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "restart-dialog-backdrop";
+    overlay.innerHTML = `
+      <div class="restart-dialog" role="dialog" aria-modal="true" aria-labelledby="restart-dialog-title">
+        <h2 id="restart-dialog-title">Restart this pathway?</h2>
+        <p>All progress for ${pathway.label} will reset. Your XP and streak are kept.</p>
+        <div class="restart-dialog-actions">
+          <button class="btn btn-secondary" onclick="Pathways.closeRestartDialog()">Cancel</button>
+          <button class="btn btn-warning" onclick="Pathways.confirmRestart('${pathway.id}')">&#8634; Restart</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  function closeRestartDialog() {
+    const existing = document.querySelector(".restart-dialog-backdrop");
+    if (existing) existing.remove();
+  }
+
+  function confirmRestart(pathwayId) {
+    const pathway = PATHWAYS.find(p => p.id === pathwayId);
+    if (!pathway) return;
     State.resetPathwayProgress(pathwayId);
+    closeRestartDialog();
     UI.toast(`${pathway.label} restarted`, "info");
-    renderPathways();
+    if ((window.location.hash || "").startsWith(`#pathway/${pathwayId}`)) {
+      showDetails(pathwayId);
+    } else {
+      renderPathways();
+    }
+  }
+
+  function replay(pathwayId) {
+    requestRestart(pathwayId);
   }
 
   function toggle() {
@@ -140,5 +236,5 @@ const Pathways = (() => {
     setTimeout(() => renderPathways(), 500);
   }
 
-  return { show, toggle, replay, claimBadge };
+  return { show, showDetails, toggle, requestRestart, closeRestartDialog, confirmRestart, replay, claimBadge };
 })();

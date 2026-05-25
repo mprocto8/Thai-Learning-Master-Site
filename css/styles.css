@@ -16,6 +16,8 @@
   --text-2: #8a8578;
   --accent: #f59e0b;
   --accent-glow: rgba(245, 158, 11, 0.15);
+  --warning: #f97316;
+  --warning-glow: rgba(249, 115, 22, 0.16);
   --coral: #f87171;
   --coral-glow: rgba(248, 113, 113, 0.15);
   --green: #34d399;
@@ -158,6 +160,16 @@ p { color: var(--text-1); }
 .btn-danger {
   background: var(--coral-glow);
   color: var(--coral);
+}
+
+.btn-warning {
+  background: var(--warning-glow);
+  color: var(--warning);
+  font-weight: 700;
+}
+
+.btn-warning:hover {
+  background: rgba(249, 115, 22, 0.24);
 }
 
 .btn-sm {
@@ -423,6 +435,34 @@ p { color: var(--text-1); }
   gap: var(--sp-2);
   color: var(--text-1);
   font-size: 0.9rem;
+}
+
+.home-capability-link {
+  min-height: 42px;
+  margin: 0 calc(var(--sp-2) * -1);
+  padding: var(--sp-2);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.home-capability-link:hover {
+  background: var(--bg-2);
+}
+
+.home-capability-link:active {
+  transform: scale(0.98);
+}
+
+.home-capability-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-capability-arrow {
+  margin-left: auto;
+  color: var(--text-2);
+  font-weight: 800;
 }
 
 .home-capability-icon {
@@ -2575,6 +2615,17 @@ p { color: var(--text-1); }
   gap: var(--sp-3);
   padding: var(--sp-4);
   border: 1px solid var(--surface-1);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.learn-pathway-card:hover {
+  border-color: var(--surface-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.learn-pathway-card:active {
+  transform: scale(0.99);
 }
 
 .learn-pathway-card.mastered,
@@ -2697,6 +2748,105 @@ p { color: var(--text-1); }
 
 .learn-pathway-actions {
   justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.pathway-detail-screen {
+  padding-top: var(--sp-4);
+}
+
+.pathway-detail-header {
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.pathway-detail-hero,
+.pathway-detail-frame,
+.pathway-detail-progress {
+  margin-bottom: var(--sp-5);
+}
+
+.pathway-detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-2) 0;
+}
+
+.pathway-detail-title-row h1 {
+  font-size: 1.45rem;
+}
+
+.pathway-detail-frame {
+  padding: var(--sp-4);
+  border: 1px solid var(--surface-1);
+  border-radius: var(--r-md);
+  background: var(--bg-1);
+}
+
+.pathway-detail-frame h2,
+.pathway-detail-progress h2 {
+  margin-bottom: var(--sp-3);
+  font-size: 0.95rem;
+}
+
+.pathway-detail-script {
+  margin-bottom: var(--sp-1);
+  font-size: 1.25rem;
+  color: var(--text-0);
+}
+
+.pathway-detail-romanized {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pathway-detail-english {
+  margin-bottom: var(--sp-3);
+  color: var(--text-1);
+}
+
+.pathway-detail-actions {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.pathway-restart-btn {
+  border: 1px solid var(--warning-glow);
+}
+
+.restart-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(15, 17, 23, 0.72);
+}
+
+.restart-dialog {
+  width: min(100%, 420px);
+  padding: var(--sp-5);
+  border: 1px solid var(--warning-glow);
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+  box-shadow: var(--shadow-lg);
+}
+
+.restart-dialog h2 {
+  margin-bottom: var(--sp-2);
+}
+
+.restart-dialog p {
+  margin-bottom: var(--sp-5);
+}
+
+.restart-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
   flex-wrap: wrap;
 }
 

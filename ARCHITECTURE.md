@@ -39,7 +39,7 @@
 | js/time-game.js — tell-the-time quiz | TimeGame | State, UI, ThaiTime |
 | js/tone-trainer.js — 5 Thai tones: browse + quiz | ToneTrainer | State, UI |
 | js/sentence-builder.js — word arrangement game; records pattern-tagged Sentence Builder mastery rounds | SentenceBuilder | State, UI, SENTENCES |
-| js/pathways.js — Learn tab with Tier 1-5 pattern pathways, strict per-mode progress, legacy mastery indicators, and replay for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
+| js/pathways.js — Learn tab with Tier 1-5 pattern pathways, strict per-mode progress, legacy mastery indicators, pathway detail view, and restart for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — Library tab with Script group, tools, and topic launcher | PracticeHub | State, UI, TOPICS, alphabet data |
 | js/topic-detail.js - topic review screen with item list, pair audio, and mode launchers | TopicDetail | State, UI, TOPICS, Audio |
 | js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
@@ -74,7 +74,7 @@
 
 ## IA v2 Tab Structure
 - Home (`#home`, legacy `#dashboard`) — focused dashboard with one primary pathway session CTA, capabilities, quick review/daily actions, and Word of the Day.
-- Learn (`#learn`, legacy `#pathways`) — Tier 1-5 pattern pathways. Completed pathways can be replayed, which resets mastery for that pathway only.
+- Learn (`#learn`, legacy `#pathways`) — Tier 1-5 pattern pathways. `#pathway/{id}` opens pathway details. Completed pathways can be restarted, which resets mastery for that pathway only.
 - Library (`#library`, legacy `#practice`) — topic library and tools. Script learning now appears as the top Library group and routes to the existing Script/Tone screens.
 - Settings (`#settings`) — unchanged.
 
