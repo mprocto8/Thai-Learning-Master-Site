@@ -73,7 +73,11 @@ const State = (() => {
   }
 
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(_state));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(_state));
+    } catch (e) {
+      console.warn("State save failed:", e);
+    }
     _scheduleSync();
   }
 
