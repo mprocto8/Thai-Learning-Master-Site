@@ -4,6 +4,16 @@
 const UI = (() => {
   const app = () => document.getElementById("app");
 
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   /* Simple hash-based router */
   let _routes = {};
 
@@ -163,14 +173,16 @@ const UI = (() => {
     const s = State.get();
     const name = s.userName || "Learner";
     const initial = (name.trim()[0] || "?").toUpperCase();
+    const safeName = escapeHtml(name);
+    const safeInitial = escapeHtml(initial);
     const progress = State.getLevelProgress();
     const level = State.getLevel();
     return `
       <div class="user-header">
         <div class="user-header-identity">
-          <div class="user-avatar" title="${level.name} — ${s.xp} XP">${initial}</div>
+          <div class="user-avatar" title="${level.name} — ${s.xp} XP">${safeInitial}</div>
           <div class="user-header-info">
-            <div class="user-header-name">${name}</div>
+            <div class="user-header-name">${safeName}</div>
             <div class="user-header-xp">
               <div class="user-header-xp-fill" style="width:${progress * 100}%"></div>
             </div>

@@ -33,6 +33,16 @@ const App = (() => {
     'polite-request': 'Make polite requests'
   };
 
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function _topicType(t) {
     return t.type || "vocabulary";
   }
@@ -316,7 +326,7 @@ const App = (() => {
 
         <div class="dash-header home-v2-header">
           <div class="dash-greeting">
-            <h1>สวัสดี ${s.userName || "Learner"}</h1>
+            <h1>สวัสดี ${escapeHtml(s.userName || "Learner")}</h1>
             <p class="dash-subtitle">${getGreeting()}</p>
           </div>
           <div class="home-streak-strip">🔥 ${s.streak || 0} day streak · Day ${dayNumber}</div>
@@ -584,7 +594,7 @@ const App = (() => {
         <div class="settings-list">
           <div class="setting-item">
             <label>Your Name</label>
-            <input type="text" id="setting-name" value="${s.userName}" maxlength="20"
+            <input type="text" id="setting-name" maxlength="20"
               onchange="App.updateName(this.value)" />
           </div>
 
@@ -664,6 +674,9 @@ const App = (() => {
         </div>
       </div>
     `);
+
+    const nameInput = document.getElementById("setting-name");
+    if (nameInput) nameInput.value = s.userName || "";
   }
 
   function updateName(name) {
