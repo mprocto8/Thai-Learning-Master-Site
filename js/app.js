@@ -117,13 +117,14 @@ const App = (() => {
       }).catch(e => console.warn("[App] session restore failed:", e));
     }
 
-    // `L` on dashboard → today's listening practice.
+    // `L` on home/dashboard → today's listening practice.
     document.addEventListener("keydown", e => {
       if (e.key !== "l" && e.key !== "L") return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || document.activeElement?.isContentEditable) return;
-      if ((window.location.hash || "#dashboard") !== "#dashboard") return;
+      const currentHash = window.location.hash || "#home";
+      if (!["#home", "#dashboard"].includes(currentHash)) return;
       e.preventDefault();
       startTodayListen();
     });
@@ -527,46 +528,46 @@ const App = (() => {
   function routeGame() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Game.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeTopic() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) TopicDetail.show(topicId);
-    else UI.navigate("#practice");
+    else UI.navigate("#library");
   }
 
   function routeFlashcard() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Flashcard.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeSpeed() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Speed.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeTyping() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) TypingChallenge.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeListen() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) ListenChoose.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routePattern() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
-    if (!topicId) { UI.navigate("#dashboard"); return; }
+    if (!topicId) { UI.navigate("#library"); return; }
     const t = TOPICS.find(tp => tp.id === topicId);
     if (!t || _topicType(t) !== "pattern") {
       UI.toast("Pattern Practice is only available for pattern topics.", "info");
-      UI.navigate("#practice");
+      UI.navigate("#library");
       return;
     }
     PatternPractice.start(topicId);
@@ -886,7 +887,7 @@ const App = (() => {
           </div>
 
           <div class="login-guest">
-            <a href="#dashboard" onclick="event.preventDefault();App.continueAsGuest()">Continue as guest →</a>
+            <a href="#home" onclick="event.preventDefault();App.continueAsGuest()">Continue as guest →</a>
             <p class="login-guest-hint">Guest progress stays on this device only.</p>
           </div>
         </div>
@@ -920,7 +921,7 @@ const App = (() => {
         await State.login(email, password);
       }
       UI.toast("Signed in!", "info");
-      UI.navigate("#dashboard");
+      UI.navigate("#home");
     } catch (e) {
       const msg = (e && e.message) ? e.message : "Something went wrong.";
       if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
@@ -929,7 +930,7 @@ const App = (() => {
   }
 
   function continueAsGuest() {
-    UI.navigate("#dashboard");
+    UI.navigate("#home");
   }
 
   /* ------------------------------------------------------------
@@ -1041,7 +1042,7 @@ const App = (() => {
       await State.updatePassword(pw);
       State.clearRecoveryMode();
       UI.toast("Password updated!", "info");
-      UI.navigate("#dashboard");
+      UI.navigate("#home");
     } catch (e) {
       const msg = (e && e.message) ? e.message : "Something went wrong.";
       // Most common failure: the recovery link expired or was reused.

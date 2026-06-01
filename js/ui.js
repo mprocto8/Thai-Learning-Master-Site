@@ -23,10 +23,10 @@ const UI = (() => {
 
   function navigate(hash) {
     // QOL 6: save scroll position when leaving home/dashboard
-    if (["#dashboard", "#home"].includes(window.location.hash || "#dashboard") && typeof App !== "undefined") {
+    if (["#dashboard", "#home"].includes(window.location.hash || "#home") && typeof App !== "undefined") {
       App.saveDashScroll();
     }
-    const current = window.location.hash || "#dashboard";
+    const current = window.location.hash || "#home";
     if (current === hash) {
       // hashchange won't fire when the hash doesn't change. This matters when
       // a screen was rendered ad-hoc (e.g. Mistake Review launched from the
@@ -132,13 +132,13 @@ const UI = (() => {
   function handleRoute() {
     // Run cleanup from previous route
     if (_cleanupFn) { _cleanupFn(); _cleanupFn = null; }
-    const hash = window.location.hash || "#dashboard";
+    const hash = window.location.hash || "#home";
     const baseHash = hash.split("/")[0].split("?")[0];
     const route = _routes[hash] || _routes[baseHash];
     if (route) {
       route();
     } else {
-      _routes["#dashboard"]();
+      _routes["#home"]();
     }
   }
 
