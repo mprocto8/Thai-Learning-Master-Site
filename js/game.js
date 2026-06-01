@@ -37,7 +37,7 @@ const Game = (() => {
     UI.render(`
       <div class="game-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#dashboard')">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#library')">← Library</button>
           <h2>${currentTopic.emoji} ${currentTopic.label}</h2>
           <div class="game-streak">
             <span class="streak-flame ${streak >= 3 ? 'on' : ''}" style="font-size:${Math.min(1.2 + streak * 0.15, 2.5)}em">🔥</span>
@@ -291,8 +291,8 @@ const Game = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="Game.start('${currentTopic.id}')">Play Again</button>
-            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#learn\')">← Learn</button>' : ''}
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>

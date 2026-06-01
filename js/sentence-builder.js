@@ -57,7 +57,7 @@ const SentenceBuilder = (() => {
             <div class="locked-icon">🔒</div>
             <h3>Unlock Sentence Builder</h3>
             <p>Master any vocabulary topic to 40% to unlock sentences using those words.</p>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Go Practice Vocabulary</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Go to Library</button>
           </div>
         `}
 
@@ -430,7 +430,7 @@ const SentenceBuilder = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="SentenceBuilder.startRound()">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Dashboard</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>

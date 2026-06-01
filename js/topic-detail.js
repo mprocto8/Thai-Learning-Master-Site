@@ -22,7 +22,7 @@ const TopicDetail = (() => {
     const topic = TOPICS.find(t => t.id === topicId);
     if (!topic) {
       UI.toast("Topic not found.", "info");
-      UI.navigate("#practice");
+      UI.navigate("#library");
       return;
     }
 
@@ -32,7 +32,7 @@ const TopicDetail = (() => {
     UI.render(`
       <div class="topic-detail-screen topic-detail-type-${type}">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#practice')">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#library')">← Library</button>
           <h2>${topic.emoji} ${topic.label}</h2>
           <span class="topic-detail-count">${topic.pairs.length}</span>
         </div>

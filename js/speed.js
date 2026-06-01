@@ -183,8 +183,8 @@ const Speed = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="Speed.start('${topic.id}')">Play Again</button>
-            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back</button>
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#learn\')">← Learn</button>' : ''}
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
@@ -196,7 +196,7 @@ const Speed = (() => {
     isActive = false;
     if (timer) clearInterval(timer);
     timer = null;
-    UI.navigate("#dashboard");
+    UI.navigate("#library");
   }
 
   // Keyboard: 1-4 select answer options

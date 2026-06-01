@@ -45,7 +45,7 @@ const PatternPractice = (() => {
   function start(topicId) {
     const t = TOPICS.find(tp => tp.id === topicId);
     if (!t || t.type !== "pattern") {
-      UI.navigate("#dashboard");
+      UI.navigate("#library");
       return;
     }
     // Keep only pairs that actually carry at least one slottable word.
@@ -54,7 +54,7 @@ const PatternPractice = (() => {
       UI.render(`
         <div class="pattern-screen">
           <div class="game-header">
-            <button class="btn btn-ghost back-btn" onclick="UI.navigate('#practice')">← Back</button>
+            <button class="btn btn-ghost back-btn" onclick="UI.navigate('#library')">← Library</button>
             <h2>🧩 ${t.emoji} ${t.label}</h2>
             <div></div>
           </div>
@@ -63,7 +63,7 @@ const PatternPractice = (() => {
             <h3>No practice items yet</h3>
             <p>This pattern topic doesn't have any slot fillings yet. Check back soon.</p>
             <div class="round-actions">
-              <button class="btn btn-primary" onclick="UI.navigate('#practice')">Back to Practice</button>
+              <button class="btn btn-primary" onclick="UI.navigate('#library')">Back to Library</button>
             </div>
           </div>
         </div>
@@ -411,7 +411,7 @@ const PatternPractice = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="PatternPractice.start('${topic.id}')">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#practice')">Back to Practice</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
@@ -422,7 +422,7 @@ const PatternPractice = (() => {
     isActive = false;
     _seqToken++;
     Audio.cancel();
-    UI.navigate("#practice");
+    UI.navigate("#library");
   }
 
   function setMode(mode) {

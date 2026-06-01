@@ -47,7 +47,7 @@ const ListenChoose = (() => {
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
-    if (!topic) { UI.navigate("#dashboard"); return; }
+    if (!topic) { UI.navigate("#library"); return; }
 
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
@@ -83,7 +83,7 @@ const ListenChoose = (() => {
       }
     }
 
-    if (pool.length === 0) { UI.navigate("#dashboard"); return; }
+    if (pool.length === 0) { UI.navigate("#home"); return; }
 
     // Synthetic topic so existing render/record paths keep working.
     topic = {
@@ -282,7 +282,7 @@ const ListenChoose = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="ListenChoose.start('${topic.id}')">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
@@ -294,7 +294,7 @@ const ListenChoose = (() => {
     UI.render(`
       <div class="listen-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="${canReturn ? 'ListenChoose.resumeRound()' : "UI.navigate('#dashboard')"}">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${canReturn ? 'ListenChoose.resumeRound()' : "UI.navigate('#library')"}">← Library</button>
           <h2>🎧 Listen &amp; Choose</h2>
           <div></div>
         </div>
@@ -311,7 +311,7 @@ const ListenChoose = (() => {
           <div class="round-actions">
             ${canReturn
               ? `<button class="btn btn-primary" onclick="ListenChoose.resumeRound()">Back to round</button>`
-              : `<button class="btn btn-primary" onclick="UI.navigate('#dashboard')">Back to Dashboard</button>`}
+              : `<button class="btn btn-primary" onclick="UI.navigate('#library')">Back to Library</button>`}
           </div>
         </div>
       </div>
@@ -324,13 +324,13 @@ const ListenChoose = (() => {
 
   function resumeRound() {
     if (isActive && queue.length > 0) renderPrompt();
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function quit() {
     isActive = false;
     Audio.cancel();
-    UI.navigate("#dashboard");
+    UI.navigate("#library");
   }
 
   return { start, startQuick, answer, playAgain, setRate, continueNext, quit, showAudioHelp, resumeRound };

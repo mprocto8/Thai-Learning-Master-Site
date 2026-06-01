@@ -41,7 +41,7 @@ const TypingChallenge = (() => {
 
   function start(topicId) {
     topic = TOPICS.find(t => t.id === topicId);
-    if (!topic) { UI.navigate("#dashboard"); return; }
+    if (!topic) { UI.navigate("#library"); return; }
     // Randomize and take up to ROUND_SIZE — no repeats within a round.
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
@@ -226,7 +226,7 @@ const TypingChallenge = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="TypingChallenge.start('${topic.id}')">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@ const TypingChallenge = (() => {
 
   function quit() {
     isActive = false;
-    UI.navigate("#dashboard");
+    UI.navigate("#library");
   }
 
   return { start, submit, tryAgain, skip, quit };

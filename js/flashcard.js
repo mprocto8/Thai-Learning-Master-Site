@@ -84,7 +84,7 @@ const Flashcard = (() => {
     UI.render(`
       <div class="flashcard-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#dashboard')">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="UI.navigate('#library')">← Library</button>
           <h2>${topic.emoji} ${topic.label}</h2>
           <span class="card-counter">${currentIndex + 1}/${deck.length}</span>
         </div>
@@ -244,11 +244,11 @@ const Flashcard = (() => {
           </div>
           <div class="round-actions">
             ${isMistakeDeck
-              ? '<button class="btn btn-primary" onclick="UI.navigate(\'#dashboard\')">Back to Dashboard</button>'
+              ? '<button class="btn btn-primary" onclick="UI.navigate(\'#home\')">Back to Home</button>'
               : `<button class="btn btn-primary" onclick="Flashcard.start('${topic.id}')">Study Again</button>`
             }
-            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#pathways\')">← Pathways</button>' : ''}
-            ${!isMistakeDeck ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#dashboard\')">Back</button>' : ''}
+            ${fromPathways ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#learn\')">← Learn</button>' : ''}
+            ${!isMistakeDeck ? '<button class="btn btn-secondary" onclick="UI.navigate(\'#library\')">Back to Library</button>' : ''}
           </div>
         </div>
       </div>
