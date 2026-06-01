@@ -167,7 +167,7 @@ const Session = (() => {
     if (!current) return;
     current.activityIndex = 0;
     current.currentRound = 0;
-    renderTransition(0, true);
+    startCurrentActivity();
   }
 
   function renderTransition(nextIndex, firstActivity) {
@@ -202,15 +202,62 @@ const Session = (() => {
   function advanceNow() {
     if (!current) return;
     clearTransition();
-    // Skeleton checkpoint: mark the activity as done and keep moving. Later
-    // commits replace this with calls into the actual modes.
+    startCurrentActivity();
+  }
+
+  function startCurrentActivity() {
+    if (!current) return;
+    clearTransition();
     const item = current.plan[current.activityIndex];
-    if (item) {
-      item.completedRounds = item.rounds;
-      current.activityIndex++;
-      renderTransition(current.activityIndex, false);
-    } else {
+    if (!item) {
       renderComplete();
+      return;
+    }
+
+    const options = {
+      sessionMode: true,
+      activityIndex: current.activityIndex,
+      activityTotal: current.plan.length,
+      roundIndex: current.currentRound,
+      roundTotal: item.rounds,
+      onComplete: result => handleModeComplete(result || {})
+    };
+
+    if (item.id === "patternPractice") {
+      PatternPractice.start(current.topic.id, options);
+    } else if (item.id === "listen") {
+      ListenChoose.start(current.topic.id, options);
+    } else if (item.id === "sentenceBuilder") {
+      SentenceBuilder.start(current.pathway.id, options);
+    }
+  }
+
+  function handleModeComplete(result) {
+    if (!current) return;
+    const item = current.plan[current.activityIndex];
+    if (!item) {
+      renderComplete();
+      return;
+    }
+
+    if (result.unavailable) item.skipped = true;
+    else {
+      item.completedRounds++;
+      item.results.push(result);
+    }
+
+    current.currentRound++;
+    if (!item.skipped && current.currentRound < item.rounds) {
+      startCurrentActivity();
+      return;
+    }
+
+    current.activityIndex++;
+    current.currentRound = 0;
+    if (current.activityIndex >= current.plan.length) {
+      renderComplete();
+    } else {
+      renderTransition(current.activityIndex, false);
     }
   }
 
