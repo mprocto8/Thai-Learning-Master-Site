@@ -648,6 +648,15 @@ const App = (() => {
             <div class="setting-hint">When off, tap Continue (or press space) after each completed sentence.</div>
           </div>
 
+          <div class="setting-item">
+            <label>Pause between activities</label>
+            <div class="toggle-group">
+              <button class="btn btn-sm ${s.pauseBetweenActivities ? 'btn-active' : ''}" onclick="App.togglePauseBetweenActivities(true)">On</button>
+              <button class="btn btn-sm ${!s.pauseBetweenActivities ? 'btn-active' : ''}" onclick="App.togglePauseBetweenActivities(false)">Off</button>
+            </div>
+            <div class="setting-hint">When off, guided sessions continue automatically after transitions.</div>
+          </div>
+
           ${renderVoiceSection(s)}
 
           ${renderAccountSection(s)}
@@ -714,6 +723,11 @@ const App = (() => {
 
   function toggleSentenceBuilderAutoAdvance(on) {
     State.set("autoAdvanceSentenceBuilder", !!on);
+    renderSettings();
+  }
+
+  function togglePauseBetweenActivities(on) {
+    State.set("pauseBetweenActivities", !!on);
     renderSettings();
   }
 
@@ -1071,7 +1085,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, playWotd, setTopicView, saveDashScroll,
-    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, setVoice, toggleDashSection,
+    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, togglePauseBetweenActivities, setVoice, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm

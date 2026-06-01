@@ -110,7 +110,7 @@ const Session = (() => {
     };
   }
 
-  function start(pathwayId) {
+  function start(pathwayId, options) {
     clearTransition();
     const session = buildSession(pathwayId);
     if (!session) {
@@ -119,7 +119,15 @@ const Session = (() => {
       return;
     }
     current = session;
+    if (State.isPathwayMastered(pathwayId) && !(options && options.forceRefresher)) {
+      renderMasteredChoice();
+      return;
+    }
     renderIntro();
+  }
+
+  function startRefresher(pathwayId) {
+    start(pathwayId, { forceRefresher: true });
   }
 
   function startNext() {
@@ -172,6 +180,26 @@ const Session = (() => {
     `);
   }
 
+  function renderMasteredChoice() {
+    if (!current) return;
+    const p = current.pathway;
+    UI.render(`
+      <div class="session-screen">
+        <div class="session-card session-intro-card">
+          <button class="btn btn-ghost session-top-back" onclick="Session.cancel()">← Home</button>
+          <div class="session-hero-icon">🏆</div>
+          <h1>You've mastered ${escapeHtml(p.label)}!</h1>
+          <p class="session-description">What would you like to do?</p>
+          <div class="session-choice-actions">
+            <button class="btn btn-primary btn-lg" onclick="Session.startRefresher('${p.id}')">Quick refresher</button>
+            <button class="btn btn-secondary btn-lg" onclick="Session.startNext()">Move to next pathway →</button>
+            <button class="btn btn-ghost btn-lg" onclick="Session.cancel()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
   function begin() {
     if (!current) return;
     current.activityIndex = 0;
@@ -187,9 +215,10 @@ const Session = (() => {
       renderComplete();
       return;
     }
-    const message = firstActivity
-      ? `First up: ${next.fullLabel}.`
-      : current.plan[nextIndex - 1].transition;
+    const previous = current.plan[nextIndex - 1];
+    const message = firstActivity || !previous || previous.skipped
+      ? `Next: ${next.fullLabel}.`
+      : previous.transition;
     UI.render(`
       <div class="session-screen">
         <div class="session-card session-transition-card">
@@ -197,15 +226,18 @@ const Session = (() => {
           <div class="session-transition-check">${firstActivity ? "→" : "✓"}</div>
           <h2>${escapeHtml(message)}</h2>
           <p>Activity ${nextIndex + 1} of ${current.plan.length} · ${next.rounds} round${next.rounds === 1 ? "" : "s"}</p>
+          <p class="session-transition-hint">${State.get().pauseBetweenActivities ? "Paused until you're ready." : "Continuing automatically."}</p>
           <div class="round-actions session-transition-actions">
-            <button class="btn btn-primary" onclick="Session.advanceNow()">Skip →</button>
+            <button class="btn btn-primary" onclick="Session.advanceNow()">${State.get().pauseBetweenActivities ? "Continue →" : "Skip →"}</button>
             <button class="btn btn-ghost" onclick="Session.skipActivity()">Skip activity</button>
             <button class="btn btn-secondary" onclick="Session.cancel()">Quit</button>
           </div>
         </div>
       </div>
     `);
-    transitionTimer = setTimeout(advanceNow, TRANSITION_MS);
+    if (!State.get().pauseBetweenActivities) {
+      transitionTimer = setTimeout(advanceNow, TRANSITION_MS);
+    }
   }
 
   function advanceNow() {
@@ -299,12 +331,9 @@ const Session = (() => {
     clearTransition();
     const status = State.getPathwayMasteryStatus(current.pathway.id);
     const mastered = State.isPathwayMastered(current.pathway.id);
-    const remainingModes = Object.keys(status.modes || {})
-      .filter(id => !status.modes[id].mastered)
-      .length;
     const message = mastered
       ? "Pathway mastered! 🏆"
-      : `${Math.max(1, remainingModes)} more session${remainingModes === 1 ? "" : "s"} to master this pathway`;
+      : "1 more session to master this pathway";
 
     UI.render(`
       <div class="session-screen">
@@ -347,6 +376,7 @@ const Session = (() => {
   return {
     start,
     startNext,
+    startRefresher,
     begin,
     advanceNow,
     skipActivity,

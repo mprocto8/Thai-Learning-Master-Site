@@ -1209,8 +1209,18 @@ p { color: var(--text-1); }
   margin-bottom: var(--sp-4);
 }
 
+.session-transition-hint {
+  font-size: 0.85rem;
+  margin-top: calc(var(--sp-3) * -1);
+}
+
 .session-transition-actions {
   flex-wrap: wrap;
+}
+
+.session-choice-actions {
+  display: grid;
+  gap: var(--sp-3);
 }
 
 .session-mode-pill {

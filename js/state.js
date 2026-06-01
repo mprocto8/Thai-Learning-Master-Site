@@ -43,7 +43,8 @@ const State = (() => {
     roundsToday: 0,
     autoPlayAudio: true,
     autoAdvancePatternPractice: false,
-    autoAdvanceSentenceBuilder: false
+    autoAdvanceSentenceBuilder: false,
+    pauseBetweenActivities: false
   });
 
   let _state = null;
@@ -677,6 +678,7 @@ const State = (() => {
       topicView: s.topicView || "grid",
       autoAdvancePatternPractice: !!s.autoAdvancePatternPractice,
       autoAdvanceSentenceBuilder: !!s.autoAdvanceSentenceBuilder,
+      pauseBetweenActivities: !!s.pauseBetweenActivities,
       // voicePreference is set via State.setVoicePreference (premium-only).
       // It lives on the profile, not local state — preserve any existing value.
       voicePreference: existingSettings.voicePreference || null
@@ -779,6 +781,9 @@ const State = (() => {
       }
       if (typeof settings.autoAdvanceSentenceBuilder === "boolean") {
         s.autoAdvanceSentenceBuilder = settings.autoAdvanceSentenceBuilder;
+      }
+      if (typeof settings.pauseBetweenActivities === "boolean") {
+        s.pauseBetweenActivities = settings.pauseBetweenActivities;
       }
     }
 

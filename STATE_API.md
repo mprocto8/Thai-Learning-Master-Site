@@ -15,6 +15,7 @@ pathwayProgress: {}    pathwayMasteryMigrationVersion: 0    pathwayLegacyMigrati
 - `autoAdvancePatternPractice` (bool, default `false`) — when true, Pattern Practice automatically advances to the next prompt after the post-answer audio sequence (slot → word → sentence) finishes + 1s buffer. When false, the user must tap **Continue** or press space.
 
 - `autoAdvanceSentenceBuilder` (bool, default `false`) - when true, Sentence Builder automatically advances after the successful completion sentence audio finishes + a short buffer. When false, the completion screen waits for **Continue** or space.
+- `pauseBetweenActivities` (bool, default `false`) - when true, Guided Session transition screens wait for a user tap. When false, they auto-advance after ~1.5 seconds.
 
 ### Profile-only settings (premium, mirrored to settings_json on push)
 - `voicePreference` (string, "ploy" | "serafina" | null) — which voice to use for premium users. Set via `State.setVoicePreference(id)`; read via `State.getVoicePreference()`. Only meaningful when `isPremium()` is true; `js/audio.js` falls back to "serafina" for premium users with no preference and "ploy" for everyone else.
