@@ -72,13 +72,22 @@ const Session = (() => {
   }
 
   function makePlan(pathwayId) {
+    const status = State.getPathwayMasteryStatus(pathwayId);
     return MODE_ORDER.map(mode => ({
       ...mode,
-      rounds: 1,
+      rounds: roundsForMode(status, mode.id),
       completedRounds: 0,
       skipped: false,
       results: []
     }));
+  }
+
+  function roundsForMode(status, modeId) {
+    const mode = status && status.modes && status.modes[modeId];
+    const highAccuracy = mode ? Math.min(mode.highAccuracyRounds || 0, 3) : 0;
+    const remaining = Math.max(0, 3 - highAccuracy);
+    if (remaining >= 2) return 2;
+    return 1;
   }
 
   function estimateMinutes(plan) {
