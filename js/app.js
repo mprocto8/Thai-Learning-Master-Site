@@ -77,6 +77,7 @@ const App = (() => {
     UI.registerRoute("#listen", routeListen);
     UI.registerRoute("#listen-quick", () => ListenChoose.startQuick());
     UI.registerRoute("#pattern", routePattern);
+    UI.registerRoute("#session", routeSession);
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once
@@ -258,7 +259,7 @@ const App = (() => {
     return {
       pathway: target,
       topic,
-      route: topic ? getTopicRoute(topic.id) : "#learn",
+      route: "#session/" + target.id,
       isReplay: prog.isComplete,
       progress: prog
     };
@@ -577,6 +578,12 @@ const App = (() => {
     const pathwayId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (!pathwayId) { UI.navigate("#learn"); return; }
     Pathways.showDetails(pathwayId);
+  }
+
+  function routeSession() {
+    const pathwayId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (pathwayId) Session.start(pathwayId);
+    else Session.startNext();
   }
 
   /* Settings */

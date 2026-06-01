@@ -39,6 +39,7 @@
 | js/time-game.js — tell-the-time quiz | TimeGame | State, UI, ThaiTime |
 | js/tone-trainer.js — 5 Thai tones: browse + quiz | ToneTrainer | State, UI |
 | js/sentence-builder.js — word arrangement game; records pattern-tagged Sentence Builder mastery rounds | SentenceBuilder | State, UI, SENTENCES |
+| js/session.js — guided pathway session controller with intro, transitions, completion, and three-mode orchestration | Session | State, UI, PATHWAYS, TOPICS, PatternPractice, ListenChoose, SentenceBuilder |
 | js/pathways.js — Learn tab with Tier 1-5 pattern pathways, strict per-mode progress, legacy mastery indicators, pathway detail view, and restart for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — Library tab with Script group, tools, and topic launcher | PracticeHub | State, UI, TOPICS, alphabet data |
 | js/topic-detail.js - topic review screen with item list, pair audio, and mode launchers | TopicDetail | State, UI, TOPICS, Audio |
@@ -70,7 +71,7 @@
 | audio/ploy/, audio/serafina/ | Pre-generated MP3 output, split by voice. Free users hear Ploy; premium users hear Serafina (or whichever voice they pick in Settings). Naming: `{topicId}-{i}-word.mp3`, `{topicId}-{i}-sentence.mp3`, for pattern topics `{topicId}-{i}-slot-{slotIdx}.mp3`, and for Sentence Builder `sentence-{exerciseIdx}-word-{wordIdx}.mp3` + `sentence-{exerciseIdx}-full.mp3` (where `exerciseIdx` is the SENTENCES array position). Committed so the app loads them with no extra build step. |
 
 ## Script Load Order
-@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/app.js
+@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/session.js → js/app.js
 
 ## IA v2 Tab Structure
 - Home (`#home`, legacy `#dashboard`) — focused dashboard with one primary pathway session CTA, capabilities, quick review/daily actions, and Word of the Day.
