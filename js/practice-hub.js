@@ -73,10 +73,10 @@ const PracticeHub = (() => {
   function renderScriptSection() {
     const collapsed = !!sectionCollapsed.script;
     const scriptItems = [
-      { icon: "ก", label: "Thai Script", meta: "Consonants, vowels, and tone marks", route: "#script" },
-      { icon: "พ", label: "Consonants", meta: `${typeof THAI_CONSONANTS !== "undefined" ? THAI_CONSONANTS.length : 44} letters`, route: "#script" },
-      { icon: "า", label: "Vowels", meta: `${typeof THAI_VOWELS !== "undefined" ? THAI_VOWELS.length : 21} vowels`, route: "#script" },
-      { icon: "่", label: "Tone Marks", meta: `${typeof THAI_TONE_MARKS !== "undefined" ? THAI_TONE_MARKS.length : 4} marks`, route: "#script" },
+      { icon: "ก", label: "Thai Script", meta: "Consonants, vowels, and tone marks", route: "#alphabet" },
+      { icon: "พ", label: "Consonants", meta: `${typeof THAI_CONSONANTS !== "undefined" ? THAI_CONSONANTS.length : 44} letters`, route: "#alphabet" },
+      { icon: "า", label: "Vowels", meta: `${typeof THAI_VOWELS !== "undefined" ? THAI_VOWELS.length : 21} vowels`, route: "#alphabet" },
+      { icon: "่", label: "Tone Marks", meta: `${typeof THAI_TONE_MARKS !== "undefined" ? THAI_TONE_MARKS.length : 4} marks`, route: "#alphabet" },
       { icon: "🎵", label: "Tone Trainer", meta: "Master the 5 Thai tones", route: "#tones" }
     ];
 
