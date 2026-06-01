@@ -21,6 +21,7 @@ const ListenChoose = (() => {
   let isActive = false;
 
   let rate = DEFAULT_RATE;
+  let sessionOptions = null;
   // iOS Safari blocks speechSynthesis until the user has tapped something in
   // the round. We gate autoplay on this so Q1 waits for a tap; Q2+ autoplay.
   let hasInteractedThisRound = false;
@@ -45,9 +46,19 @@ const ListenChoose = (() => {
     else Audio.speak(pair.script);
   }
 
-  function start(topicId) {
+  function start(topicId, options) {
+    sessionOptions = options && options.sessionMode ? options : null;
     topic = TOPICS.find(t => t.id === topicId);
-    if (!topic) { UI.navigate("#library"); return; }
+    if (!topic) {
+      if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+        const callback = sessionOptions.onComplete;
+        sessionOptions = null;
+        callback({ correct: 0, total: 0, accuracy: 0, unavailable: true });
+      } else {
+        UI.navigate("#library");
+      }
+      return;
+    }
 
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
@@ -66,6 +77,7 @@ const ListenChoose = (() => {
   /** Quick Listen — 10 random pairs pulled from all played topics.
    *  Fallback: greetings-phrases for brand-new users. */
   function startQuick() {
+    sessionOptions = null;
     const s = State.get();
     const playedIds = Object.keys(s.topicStats || {}).filter(id => {
       const ts = s.topicStats[id];
@@ -139,6 +151,8 @@ const ListenChoose = (() => {
           <h2>🎧 ${topic.emoji} ${topic.label}</h2>
           <div class="listen-progress-count">${idx + 1} / ${queue.length}</div>
         </div>
+
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="listen-progress">
           <div class="listen-progress-bar" style="width:${(idx / queue.length) * 100}%"></div>
@@ -254,6 +268,12 @@ const ListenChoose = (() => {
     if (topic.type === "pattern") {
       State.recordModeRound(topic.id, "listen", correct, total);
     }
+    if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+      const callback = sessionOptions.onComplete;
+      sessionOptions = null;
+      callback({ correct, total, accuracy });
+      return;
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
@@ -330,7 +350,9 @@ const ListenChoose = (() => {
   function quit() {
     isActive = false;
     Audio.cancel();
-    UI.navigate("#library");
+    const wasSession = !!sessionOptions;
+    sessionOptions = null;
+    UI.navigate(wasSession ? "#home" : "#library");
   }
 
   return { start, startQuick, answer, playAgain, setRate, continueNext, quit, showAudioHelp, resumeRound };

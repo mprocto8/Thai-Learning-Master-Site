@@ -20,8 +20,10 @@ const SentenceBuilder = (() => {
   let completionToken = 0;
   let patternRoundStats = {};
   let currentHadMistake = false;
+  let sessionOptions = null;
 
   function show() {
+    sessionOptions = null;
     currentSentence = null;
     completionShowing = false;
     completionToken++;
@@ -80,7 +82,24 @@ const SentenceBuilder = (() => {
     }
   }
 
-  function startRound() {
+  function start(pathwayId, options) {
+    sessionOptions = options && options.sessionMode ? options : null;
+    availableSentences = SENTENCES.filter(s => s.patternId === pathwayId);
+    if (availableSentences.length === 0) {
+      if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+        const callback = sessionOptions.onComplete;
+        sessionOptions = null;
+        callback({ correct: 0, total: 0, accuracy: 0, unavailable: true });
+      } else {
+        show();
+      }
+      return;
+    }
+    startRound(sessionOptions);
+  }
+
+  function startRound(options) {
+    if (options && options.sessionMode) sessionOptions = options;
     roundIndex = 0;
     roundCorrect = 0;
     roundTotal = 0;
@@ -137,10 +156,12 @@ const SentenceBuilder = (() => {
     UI.render(`
       <div class="sb-active">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${sessionOptions ? "SentenceBuilder.quit()" : "SentenceBuilder.show()"}">${sessionOptions ? "Quit" : "Back"}</button>
           <h2>📝 Build</h2>
           <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
         </div>
+
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="flashcard-progress">
           <div class="flashcard-progress-bar" style="width:${(roundIndex / roundSentences.length) * 100}%"></div>
@@ -321,10 +342,11 @@ const SentenceBuilder = (() => {
     UI.render(`
       <div class="sb-complete-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">&larr; Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${sessionOptions ? "SentenceBuilder.quit()" : "SentenceBuilder.show()"}">${sessionOptions ? "Quit" : "Back"}</button>
           <h2>&#128221; Build</h2>
           <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
         </div>
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="flashcard-progress">
           <div class="flashcard-progress-bar" style="width:${((roundIndex + 1) / roundSentences.length) * 100}%"></div>
@@ -402,6 +424,12 @@ const SentenceBuilder = (() => {
         State.recordModeRound(patternId, "sentenceBuilder", stats.correct, stats.total);
       }
     }
+    if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+      const callback = sessionOptions.onComplete;
+      sessionOptions = null;
+      callback({ correct: roundCorrect, total: roundTotal, accuracy });
+      return;
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
@@ -437,5 +465,14 @@ const SentenceBuilder = (() => {
     `);
   }
 
-  return { show, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer, replayCompletion, continueNext };
+  function quit() {
+    currentSentence = null;
+    completionShowing = false;
+    completionToken++;
+    sessionOptions = null;
+    Audio.cancel();
+    UI.navigate("#home");
+  }
+
+  return { show, start, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer, replayCompletion, continueNext, quit };
 })();

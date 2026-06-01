@@ -34,6 +34,7 @@ const PatternPractice = (() => {
   let isActive = false;
   // Session-only display mode: "both" | "script" | "romanized". Not persisted.
   let displayMode = "both";
+  let sessionOptions = null;
 
   function _pairSlottable(p) {
     if (!p) return [];
@@ -42,10 +43,17 @@ const PatternPractice = (() => {
     return [];
   }
 
-  function start(topicId) {
+  function start(topicId, options) {
+    sessionOptions = options && options.sessionMode ? options : null;
     const t = TOPICS.find(tp => tp.id === topicId);
     if (!t || t.type !== "pattern") {
-      UI.navigate("#library");
+      if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+        const callback = sessionOptions.onComplete;
+        sessionOptions = null;
+        callback({ correct: 0, total: 0, accuracy: 0, unavailable: true });
+      } else {
+        UI.navigate("#library");
+      }
       return;
     }
     // Keep only pairs that actually carry at least one slottable word.
@@ -160,6 +168,8 @@ const PatternPractice = (() => {
           <h2>🧩 ${topic.emoji} ${topic.label}</h2>
           <div class="pattern-progress-count">${idx + 1} / ${queue.length}</div>
         </div>
+
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="pattern-display-toggle" role="group" aria-label="Display mode">
           <button class="pattern-display-btn ${displayMode==='both'?'active':''}" onclick="PatternPractice.setMode('both')">Both</button>
@@ -383,6 +393,12 @@ const PatternPractice = (() => {
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
     State.recordTopicRound(topic.id, correct, total);
     State.recordModeRound(topic.id, "patternPractice", correct, total);
+    if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+      const callback = sessionOptions.onComplete;
+      sessionOptions = null;
+      callback({ correct, total, accuracy });
+      return;
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
@@ -422,7 +438,9 @@ const PatternPractice = (() => {
     isActive = false;
     _seqToken++;
     Audio.cancel();
-    UI.navigate("#library");
+    const wasSession = !!sessionOptions;
+    sessionOptions = null;
+    UI.navigate(wasSession ? "#home" : "#library");
   }
 
   function setMode(mode) {
