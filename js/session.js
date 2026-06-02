@@ -55,6 +55,10 @@ const Session = (() => {
     return getPathways().find(p => p.id === pathwayId) || null;
   }
 
+  function isFullyMastered(pathwayId) {
+    return !!State.getPathwayMasteryStatus(pathwayId).displayMastered;
+  }
+
   function getTopic(pathway) {
     const topicId = pathway && pathway.topics && pathway.topics[0];
     return topicId ? TOPICS.find(t => t.id === topicId) || null : null;
@@ -66,9 +70,20 @@ const Session = (() => {
       ? Math.max(0, pathways.findIndex(p => p.id === afterPathwayId) + 1)
       : 0;
     for (let i = startIndex; i < pathways.length; i++) {
-      if (!State.isPathwayMastered(pathways[i].id)) return pathways[i];
+      if (!isFullyMastered(pathways[i].id)) return pathways[i];
     }
-    return pathways.find(p => !State.isPathwayMastered(p.id)) || pathways[0] || null;
+    return pathways.find(p => !isFullyMastered(p.id)) || pathways[pathways.length - 1] || null;
+  }
+
+  function resolveCurrentPathway() {
+    const pathways = getPathways();
+    if (!pathways.length) return null;
+
+    const lastActive = State.getLastActivePathway && State.getLastActivePathway();
+    const lastPathway = lastActive ? getPathway(lastActive.pathwayId) : null;
+    if (lastPathway && !isFullyMastered(lastPathway.id)) return lastPathway;
+
+    return pathways.find(p => !isFullyMastered(p.id)) || pathways[pathways.length - 1] || null;
   }
 
   function makePlan(pathwayId) {
@@ -119,7 +134,8 @@ const Session = (() => {
       return;
     }
     current = session;
-    if (State.isPathwayMastered(pathwayId) && !(options && options.forceRefresher)) {
+    if (State.setLastActivePathway) State.setLastActivePathway(pathwayId);
+    if (isFullyMastered(pathwayId) && !(options && options.forceRefresher)) {
       renderMasteredChoice();
       return;
     }
@@ -381,6 +397,7 @@ const Session = (() => {
     advanceNow,
     skipActivity,
     modeProgressHtml,
+    resolveCurrentPathway,
     cancel
   };
 })();

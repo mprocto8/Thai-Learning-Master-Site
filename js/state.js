@@ -44,7 +44,8 @@ const State = (() => {
     autoPlayAudio: true,
     autoAdvancePatternPractice: false,
     autoAdvanceSentenceBuilder: false,
-    pauseBetweenActivities: false
+    pauseBetweenActivities: false,
+    lastActivePathway: null
   });
 
   let _state = null;
@@ -337,6 +338,24 @@ const State = (() => {
 
   function getPathwayLegacyMigrationCount() {
     return get().pathwayLegacyMigrationCount || 0;
+  }
+
+  function setLastActivePathway(pathwayId) {
+    if (!pathwayId) return;
+    update(s => {
+      s.lastActivePathway = {
+        pathwayId,
+        timestamp: Date.now()
+      };
+    });
+  }
+
+  function getLastActivePathway() {
+    const last = get().lastActivePathway;
+    if (!last) return null;
+    if (typeof last === "string") return { pathwayId: last, timestamp: null };
+    if (!last.pathwayId) return null;
+    return last;
   }
 
   /* Alphabet stats */
@@ -926,6 +945,7 @@ const State = (() => {
     checkStreak, isStreakAtRisk, isStreakUrgent, hasPlayedToday,
     recordTopicRound, getTopicMastery,
     recordModeRound, getPathwayMasteryStatus, isPathwayMastered, getPathwayLegacyMigrationCount,
+    setLastActivePathway, getLastActivePathway,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,
     getSpeedBest, setSpeedBest,
     getPathwayProgress, resetPathwayProgress, earnBadge, hasBadge,

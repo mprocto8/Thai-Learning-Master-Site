@@ -9,6 +9,7 @@ topicStats: {}         alphabetStats: {}     flashcardStats: {}
 speedBests: {}         onboarded: false      badges: []
 tutorialsSeen: {}      autoPlayAudio: true     autoAdvanceSentenceBuilder: false
 pathwayProgress: {}    pathwayMasteryMigrationVersion: 0    pathwayLegacyMigrationCount: 0
+lastActivePathway: null
 
 ### Settings fields
 - `autoPlayAudio` (bool, default `true`) — when true, Listen & Choose auto-plays the Thai utterance ~300ms after each question loads. Toggled from the Settings screen. Read as `State.get().autoPlayAudio !== false` at playback sites so older saves (without the field) still auto-play.
@@ -53,6 +54,8 @@ recordModeRound(pathwayId, modeId, correct, total) → void — records one mode
 getPathwayMasteryStatus(pathwayId) → { modes, completedModes, totalModes, completedRounds, requiredRounds, percentComplete, mastered, strictMastered, legacyMastered, displayMastered } — strict mastery means all three modes have 3+ rounds at ≥80%; `displayMastered` is true for strict or preserved legacy mastery.
 isPathwayMastered(pathwayId) → bool — strict mastery only; true when Listen, Pattern Practice, and Sentence Builder are all mastered.
 getPathwayLegacyMigrationCount() → int — number of pathways marked `legacyMastered` during the one-time local migration.
+setLastActivePathway(pathwayId) → void — records the most recently started guided-session pathway as `{ pathwayId, timestamp }`.
+getLastActivePathway() → { pathwayId, timestamp }|null — returns the most recently started guided-session pathway, if any.
 
 ### Alphabet
 recordAlphabetAnswer(char, correct) → void

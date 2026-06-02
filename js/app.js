@@ -242,16 +242,7 @@ const App = (() => {
   }
 
   function getCurrentPathwaySession() {
-    const pathways = (typeof PATHWAYS !== "undefined" ? PATHWAYS : []).filter(p => !p.usesAlphabet && p.topics && p.topics.length);
-    const started = pathways.find(p => {
-      const prog = State.getPathwayProgress(p.id);
-      const hasProgress = prog.mastered > 0 || p.topics.some(topicId => {
-        const ts = State.get().topicStats[topicId];
-        return ts && ts.played > 0;
-      });
-      return hasProgress && !prog.isComplete;
-    });
-    const target = started || pathways.find(p => !State.getPathwayProgress(p.id).isComplete) || pathways[pathways.length - 1];
+    const target = Session.resolveCurrentPathway ? Session.resolveCurrentPathway() : null;
     if (!target) return null;
     const prog = State.getPathwayProgress(target.id);
     const nextTopicId = prog.nextTopic || target.topics[0];
