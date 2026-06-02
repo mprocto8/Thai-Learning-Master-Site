@@ -341,6 +341,26 @@ const State = (() => {
     return get().pathwayLegacyMigrationCount || 0;
   }
 
+  function getPathwayRecentApplicationAccuracy(pathwayId) {
+    const s = get();
+    const pp = _ensurePathwayProgress(s, pathwayId);
+    const recent = [];
+    for (const modeId of ["listen", "sentenceBuilder"]) {
+      const rounds = pp[modeId] && Array.isArray(pp[modeId].rounds) ? pp[modeId].rounds : [];
+      recent.push(...rounds.slice(-3));
+    }
+    const valid = recent.filter(r => r && typeof r.accuracy === "number" && r.total > 0);
+    if (!valid.length) {
+      return { hasPriorRounds: false, averageAccuracy: null, roundCount: 0 };
+    }
+    const averageAccuracy = valid.reduce((sum, round) => sum + round.accuracy, 0) / valid.length;
+    return {
+      hasPriorRounds: true,
+      averageAccuracy,
+      roundCount: valid.length
+    };
+  }
+
   function setLastActivePathway(pathwayId) {
     if (!pathwayId) return;
     update(s => {
@@ -367,6 +387,7 @@ const State = (() => {
       s.activeSession = {
         pathwayId: session.pathwayId,
         plan: session.plan,
+        sessionType: session.sessionType || existing.sessionType || null,
         currentActivityIndex: Math.max(0, session.currentActivityIndex || 0),
         currentRound: Math.max(0, session.currentRound || 0),
         startedAt: session.startedAt || existing.startedAt || now,
@@ -986,6 +1007,7 @@ const State = (() => {
     checkStreak, isStreakAtRisk, isStreakUrgent, hasPlayedToday,
     recordTopicRound, getTopicMastery,
     recordModeRound, getPathwayMasteryStatus, isPathwayMastered, getPathwayLegacyMigrationCount,
+    getPathwayRecentApplicationAccuracy,
     setLastActivePathway, getLastActivePathway,
     saveActiveSession, updateActiveSessionProgress, getActiveSession, clearActiveSession,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,

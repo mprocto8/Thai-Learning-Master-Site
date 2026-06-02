@@ -89,13 +89,25 @@ const Session = (() => {
 
   function makePlan(pathwayId) {
     const status = State.getPathwayMasteryStatus(pathwayId);
-    return MODE_ORDER.map(mode => ({
+    const sessionType = determineSessionType(pathwayId);
+    const modes = sessionType === "review"
+      ? MODE_ORDER.filter(mode => mode.id !== "patternPractice")
+      : MODE_ORDER;
+    return modes.map(mode => ({
       ...mode,
       rounds: roundsForMode(status, mode.id),
       completedRounds: 0,
       skipped: false,
       results: []
     }));
+  }
+
+  function determineSessionType(pathwayId) {
+    const recent = State.getPathwayRecentApplicationAccuracy
+      ? State.getPathwayRecentApplicationAccuracy(pathwayId)
+      : null;
+    if (!recent || !recent.hasPriorRounds) return "teaching";
+    return recent.averageAccuracy >= 0.8 ? "review" : "teaching";
   }
 
   function roundsForMode(status, modeId) {
@@ -127,6 +139,7 @@ const Session = (() => {
       pathway,
       topic,
       plan,
+      sessionType: determineSessionType(pathway.id),
       activityIndex: 0,
       currentRound: 0,
       estimatedMinutes: estimateMinutes(plan)
@@ -145,6 +158,7 @@ const Session = (() => {
       pathway,
       topic,
       plan,
+      sessionType: saved.sessionType || (plan.some(item => item.id === "patternPractice") ? "teaching" : "review"),
       activityIndex: Math.max(0, saved.currentActivityIndex || 0),
       currentRound: Math.max(0, saved.currentRound || 0),
       estimatedMinutes: estimateMinutes(plan),
@@ -165,6 +179,7 @@ const Session = (() => {
     State.saveActiveSession({
       pathwayId: current.pathway.id,
       plan: clonePlan(current.plan),
+      sessionType: current.sessionType,
       currentActivityIndex: current.activityIndex,
       currentRound: current.currentRound,
       startedAt: current.startedAt || Date.now(),
@@ -225,9 +240,10 @@ const Session = (() => {
   }
 
   function renderProgress(activeIndex) {
+    const plan = current && current.plan ? current.plan : MODE_ORDER;
     return `
       <div class="session-progress" aria-label="Session progress">
-        ${MODE_ORDER.map((mode, i) => `
+        ${plan.map((mode, i) => `
           <span class="session-progress-dot ${i < activeIndex ? "done" : ""} ${i === activeIndex ? "active" : ""}"></span>
         `).join("")}
       </div>
@@ -238,6 +254,9 @@ const Session = (() => {
     if (!current) return;
     const p = current.pathway;
     const topic = current.topic;
+    const sessionLabel = current.sessionType === "review"
+      ? `${current.plan.length} activities · review`
+      : `${current.plan.length} activities`;
     UI.render(`
       <div class="session-screen">
         <div class="session-card session-intro-card">
@@ -247,7 +266,7 @@ const Session = (() => {
           <h1>${escapeHtml(p.label)}</h1>
           <p class="session-description">${escapeHtml(p.description || "Build this pattern across speaking, listening, and sentence construction.")}</p>
           <div class="session-meta-row">
-            <span>3 activities</span>
+            <span>${escapeHtml(sessionLabel)}</span>
             <span>~${current.estimatedMinutes} min</span>
           </div>
           <div class="session-plan-list">
@@ -404,9 +423,10 @@ const Session = (() => {
   }
 
   function modeProgressHtml(activityIndex, roundIndex, roundTotal) {
+    const activityTotal = current && current.plan ? current.plan.length : MODE_ORDER.length;
     return `
       <div class="session-mode-pill">
-        <span>Activity ${activityIndex + 1} of ${MODE_ORDER.length}</span>
+        <span>Activity ${activityIndex + 1} of ${activityTotal}</span>
         <span>Round ${roundIndex + 1} of ${roundTotal}</span>
       </div>
     `;

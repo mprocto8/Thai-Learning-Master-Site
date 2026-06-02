@@ -57,10 +57,11 @@ isPathwayMastered(pathwayId) → bool — strict mastery only; true when Listen,
 getPathwayLegacyMigrationCount() → int — number of pathways marked `legacyMastered` during the one-time local migration.
 setLastActivePathway(pathwayId) → void — records the most recently started guided-session pathway as `{ pathwayId, timestamp }`.
 getLastActivePathway() → { pathwayId, timestamp }|null — returns the most recently started guided-session pathway, if any.
-saveActiveSession(session) → void — persists a guided-session snapshot `{ pathwayId, plan, currentActivityIndex, currentRound, startedAt, lastInteractionAt, status }`.
+saveActiveSession(session) → void — persists a guided-session snapshot `{ pathwayId, plan, sessionType, currentActivityIndex, currentRound, startedAt, lastInteractionAt, status }`.
 updateActiveSessionProgress(pathwayId, currentActivityIndex, currentRound) → void — updates the saved guided-session position and `lastInteractionAt`.
 getActiveSession() → obj|null — returns the saved guided-session snapshot, if present.
 clearActiveSession() → void — removes any saved guided-session snapshot.
+getPathwayRecentApplicationAccuracy(pathwayId) → { hasPriorRounds, averageAccuracy, roundCount } — averages the last ~3 Listen and Sentence Builder rounds for adaptive teaching-vs-review sessions.
 
 ### Alphabet
 recordAlphabetAnswer(char, correct) → void
