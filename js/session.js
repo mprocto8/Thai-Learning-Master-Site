@@ -306,6 +306,7 @@ const Session = (() => {
 
   function begin() {
     if (!current) return;
+    if (typeof Audio !== "undefined" && Audio.unlock) Audio.unlock();
     current.activityIndex = 0;
     current.currentRound = 0;
     persistCurrent();
@@ -348,6 +349,7 @@ const Session = (() => {
   function advanceNow() {
     if (!current) return;
     clearTransition();
+    if (typeof Audio !== "undefined" && Audio.unlock) Audio.unlock();
     touchCurrent();
     startCurrentActivity();
   }
@@ -368,6 +370,7 @@ const Session = (() => {
       activityTotal: current.plan.length,
       roundIndex: current.currentRound,
       roundTotal: item.rounds,
+      audioUnlocked: typeof Audio !== "undefined" && Audio.isUnlocked && Audio.isUnlocked(),
       onComplete: result => handleModeComplete(result || {})
     };
 

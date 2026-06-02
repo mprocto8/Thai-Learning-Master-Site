@@ -27,6 +27,7 @@ const Audio = (() => {
 
   let rate = 1.0;
   let thaiVoice = null;
+  let unlocked = false;
 
   function _loadVoices() {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
@@ -53,6 +54,24 @@ const Audio = (() => {
   }
 
   function setRate(r) { rate = r; }
+
+  function unlock() {
+    if (unlocked || typeof window === "undefined" || !window.Audio) return Promise.resolve();
+    try {
+      const el = new window.Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=");
+      el.volume = 0;
+      const played = el.play();
+      unlocked = true;
+      if (played && typeof played.catch === "function") {
+        played.catch(() => {});
+      }
+    } catch {}
+    return Promise.resolve();
+  }
+
+  function isUnlocked() {
+    return unlocked;
+  }
 
   function cancel() {
     if (hasTTSSupport()) {
@@ -205,6 +224,8 @@ const Audio = (() => {
     playSentenceBuilderFull,
     cancel,
     setRate,
+    unlock,
+    isUnlocked,
     hasTTSSupport,
     hasThaiVoice,
   };

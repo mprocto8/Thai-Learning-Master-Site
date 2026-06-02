@@ -70,7 +70,7 @@ const ListenChoose = (() => {
     xpEarned = 0;
     answered = false;
     isActive = true;
-    hasInteractedThisRound = false;
+    hasInteractedThisRound = !!(sessionOptions && sessionOptions.audioUnlocked);
     nextPrompt();
   }
 
