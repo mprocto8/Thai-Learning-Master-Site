@@ -10,6 +10,7 @@ speedBests: {}         onboarded: false      badges: []
 tutorialsSeen: {}      autoPlayAudio: true     autoAdvanceSentenceBuilder: false
 pathwayProgress: {}    pathwayMasteryMigrationVersion: 0    pathwayLegacyMigrationCount: 0
 lastActivePathway: null
+activeSession: null
 
 ### Settings fields
 - `autoPlayAudio` (bool, default `true`) — when true, Listen & Choose auto-plays the Thai utterance ~300ms after each question loads. Toggled from the Settings screen. Read as `State.get().autoPlayAudio !== false` at playback sites so older saves (without the field) still auto-play.
@@ -56,6 +57,10 @@ isPathwayMastered(pathwayId) → bool — strict mastery only; true when Listen,
 getPathwayLegacyMigrationCount() → int — number of pathways marked `legacyMastered` during the one-time local migration.
 setLastActivePathway(pathwayId) → void — records the most recently started guided-session pathway as `{ pathwayId, timestamp }`.
 getLastActivePathway() → { pathwayId, timestamp }|null — returns the most recently started guided-session pathway, if any.
+saveActiveSession(session) → void — persists a guided-session snapshot `{ pathwayId, plan, currentActivityIndex, currentRound, startedAt, lastInteractionAt, status }`.
+updateActiveSessionProgress(pathwayId, currentActivityIndex, currentRound) → void — updates the saved guided-session position and `lastInteractionAt`.
+getActiveSession() → obj|null — returns the saved guided-session snapshot, if present.
+clearActiveSession() → void — removes any saved guided-session snapshot.
 
 ### Alphabet
 recordAlphabetAnswer(char, correct) → void

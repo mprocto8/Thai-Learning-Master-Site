@@ -31,6 +31,7 @@ const Session = (() => {
   ];
   const TRANSITION_MS = 1500;
   const MINUTES_PER_ROUND = 2;
+  const RESUME_WINDOW_MS = 2 * 60 * 60 * 1000;
 
   let current = null;
   let transitionTimer = null;
@@ -109,6 +110,13 @@ const Session = (() => {
     return Math.max(1, plan.reduce((sum, item) => sum + item.rounds, 0) * MINUTES_PER_ROUND);
   }
 
+  function clonePlan(plan) {
+    return (plan || []).map(item => ({
+      ...item,
+      results: Array.isArray(item.results) ? [...item.results] : []
+    }));
+  }
+
   function buildSession(pathwayId) {
     const pathway = getPathway(pathwayId);
     if (!pathway) return null;
@@ -125,9 +133,61 @@ const Session = (() => {
     };
   }
 
+  function buildSessionFromSaved(saved) {
+    if (!saved || !saved.pathwayId) return null;
+    const pathway = getPathway(saved.pathwayId);
+    if (!pathway) return null;
+    const topic = getTopic(pathway);
+    if (!topic) return null;
+    const plan = clonePlan(saved.plan);
+    if (!plan.length) return null;
+    return {
+      pathway,
+      topic,
+      plan,
+      activityIndex: Math.max(0, saved.currentActivityIndex || 0),
+      currentRound: Math.max(0, saved.currentRound || 0),
+      estimatedMinutes: estimateMinutes(plan),
+      startedAt: saved.startedAt || Date.now(),
+      resumed: true
+    };
+  }
+
+  function isResumeFresh(saved, pathwayId) {
+    if (!saved || saved.pathwayId !== pathwayId) return false;
+    if (saved.status && saved.status !== "in-progress") return false;
+    const last = saved.lastInteractionAt || saved.startedAt || 0;
+    return last > 0 && Date.now() - last < RESUME_WINDOW_MS;
+  }
+
+  function persistCurrent() {
+    if (!current || !State.saveActiveSession) return;
+    State.saveActiveSession({
+      pathwayId: current.pathway.id,
+      plan: clonePlan(current.plan),
+      currentActivityIndex: current.activityIndex,
+      currentRound: current.currentRound,
+      startedAt: current.startedAt || Date.now(),
+      lastInteractionAt: Date.now(),
+      status: "in-progress"
+    });
+  }
+
+  function touchCurrent() {
+    if (!current || !State.updateActiveSessionProgress) return;
+    State.updateActiveSessionProgress(current.pathway.id, current.activityIndex, current.currentRound);
+  }
+
   function start(pathwayId, options) {
     clearTransition();
-    const session = buildSession(pathwayId);
+    let session = null;
+    const saved = State.getActiveSession && State.getActiveSession();
+    if (!(options && options.forceRefresher) && isResumeFresh(saved, pathwayId)) {
+      session = buildSessionFromSaved(saved);
+    } else if (saved && State.clearActiveSession) {
+      State.clearActiveSession();
+    }
+    if (!session) session = buildSession(pathwayId);
     if (!session) {
       UI.toast("That session is not available yet.", "info");
       UI.navigate("#learn");
@@ -135,6 +195,13 @@ const Session = (() => {
     }
     current = session;
     if (State.setLastActivePathway) State.setLastActivePathway(pathwayId);
+    if (!current.startedAt) current.startedAt = Date.now();
+    persistCurrent();
+    if (current.resumed) {
+      UI.toast("Resuming where you left off.", "info");
+      startCurrentActivity();
+      return;
+    }
     if (isFullyMastered(pathwayId) && !(options && options.forceRefresher)) {
       renderMasteredChoice();
       return;
@@ -147,7 +214,9 @@ const Session = (() => {
   }
 
   function startNext() {
-    const next = findNextUnmastered(current && current.pathway && current.pathway.id);
+    const next = current
+      ? findNextUnmastered(current.pathway && current.pathway.id)
+      : resolveCurrentPathway();
     if (!next) {
       UI.navigate("#learn");
       return;
@@ -220,6 +289,7 @@ const Session = (() => {
     if (!current) return;
     current.activityIndex = 0;
     current.currentRound = 0;
+    persistCurrent();
     startCurrentActivity();
   }
 
@@ -259,12 +329,14 @@ const Session = (() => {
   function advanceNow() {
     if (!current) return;
     clearTransition();
+    touchCurrent();
     startCurrentActivity();
   }
 
   function startCurrentActivity() {
     if (!current) return;
     clearTransition();
+    touchCurrent();
     const item = current.plan[current.activityIndex];
     if (!item) {
       renderComplete();
@@ -304,6 +376,7 @@ const Session = (() => {
     }
 
     current.currentRound++;
+    persistCurrent();
     if (!item.skipped && current.currentRound < item.rounds) {
       startCurrentActivity();
       return;
@@ -311,6 +384,7 @@ const Session = (() => {
 
     current.activityIndex++;
     current.currentRound = 0;
+    persistCurrent();
     if (current.activityIndex >= current.plan.length) {
       renderComplete();
     } else {
@@ -324,6 +398,8 @@ const Session = (() => {
     const item = current.plan[current.activityIndex];
     if (item) item.skipped = true;
     current.activityIndex++;
+    current.currentRound = 0;
+    persistCurrent();
     renderTransition(current.activityIndex, false);
   }
 
@@ -345,6 +421,7 @@ const Session = (() => {
   function renderComplete() {
     if (!current) return;
     clearTransition();
+    if (State.clearActiveSession) State.clearActiveSession();
     const status = State.getPathwayMasteryStatus(current.pathway.id);
     const mastered = State.isPathwayMastered(current.pathway.id);
     const message = mastered

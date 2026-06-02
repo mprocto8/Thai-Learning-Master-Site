@@ -45,7 +45,8 @@ const State = (() => {
     autoAdvancePatternPractice: false,
     autoAdvanceSentenceBuilder: false,
     pauseBetweenActivities: false,
-    lastActivePathway: null
+    lastActivePathway: null,
+    activeSession: null
   });
 
   let _state = null;
@@ -356,6 +357,46 @@ const State = (() => {
     if (typeof last === "string") return { pathwayId: last, timestamp: null };
     if (!last.pathwayId) return null;
     return last;
+  }
+
+  function saveActiveSession(session) {
+    if (!session || !session.pathwayId || !Array.isArray(session.plan)) return;
+    update(s => {
+      const now = Date.now();
+      const existing = s.activeSession || {};
+      s.activeSession = {
+        pathwayId: session.pathwayId,
+        plan: session.plan,
+        currentActivityIndex: Math.max(0, session.currentActivityIndex || 0),
+        currentRound: Math.max(0, session.currentRound || 0),
+        startedAt: session.startedAt || existing.startedAt || now,
+        lastInteractionAt: session.lastInteractionAt || now,
+        status: session.status || "in-progress"
+      };
+    });
+  }
+
+  function updateActiveSessionProgress(pathwayId, currentActivityIndex, currentRound) {
+    if (!pathwayId) return;
+    update(s => {
+      if (!s.activeSession || s.activeSession.pathwayId !== pathwayId) return;
+      s.activeSession.currentActivityIndex = Math.max(0, currentActivityIndex || 0);
+      s.activeSession.currentRound = Math.max(0, currentRound || 0);
+      s.activeSession.lastInteractionAt = Date.now();
+      s.activeSession.status = "in-progress";
+    });
+  }
+
+  function getActiveSession() {
+    const session = get().activeSession;
+    if (!session || !session.pathwayId || !Array.isArray(session.plan)) return null;
+    return session;
+  }
+
+  function clearActiveSession() {
+    update(s => {
+      s.activeSession = null;
+    });
   }
 
   /* Alphabet stats */
@@ -946,6 +987,7 @@ const State = (() => {
     recordTopicRound, getTopicMastery,
     recordModeRound, getPathwayMasteryStatus, isPathwayMastered, getPathwayLegacyMigrationCount,
     setLastActivePathway, getLastActivePathway,
+    saveActiveSession, updateActiveSessionProgress, getActiveSession, clearActiveSession,
     recordAlphabetAnswer, getFlashcardBucket, setFlashcardBucket,
     getSpeedBest, setSpeedBest,
     getPathwayProgress, resetPathwayProgress, earnBadge, hasBadge,
