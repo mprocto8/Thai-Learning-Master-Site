@@ -24,11 +24,45 @@ const Pathways = (() => {
           <p>Master Thai sentence patterns tier by tier</p>
         </div>
 
+        ${renderLiveDeadCard()}
+
         <div class="pathway-tier-list">
           ${Object.keys(TIER_LABELS).map(tier => renderTier(Number(tier))).join("")}
         </div>
       </div>
     `);
+  }
+
+  /* Entry point for the Live/Dead reading drill (#livedead). Reads only its State key. */
+  function renderLiveDeadCard() {
+    const ld = State.get().livedead;
+    const passed = ld && ld.levels ? Object.keys(ld.levels).filter(k => ld.levels[k] && ld.levels[k].passed).length : 0;
+    const started = !!(ld && ld.lastSession);
+    return `
+      <section class="pathway-tier">
+        <h2 class="pathway-tier-title">Reading drill</h2>
+        <div class="pathway-cards">
+          <article class="pathway-card learn-pathway-card ${passed === 6 ? "completed" : ""}">
+            <div class="learn-pathway-main">
+              <span class="pathway-icon">🔔</span>
+              <div class="pathway-info">
+                <h3>Live or Dead</h3>
+                <p class="pathway-desc-short">Read a syllable's tone in under 2 seconds.</p>
+              </div>
+            </div>
+            <div class="pathway-progress-row">
+              <div class="pathway-progress-bar">
+                <div class="pathway-progress-fill" style="width:${Math.round(passed / 6 * 100)}%"></div>
+              </div>
+              <span class="pathway-progress-text">${passed}/6</span>
+            </div>
+            <div class="learn-pathway-actions">
+              <button class="btn btn-sm btn-primary" onclick="UI.navigate('#livedead')">${started ? "Continue" : "Start"} →</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    `;
   }
 
   function renderTier(tier) {
