@@ -1,0 +1,2250 @@
+[
+  {
+    "th": "กิน",
+    "rom": "gin",
+    "en": "eat",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กัน",
+    "rom": "gan",
+    "en": "together; each other",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "จาน",
+    "rom": "jaan",
+    "en": "plate; dish",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดิน",
+    "rom": "din",
+    "en": "soil; earth",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดาว",
+    "rom": "daao",
+    "en": "star",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตาม",
+    "rom": "dtaam",
+    "en": "follow",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตาย",
+    "rom": "dtaai",
+    "en": "die",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "บาง",
+    "rom": "baang",
+    "en": "thin (flat things)",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "บิน",
+    "rom": "bin",
+    "en": "fly",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดัง",
+    "rom": "dang",
+    "en": "loud",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตอน",
+    "rom": "dtawn",
+    "en": "time; part; when",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "แดง",
+    "rom": "daeng",
+    "en": "red",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "แกง",
+    "rom": "gaeng",
+    "en": "curry",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เดิน",
+    "rom": "dern",
+    "en": "walk",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เต็ม",
+    "rom": "dtem",
+    "en": "full",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เดือน",
+    "rom": "duean",
+    "en": "month",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เตียง",
+    "rom": "dtiang",
+    "en": "bed",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดวง",
+    "rom": "duang",
+    "en": "classifier for stars, lamps; fortune",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ขาว",
+    "rom": "khaao",
+    "en": "white",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ขาย",
+    "rom": "khaai",
+    "en": "sell",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ถาม",
+    "rom": "thaam",
+    "en": "ask",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ผม",
+    "rom": "phom",
+    "en": "hair (on head); I (male)",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ฝน",
+    "rom": "fon",
+    "en": "rain",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ฝัน",
+    "rom": "fan",
+    "en": "dream",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สอง",
+    "rom": "sawng",
+    "en": "two",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สาม",
+    "rom": "saam",
+    "en": "three",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สาย",
+    "rom": "saai",
+    "en": "late; line; string",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สูง",
+    "rom": "suung",
+    "en": "tall; high",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สวย",
+    "rom": "suay",
+    "en": "beautiful",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สวน",
+    "rom": "suan",
+    "en": "garden",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เสียง",
+    "rom": "siang",
+    "en": "sound; voice",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เขียว",
+    "rom": "khiao",
+    "en": "green",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "แขน",
+    "rom": "khaen",
+    "en": "arm",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หอม",
+    "rom": "hawm",
+    "en": "fragrant",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หาย",
+    "rom": "haai",
+    "en": "disappear; recover",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เห็น",
+    "rom": "hen",
+    "en": "see",
+    "category": "A",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "คน",
+    "rom": "khon",
+    "en": "person",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "งาน",
+    "rom": "ngaan",
+    "en": "work; event",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ชาม",
+    "rom": "chaam",
+    "en": "bowl",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ทอง",
+    "rom": "thawng",
+    "en": "gold",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ทาง",
+    "rom": "thaang",
+    "en": "way; path",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "นอน",
+    "rom": "nawn",
+    "en": "sleep; lie down",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "นาน",
+    "rom": "naan",
+    "en": "long (time)",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "นม",
+    "rom": "nom",
+    "en": "milk",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ยาย",
+    "rom": "yaai",
+    "en": "grandmother (maternal)",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ยิง",
+    "rom": "ying",
+    "en": "shoot",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ยืน",
+    "rom": "yueen",
+    "en": "stand",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ลม",
+    "rom": "lom",
+    "en": "wind",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ลิง",
+    "rom": "ling",
+    "en": "monkey",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ลืม",
+    "rom": "lueem",
+    "en": "forget",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เมือง",
+    "rom": "mueang",
+    "en": "city; town",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เรียน",
+    "rom": "rian",
+    "en": "study; learn",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เร็ว",
+    "rom": "reo",
+    "en": "fast",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "วัน",
+    "rom": "wan",
+    "en": "day",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "วาง",
+    "rom": "waang",
+    "en": "put down; place",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ชวน",
+    "rom": "chuan",
+    "en": "invite",
+    "category": "A",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปาก",
+    "rom": "bpaak",
+    "en": "mouth",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "กับ",
+    "rom": "gap",
+    "en": "with; and",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "จบ",
+    "rom": "jop",
+    "en": "end; finish",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "จาก",
+    "rom": "jaak",
+    "en": "from; leave",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ดอก",
+    "rom": "dawk",
+    "en": "flower",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ตก",
+    "rom": "dtok",
+    "en": "fall",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ตัด",
+    "rom": "dtat",
+    "en": "cut",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ตอบ",
+    "rom": "dtawp",
+    "en": "answer",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "บอก",
+    "rom": "bawk",
+    "en": "tell",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ปิด",
+    "rom": "bpit",
+    "en": "close; shut",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เปิด",
+    "rom": "bpert",
+    "en": "open",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เด็ก",
+    "rom": "dek",
+    "en": "child",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เก็บ",
+    "rom": "gep",
+    "en": "keep; pick up",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เจ็บ",
+    "rom": "jep",
+    "en": "hurt; painful",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เจ็ด",
+    "rom": "jet",
+    "en": "seven",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "แปด",
+    "rom": "bpaet",
+    "en": "eight",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "อีก",
+    "rom": "iik",
+    "en": "again; more",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ขอบ",
+    "rom": "khawp",
+    "en": "edge; border",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ขับ",
+    "rom": "khap",
+    "en": "drive",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ขาด",
+    "rom": "khaat",
+    "en": "lack; torn; miss",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ขุด",
+    "rom": "khut",
+    "en": "dig",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ถูก",
+    "rom": "thuuk",
+    "en": "cheap; correct",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ผัก",
+    "rom": "phak",
+    "en": "vegetable",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ผิด",
+    "rom": "phit",
+    "en": "wrong",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ฝาก",
+    "rom": "faak",
+    "en": "deposit; leave with",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "สุด",
+    "rom": "sut",
+    "en": "end; most",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "สอบ",
+    "rom": "sawp",
+    "en": "exam; take an exam",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ศอก",
+    "rom": "sawk",
+    "en": "elbow",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ฉีก",
+    "rom": "chiik",
+    "en": "tear",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เผ็ด",
+    "rom": "phet",
+    "en": "spicy",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หก",
+    "rom": "hok",
+    "en": "six",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หัก",
+    "rom": "hak",
+    "en": "break (snap)",
+    "category": "B",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "นก",
+    "rom": "nok",
+    "en": "bird",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "มด",
+    "rom": "mot",
+    "en": "ant",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "รัก",
+    "rom": "rak",
+    "en": "love",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "วัด",
+    "rom": "wat",
+    "en": "temple",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "นิด",
+    "rom": "nit",
+    "en": "a little",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เล็ก",
+    "rom": "lek",
+    "en": "small",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "ทุก",
+    "rom": "thuk",
+    "en": "every",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "พัก",
+    "rom": "phak",
+    "en": "rest; stay",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "คิด",
+    "rom": "khit",
+    "en": "think",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "ลด",
+    "rom": "lot",
+    "en": "reduce",
+    "category": "B",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "มาก",
+    "rom": "maak",
+    "en": "much; many; very",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ยาก",
+    "rom": "yaak",
+    "en": "difficult",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ลูก",
+    "rom": "luuk",
+    "en": "child (offspring); fruit",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "พูด",
+    "rom": "phuut",
+    "en": "speak",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "พวก",
+    "rom": "phuak",
+    "en": "group; gang",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "นอก",
+    "rom": "nawk",
+    "en": "outside",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ชอบ",
+    "rom": "chawp",
+    "en": "like",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "แยก",
+    "rom": "yaek",
+    "en": "separate",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "โลก",
+    "rom": "look",
+    "en": "world",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "เลิก",
+    "rom": "lerk",
+    "en": "stop; quit",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "เรียก",
+    "rom": "riak",
+    "en": "call",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "เลือก",
+    "rom": "lueak",
+    "en": "choose",
+    "category": "B",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ตา",
+    "rom": "dtaa",
+    "en": "eye; maternal grandfather",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตัว",
+    "rom": "dtua",
+    "en": "body; classifier for animals",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดี",
+    "rom": "dii",
+    "en": "good",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปู",
+    "rom": "bpuu",
+    "en": "crab",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตี",
+    "rom": "dtii",
+    "en": "hit; beat",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปา",
+    "rom": "bpaa",
+    "en": "throw",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปี",
+    "rom": "bpii",
+    "en": "year",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "อา",
+    "rom": "aa",
+    "en": "aunt/uncle (father's younger sibling)",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "โต",
+    "rom": "dtoo",
+    "en": "big; grown up",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดู",
+    "rom": "duu",
+    "en": "look; watch",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "จอ",
+    "rom": "jaw",
+    "en": "screen",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "บัว",
+    "rom": "bua",
+    "en": "lotus",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ขา",
+    "rom": "khaa",
+    "en": "leg",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ขอ",
+    "rom": "khaw",
+    "en": "ask for; request",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ผี",
+    "rom": "phii",
+    "en": "ghost",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "สี",
+    "rom": "sii",
+    "en": "colour",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เสือ",
+    "rom": "suea",
+    "en": "tiger",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เสีย",
+    "rom": "sia",
+    "en": "spoil; break down; lose",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ถือ",
+    "rom": "thuee",
+    "en": "hold; carry",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ฝา",
+    "rom": "faa",
+    "en": "lid; cover",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หัว",
+    "rom": "hua",
+    "en": "head",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หู",
+    "rom": "huu",
+    "en": "ear",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หา",
+    "rom": "haa",
+    "en": "look for; find",
+    "category": "C",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "มา",
+    "rom": "maa",
+    "en": "come",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "มือ",
+    "rom": "muee",
+    "en": "hand",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "มี",
+    "rom": "mii",
+    "en": "have",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ยา",
+    "rom": "yaa",
+    "en": "medicine",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "รอ",
+    "rom": "raw",
+    "en": "wait",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "รู",
+    "rom": "ruu",
+    "en": "hole",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ชา",
+    "rom": "chaa",
+    "en": "tea",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "คอ",
+    "rom": "khaw",
+    "en": "neck",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "คือ",
+    "rom": "khuee",
+    "en": "is; namely",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "งู",
+    "rom": "nguu",
+    "en": "snake",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "นา",
+    "rom": "naa",
+    "en": "rice field",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "พอ",
+    "rom": "phaw",
+    "en": "enough",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "พา",
+    "rom": "phaa",
+    "en": "take; bring (a person)",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "วัว",
+    "rom": "wua",
+    "en": "cow; cattle",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เรือ",
+    "rom": "ruea",
+    "en": "boat",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เธอ",
+    "rom": "ther",
+    "en": "she; you (to a woman)",
+    "category": "C",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "จะ",
+    "rom": "ja",
+    "en": "will; going to",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เตะ",
+    "rom": "dte",
+    "en": "kick",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เกาะ",
+    "rom": "go",
+    "en": "island; cling to",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ดุ",
+    "rom": "du",
+    "en": "fierce; stern",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "และ",
+    "rom": "lae",
+    "en": "and",
+    "category": "D",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เยอะ",
+    "rom": "yer",
+    "en": "a lot; many",
+    "category": "D",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "แตะ",
+    "rom": "dtae",
+    "en": "touch; tap",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "แกะ",
+    "rom": "gae",
+    "en": "sheep; unwrap",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "แพะ",
+    "rom": "phae",
+    "en": "goat",
+    "category": "D",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เจาะ",
+    "rom": "jo",
+    "en": "drill; pierce",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เคาะ",
+    "rom": "kho",
+    "en": "knock; tap",
+    "category": "D",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เงาะ",
+    "rom": "ngo",
+    "en": "rambutan",
+    "category": "D",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เหาะ",
+    "rom": "ho",
+    "en": "fly (magically); soar",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ผุ",
+    "rom": "phu",
+    "en": "rotten; decayed",
+    "category": "D",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ทำ",
+    "rom": "tham",
+    "en": "do; make",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ดำ",
+    "rom": "dam",
+    "en": "black",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "คำ",
+    "rom": "kham",
+    "en": "word; mouthful",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กำ",
+    "rom": "gam",
+    "en": "grip; fist",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "จำ",
+    "rom": "jam",
+    "en": "remember",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "นำ",
+    "rom": "nam",
+    "en": "lead",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "รำ",
+    "rom": "ram",
+    "en": "dance (Thai classical)",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ยำ",
+    "rom": "yam",
+    "en": "spicy salad",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ขำ",
+    "rom": "kham",
+    "en": "funny; amusing",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ตำ",
+    "rom": "dtam",
+    "en": "pound (with a mortar)",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ไป",
+    "rom": "bpai",
+    "en": "go",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ไฟ",
+    "rom": "fai",
+    "en": "fire; electricity",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ไว",
+    "rom": "wai",
+    "en": "quick",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ไต",
+    "rom": "dtai",
+    "en": "kidney",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ไถ",
+    "rom": "thai",
+    "en": "plough",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ใจ",
+    "rom": "jai",
+    "en": "heart; mind",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ใส",
+    "rom": "sai",
+    "en": "clear; transparent",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ใน",
+    "rom": "nai",
+    "en": "in; inside",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ใบ",
+    "rom": "bai",
+    "en": "leaf; classifier for flat/round items",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เรา",
+    "rom": "rao",
+    "en": "we; I",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เสา",
+    "rom": "sao",
+    "en": "pillar; post",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เมา",
+    "rom": "mao",
+    "en": "drunk",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เบา",
+    "rom": "bao",
+    "en": "light (weight)",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เผา",
+    "rom": "phao",
+    "en": "burn",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เหา",
+    "rom": "hao",
+    "en": "louse",
+    "category": "E",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เกา",
+    "rom": "gao",
+    "en": "scratch",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เตา",
+    "rom": "dtao",
+    "en": "stove",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เงา",
+    "rom": "ngao",
+    "en": "shadow",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เอา",
+    "rom": "ao",
+    "en": "take; want",
+    "category": "E",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ศาล",
+    "rom": "saan",
+    "en": "court",
+    "category": "F",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "การ",
+    "rom": "gaan",
+    "en": "work; affair (noun-forming prefix)",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "คุณ",
+    "rom": "khun",
+    "en": "you (polite); merit",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "บุญ",
+    "rom": "bun",
+    "en": "merit; good deeds",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ผล",
+    "rom": "phon",
+    "en": "fruit; result",
+    "category": "F",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หาร",
+    "rom": "haan",
+    "en": "divide",
+    "category": "F",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "มาร",
+    "rom": "maan",
+    "en": "demon",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "สาร",
+    "rom": "saan",
+    "en": "substance; message",
+    "category": "F",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "มูล",
+    "rom": "muun",
+    "en": "origin; dung",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตาล",
+    "rom": "dtaan",
+    "en": "palm (sugar palm)",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ศีล",
+    "rom": "siin",
+    "en": "Buddhist precepts",
+    "category": "F",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "รถ",
+    "rom": "rot",
+    "en": "car; vehicle",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "รส",
+    "rom": "rot",
+    "en": "taste; flavour",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "บาท",
+    "rom": "baat",
+    "en": "baht (Thai currency)",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เศษ",
+    "rom": "seet",
+    "en": "remainder; scrap",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เพศ",
+    "rom": "pheet",
+    "en": "gender; sex",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "รัฐ",
+    "rom": "rat",
+    "en": "state; government",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "โทษ",
+    "rom": "thoot",
+    "en": "blame; punishment",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ทิศ",
+    "rom": "thit",
+    "en": "direction",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "พิษ",
+    "rom": "phit",
+    "en": "poison; venom",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "กฎ",
+    "rom": "got",
+    "en": "rule; law",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ทูต",
+    "rom": "thuut",
+    "en": "envoy; ambassador",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ทาส",
+    "rom": "thaat",
+    "en": "slave",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "บท",
+    "rom": "bot",
+    "en": "lesson; chapter",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "จิต",
+    "rom": "jit",
+    "en": "mind; spirit",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "พืช",
+    "rom": "phueet",
+    "en": "plant; crop",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "สุข",
+    "rom": "suk",
+    "en": "happy; happiness",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เลข",
+    "rom": "leek",
+    "en": "number",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "โรค",
+    "rom": "rook",
+    "en": "disease",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "เมฆ",
+    "rom": "meek",
+    "en": "cloud",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ภาพ",
+    "rom": "phaap",
+    "en": "picture; image",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "รูป",
+    "rom": "ruup",
+    "en": "picture; shape",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "บาป",
+    "rom": "baap",
+    "en": "sin",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ลาภ",
+    "rom": "laap",
+    "en": "fortune; windfall",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ชีพ",
+    "rom": "chiip",
+    "en": "life; livelihood",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ศพ",
+    "rom": "sop",
+    "en": "corpse",
+    "category": "F",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "เทพ",
+    "rom": "theep",
+    "en": "deity; angel",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "โชค",
+    "rom": "chook",
+    "en": "luck",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ภาค",
+    "rom": "phaak",
+    "en": "region; part",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ธูป",
+    "rom": "thuup",
+    "en": "incense stick",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "ทัพ",
+    "rom": "thap",
+    "en": "army",
+    "category": "F",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "โลภ",
+    "rom": "loop",
+    "en": "greedy",
+    "category": "F",
+    "live": false,
+    "tone": "falling"
+  },
+  {
+    "th": "กรง",
+    "rom": "grong",
+    "en": "cage",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กราบ",
+    "rom": "graap",
+    "en": "bow down; prostrate",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "กลม",
+    "rom": "glom",
+    "en": "round",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กลัว",
+    "rom": "glua",
+    "en": "afraid",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กลาง",
+    "rom": "glaang",
+    "en": "middle",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กลับ",
+    "rom": "glap",
+    "en": "return; go back",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "กลอง",
+    "rom": "glawng",
+    "en": "drum",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เกลือ",
+    "rom": "gluea",
+    "en": "salt",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กวาง",
+    "rom": "gwaang",
+    "en": "deer",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "กวาด",
+    "rom": "gwaat",
+    "en": "sweep",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ขวา",
+    "rom": "khwaa",
+    "en": "right (direction)",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ขวด",
+    "rom": "khuat",
+    "en": "bottle",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ครู",
+    "rom": "khruu",
+    "en": "teacher",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ครัว",
+    "rom": "khrua",
+    "en": "kitchen",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "คลอง",
+    "rom": "khlawng",
+    "en": "canal",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ควาย",
+    "rom": "khwaai",
+    "en": "water buffalo",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ควร",
+    "rom": "khuan",
+    "en": "should",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "เชิญ",
+    "rom": "chern",
+    "en": "invite; please (go ahead)",
+    "category": "F",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตรง",
+    "rom": "dtrong",
+    "en": "straight; direct",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ตรวจ",
+    "rom": "dtruat",
+    "en": "inspect; check",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ปลา",
+    "rom": "bplaa",
+    "en": "fish",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปลาย",
+    "rom": "bplaai",
+    "en": "tip; end",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ปลูก",
+    "rom": "bpluuk",
+    "en": "plant (verb)",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ปรับ",
+    "rom": "bprap",
+    "en": "adjust",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "พริก",
+    "rom": "phrik",
+    "en": "chilli",
+    "category": "G",
+    "live": false,
+    "tone": "high"
+  },
+  {
+    "th": "เพลง",
+    "rom": "phleeng",
+    "en": "song",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ผลัก",
+    "rom": "phlak",
+    "en": "push",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "ไกล",
+    "rom": "glai",
+    "en": "far",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "ใคร",
+    "rom": "khrai",
+    "en": "who",
+    "category": "G",
+    "live": true,
+    "tone": "mid"
+  },
+  {
+    "th": "อยาก",
+    "rom": "yaak",
+    "en": "want to",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หนู",
+    "rom": "nuu",
+    "en": "mouse; rat",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หมา",
+    "rom": "maa",
+    "en": "dog",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หมู",
+    "rom": "muu",
+    "en": "pig; pork",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หมอ",
+    "rom": "maw",
+    "en": "doctor",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หมี",
+    "rom": "mii",
+    "en": "bear",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หลับ",
+    "rom": "lap",
+    "en": "sleep; fall asleep",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หวาน",
+    "rom": "waan",
+    "en": "sweet",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หมด",
+    "rom": "mot",
+    "en": "run out; finished",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หนัก",
+    "rom": "nak",
+    "en": "heavy",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หลัง",
+    "rom": "lang",
+    "en": "back; behind; classifier for houses",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หลาย",
+    "rom": "laai",
+    "en": "many; several",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หยุด",
+    "rom": "yut",
+    "en": "stop; take a break",
+    "category": "G",
+    "live": false,
+    "tone": "low"
+  },
+  {
+    "th": "หญิง",
+    "rom": "ying",
+    "en": "woman; female",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "หรือ",
+    "rom": "ruee",
+    "en": "or",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "เหลือง",
+    "rom": "lueang",
+    "en": "yellow",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "แหวน",
+    "rom": "waen",
+    "en": "ring",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  },
+  {
+    "th": "ไหน",
+    "rom": "nai",
+    "en": "where; which",
+    "category": "G",
+    "live": true,
+    "tone": "rising"
+  }
+]
