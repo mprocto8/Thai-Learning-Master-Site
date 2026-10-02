@@ -66,6 +66,7 @@ const App = (() => {
     UI.registerRoute("#listen", routeListen);
     UI.registerRoute("#listen-quick", () => ListenChoose.startQuick());
     UI.registerRoute("#pattern", routePattern);
+    UI.registerRoute("#livedead", () => LiveDead.show());
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once

@@ -40,7 +40,8 @@ const State = (() => {
     roundsToday: 0,
     autoPlayAudio: true,
     autoAdvancePatternPractice: false,
-    autoAdvanceSentenceBuilder: false
+    autoAdvanceSentenceBuilder: false,
+    livedead: null          // Live/Dead drill spaced-review state
   });
 
   let _state = null;

@@ -196,6 +196,18 @@ const Audio = (() => {
     return speak(text);
   }
 
+  /** Play a Live/Dead drill syllable. File: audio/{voice}/livedead-{hex}.mp3 where
+   *  hex = each UTF-16 code unit of th as 4 lowercase hex digits, concatenated.
+   *  No TTS fallback: a missing clip resolves silently. */
+  function playLiveDead(th) {
+    if (!th) return Promise.resolve();
+    let hex = "";
+    for (let i = 0; i < th.length; i++) {
+      hex += th.charCodeAt(i).toString(16).padStart(4, "0");
+    }
+    return _playMp3(`${_voiceFolder()}/livedead-${hex}.mp3`, null);
+  }
+
   return {
     speak,
     playWord,
@@ -203,6 +215,7 @@ const Audio = (() => {
     playSlot,
     playSentenceBuilderWord,
     playSentenceBuilderFull,
+    playLiveDead,
     cancel,
     setRate,
     hasTTSSupport,
