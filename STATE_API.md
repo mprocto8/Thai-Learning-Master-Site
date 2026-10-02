@@ -8,12 +8,24 @@ lastPlayedDate: null   showScript: false     darkMode: true
 topicStats: {}         alphabetStats: {}     flashcardStats: {}
 speedBests: {}         onboarded: false      badges: []
 tutorialsSeen: {}      autoPlayAudio: true     autoAdvanceSentenceBuilder: false
+livedead: null
 
 ### Settings fields
 - `autoPlayAudio` (bool, default `true`) — when true, Listen & Choose auto-plays the Thai utterance ~300ms after each question loads. Toggled from the Settings screen. Read as `State.get().autoPlayAudio !== false` at playback sites so older saves (without the field) still auto-play.
 - `autoAdvancePatternPractice` (bool, default `false`) — when true, Pattern Practice automatically advances to the next prompt after the post-answer audio sequence (slot → word → sentence) finishes + 1s buffer. When false, the user must tap **Continue** or press space.
 
 - `autoAdvanceSentenceBuilder` (bool, default `false`) - when true, Sentence Builder automatically advances after the successful completion sentence audio finishes + a short buffer. When false, the completion screen waits for **Continue** or space.
+
+### Live/Dead drill (`livedead`, default `null`)
+Owned by `js/livedead.js`, read/written only via `State.get().livedead` / `State.set("livedead", obj)` (no dedicated methods). Initialised lazily on first visit. **Local-only:** not included in the Supabase push/pull snapshot, so it does not sync across devices yet. `resetAll()` clears it. Shape:
+```
+{
+  rules:  { [ruleKey|toneKey]: { box: 0-4, seen, correct, lastSeen /* epoch ms */ } },
+  levels: { 1..6: { rounds, good, passed, best, introSeen } },   // good = qualifying rounds (≥11/12; level 6 also median < 2000 ms); passed after 2
+  lastSession: { at, mode: "level"|"today", level, score, total, medianMs } | null
+}
+```
+ruleKeys: final-live, final-dead, open-long, open-short, hidden-ending, disguised-n, disguised-t, disguised-kp. toneKeys: mid-live, mid-dead, high-live, high-dead, low-live, low-dead-short, low-dead-long. Correct → box +1 (max 4), wrong → box 0. Item selection weights rules by `5 - box`. The Learn tab's card reads `levels[n].passed` and `lastSession`. Live/Dead does not touch `topicStats` or any other existing key; it does call `addXP` (3 per correct, 20 per completed level round) and `checkStreak`.
 
 ### Profile-only settings (premium, mirrored to settings_json on push)
 - `voicePreference` (string, "ploy" | "serafina" | null) — which voice to use for premium users. Set via `State.setVoicePreference(id)`; read via `State.getVoicePreference()`. Only meaningful when `isPremium()` is true; `js/audio.js` falls back to "serafina" for premium users with no preference and "ploy" for everyone else.

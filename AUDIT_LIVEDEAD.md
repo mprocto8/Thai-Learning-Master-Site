@@ -53,3 +53,10 @@ Rejected: 0
 | high | 80 |  |
 | low | 109 |  |
 | mid | 92 |  |
+
+## Opus review notes (added by hand; re-running the gate overwrites this file)
+
+- The final Sonnet draft had 0 engine disagreements, so the table above is empty.
+- A first draft from Haiku (304 entries) was discarded in full before the gate run: mostly invented words, plus tone-marked words, duplicates and the irregular เขา. The gate cannot detect non-words, so the list was reviewed by hand.
+- Removed by review: ความ (bound noun prefix, not a standalone word). Added: เชิญ.
+- Words to verify with a native speaker are listed in AI_HANDOFF.md under "Live/Dead decisions".

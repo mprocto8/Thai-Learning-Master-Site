@@ -13,7 +13,7 @@
 - Tier 1-5 pattern pathways shipped in the v2 IA (25 pattern topics)
 - ~1,600 audio MP3s across two voice tiers (Ploy default, Serafina premium)
 - Full auth + sync + tier framework in place
-- Eight learning modes
+- Eight learning modes, plus the Live or Dead reading drill (`#livedead`, entry on the Learn tab)
 - Primary tabs are now Home, Learn, Library, Settings. Old code/docs that refer to Pathways and Practice as primary tabs are deprecated; legacy routes still exist for bookmarks.
 
 **Stage:** Active development. Solo developer (the user) building via AI-assisted workflows, primarily Claude Code with occasional other tools.
@@ -291,3 +291,88 @@ You failed if:
 ## Final Note
 
 This project is built and maintained primarily through AI-assisted development. The user is the product owner and reviewer, not the implementer. Your job is to translate their intent into correct, consistent code that fits the existing architecture. When in doubt, ask. The user prefers a thoughtful question over a confident wrong answer.
+
+---
+
+## Live/Dead decisions
+
+Built on branch `feature/livedead` (not pushed, not merged) from the Live/Dead kickoff brief. Every non-obvious call is listed here so Aaron can overrule any of them.
+
+### Delegation path
+- **Codex was reachable, and took the Codex tasks.** The CLI is at `%LOCALAPPDATA%\OpenAI\Codex\bin\codex.exe` (0.130.0-alpha). It can't parse the desktop app's `~/.codex/config.toml` (`service_tier = "default"`) and rejects `gpt-6-luna` for ChatGPT accounts, so it ran as `codex exec --ignore-user-config -m gpt-5.5 -c windows.sandbox="elevated" -s workspace-write`. Without the `windows.sandbox` override it silently drops to read-only. The full prompts are in `handoff/codex-01-syllable-engine.md` and `handoff/codex-02-livedead-ui.md`.
+- **`tools/check-livedead.js` went to Codex, not Haiku.** It is tightly coupled to the engine's API, and the user asked for Codex wherever it is faster.
+- **The Haiku word-list draft was discarded in full.** Most entries were invented strings (นส, ชส, ตัม, หงา…), and it also had tone-marked words, duplicates and เขา. The gate can't catch non-words, because the engine happily parses them. Sonnet redrafted the list (281 words), and Opus reviewed it word by word.
+- **Reviews:** Opus reviewed the Codex engine, the Codex UI, the Sonnet copy and the Sonnet word list. No agent reviewed its own work. Opus's own fixes are listed below and were verified in the browser.
+
+### Engine (`js/syllable.js`)
+- Returns two fields beyond the brief: `initialIndices` (to highlight the class-deciding consonant) and `toneKey`. Every word has one live/dead rule (`ruleKey`) and one tone rule (`toneKey`), so a single field couldn't serve both level types.
+- Opus fixed an index bug that stopped เ‑ียะ and เ‑ือะ from ever matching, and added an explicit `รร → null`.
+- Ambiguity rules: a consonant + ว + final reads as ua (กวน = kuan, หวง = huang, per the brief). Otherwise the longest valid initial wins.
+- All section‑4 fixtures pass: `node tests/syllable.test.js`.
+
+### Word set
+- The gate also rejects any word with a tone mark, since v1 levels are unmarked only.
+- Opus removed ความ (a bound noun prefix, not a standalone word) and added เชิญ, keeping `disguised-n` at 13 words. Every ruleKey has at least 13 words.
+- Short เ‑าะ words are romanized "o" (เกาะ go, เคาะ kho) so they don't look identical to long อ ("khaw"). Elsewhere the romanization is simplified, with no tone marks and doubled long vowels. It does **not** mark length for ə (เดิน "dern" vs เยอะ "yer").
+- Category F (disguised finals) skews toward low class (8/8/26), because real disguised-final words are mostly low class. No ฟ-final words, and only one ฆ-final word (เมฆ).
+- **TODO: verify with a native speaker.** The drafter was less sure these are everyday words with regular pronunciation: มูล ศีล ตาล มาร ทาส ทูต รัฐ กฎ การ ไถ ไต ไว ผุ เหาะ เหา เกา เยอะ ขำ ปรับ.
+- `AUDIT_LIVEDEAD.md` lists zero rejections, because the final draft agreed with the engine on every word. What was actually dropped: the whole Haiku draft, plus ความ.
+
+### Module (`js/livedead.js`)
+- **Styles are in `css/styles.css`, not `css/livedead.css`.** The section is `/* === Live / Dead module === */`. AI_HANDOFF requires a single stylesheet, and the docs override the brief.
+- **Copy is in its own file, `js/livedead-copy.js`,** so the copy and UI could be built in parallel.
+- **Swipe direction follows the button layout.** Swipe left (toward the Live button) = Live, swipe right = Dead. Keys: ← Live, → Dead, and 1–5 for tones. The brief's "swipe right / left" was ambiguous.
+- **Mastery:** a level passes after two qualifying rounds, which need not be consecutive. Skip-ahead lets you play a locked level but doesn't mark earlier levels passed.
+- **Today's 5 minutes** draws from the passed levels plus the first unpassed one. It updates rule boxes but doesn't count as a level round.
+- **Intro cards** show the first time a level is played. After that, the level row has an "intro" link to reread them.
+- **XP:** 3 per correct answer, 20 per completed level round, plus `checkStreak()` (same pattern as other modules).
+- **`livedead` state is local-only.** The Supabase snapshot has no column for it, and adding one needs a schema migration, so it doesn't sync across devices yet.
+- **Font:** Noto Sans Thai Looped from Google Fonts. It's the first web font in the app, and system Thai fonts are the fallback.
+- **Feedback colors:** the verdict and the highlighted letter always use the answer's own color and shape (amber with a trailing line = live, teal with a hard stop = dead). Right or wrong appears as separate text ("Correct" / "Not quite. You picked …"), so the colors never contradict. On tone levels the initial consonant gets a dotted underline. A combining vowel (ี, ุ…) is highlighted together with its base consonant, because splitting them breaks Thai rendering. The reason text names the vowel itself.
+- **Reduced motion:** the level 6 timer bar fills instantly but still switches to its "slow" state at 2 s.
+- **Opus fixes to the Codex UI** (all verified at 390px and 1280px, dark and light):
+  - Quit, Home and intro Back did nothing when the hash was already `#livedead`.
+  - "Missed rules" printed placeholder debris.
+  - The Today countdown could show `4:60`.
+  - The Live button's trailing line never rendered (a zero-height gradient bounding box).
+  - New screens kept the previous screen's scroll position.
+  - The skip-ahead panel rendered below the fold.
+  - The class-chip highlight box overlapped the feedback text.
+  - The counter jumped ahead during feedback.
+- **Copy fixes:** คุ → ดุ (คุ isn't a word); เรา removed from the plain-ending examples (it ends in a hidden w); "Ends in {letter} ({sound})" wording; a clearer one-line-per-class tone card.
+
+### Verified
+- `node tests/syllable.test.js` and `node tests/livedead.test.js` pass.
+- Levels 1, 3, 5 and 6, Today mode and the cheat sheet were played end to end with buttons, swipe and keyboard. Level 1 passed after two rounds and unlocked level 2, and state survived a reload. No console errors, and no horizontal scroll at 390px.
+- Not tested on a real iPhone. Not tested: playing audio inside the drill, because the manifest is deliberately empty (see below).
+
+### Waiting on Aaron: audio listen check
+Twenty Ploy clips were generated (`node scripts/generate-livedead-audio.js --words=…`) and committed under `audio/ploy/`. **`js/livedead-audio.js` is deliberately left empty,** so the drill shows no audio until the clips are approved. Unapproved TTS could teach a wrong tone or length. Listen for the right tone, vowel length (นก vs มาก, จะ vs ขา) and a clean final stop:
+
+| Word | Expected | File |
+|---|---|---|
+| กิน | mid, short, live | livedead-0e010e340e19.mp3 |
+| จาน | mid, long, live | livedead-0e080e320e19.mp3 |
+| หญิง | rising, short, live | livedead-0e2b0e0d0e340e07.mp3 |
+| นก | high, short, dead | livedead-0e190e01.mp3 |
+| มาก | falling, long, dead | livedead-0e210e320e01.mp3 |
+| ปาก | low, long, dead | livedead-0e1b0e320e01.mp3 |
+| ขา | rising, long, open | livedead-0e020e32.mp3 |
+| ดี | mid, long, open | livedead-0e140e35.mp3 |
+| จะ | low, short, open | livedead-0e080e30.mp3 — **only 0.16 s; likely clipped** |
+| เตะ | low, short, open | livedead-0e400e150e30.mp3 |
+| เกาะ | low, short, open | livedead-0e400e010e320e30.mp3 |
+| ทำ | mid, hidden m | livedead-0e170e33.mp3 |
+| ใจ | mid, hidden y | livedead-0e430e08.mp3 |
+| เรา | mid, hidden w | livedead-0e400e230e32.mp3 |
+| คุณ | mid, ณ → n | livedead-0e040e380e13.mp3 |
+| ผล | rising, ล → n | livedead-0e1c0e25.mp3 |
+| รถ | high, ถ → t | livedead-0e230e16.mp3 |
+| บาท | low, ท → t | livedead-0e1a0e320e17.mp3 |
+| สุข | low, ข → k | livedead-0e2a0e380e02.mp3 |
+| ภาพ | falling, พ → p | livedead-0e200e320e1e.mp3 |
+
+After listening, delete any bad clips. Then:
+- `node scripts/generate-livedead-audio.js --manifest-only` switches on the clips that remain.
+- `node scripts/generate-livedead-audio.js --words=จะ --force` regenerates a single clip.
+- `node scripts/generate-livedead-audio.js --all --approved` generates the full set, about 260 more clips.
