@@ -62,22 +62,40 @@ const LiveDeadCopy = (function () {
       ]
     },
     5: {
-      title: "Tone",
-      blurb: "Class, live or dead, then the tone.",
+      title: "Tone table",
+      blurb: "Clues in, tone out. Learn the table before the words.",
       intro: [
         {
-          title: "Live or dead picks the row",
-          body: "You already know live or dead. Add the class of the first letter: mid, high or low.\nThe chip shows the class for now."
+          title: "กา ก่า ก้า ก๊า ก๋า",
+          body: "The five tones in order: สามัญ, เอก, โท, ตรี, จัตวา.\nEach button shows the tone's name and the mark that makes that tone on a mid-class letter like ก.\nA word with no mark still has one of these tones. This level teaches you which one."
         },
         {
-          title: "One line per class",
-          body: "Mid class: live is mid, dead is low.\nHigh class: live is rising, dead is low.\nLow class: live is mid, dead short is high, dead long is falling."
+          title: "The whole table in three lines",
+          body: "คำเป็น → สามัญ. Except อักษรสูง → จัตวา.\nคำตาย → เอก. Except อักษรต่ำ.\nอักษรต่ำ คำตาย: สระสั้น → ตรี (นก, รัก). สระยาว → โท (มาก, ลูก)."
+        },
+        {
+          title: "Clues first, words later",
+          body: "You see clues like อักษรสูง · คำตาย and pick the tone. There's no word to read yet.\nVowel length only matters for อักษรต่ำ คำตาย. Everywhere else, ignore it.\nOnce the table is automatic, the words get easy."
         }
       ]
     },
     6: {
+      title: "Read the tone",
+      blurb: "Real words. The chip shows the class.",
+      intro: [
+        {
+          title: "Three questions, one tone",
+          body: "Which class is the first letter? Is it คำเป็น or คำตาย? If it's อักษรต่ำ คำตาย, is the vowel short or long?\nThe chip shows the class for now."
+        },
+        {
+          title: "Same three lines",
+          body: "คำเป็น → สามัญ. Except อักษรสูง → จัตวา.\nคำตาย → เอก. Except อักษรต่ำ: สระสั้น → ตรี, สระยาว → โท."
+        }
+      ]
+    },
+    7: {
       title: "Speed read",
-      blurb: "Tones with no class chip. Under 2 seconds each.",
+      blurb: "No class chip. Under 2 seconds each.",
       intro: [
         {
           title: "Chip off, clock on",
@@ -105,26 +123,50 @@ const LiveDeadCopy = (function () {
     "hidden-ending": "{letter} hides an ending {sound}. You can hold {sound}. Live."
   };
 
-  // Tone chain lines, one per toneKey.
-  const toneChains = {
-    "mid-live":       "Mid class → live → mid",
-    "mid-dead":       "Mid class → dead → low",
-    "high-live":      "High class → live → rising",
-    "high-dead":      "High class → dead → low",
-    "low-live":       "Low class → live → mid",
-    "low-dead-short": "Low class → dead → short vowel → high",
-    "low-dead-long":  "Low class → dead → long vowel → falling"
-  };
-
+  // Tone names as Thai learners say them. `mark` is the mark that produces this
+  // tone on a mid-class letter (the กา ก่า ก้า ก๊า ก๋า chant). It is a memory aid
+  // for the SOUND: unmarked words have no mark, and on low-class letters the marks
+  // give different tones (ไม้เอก on a low-class letter sounds โท).
   const toneNames = {
-    mid:     { en: "mid",     th: "สามัญ" },
-    low:     { en: "low",     th: "เอก" },
-    falling: { en: "falling", th: "โท" },
-    high:    { en: "high",    th: "ตรี" },
-    rising:  { en: "rising",  th: "จัตวา" }
+    mid:     { th: "สามัญ", mark: "",  rom: "saaman", noMark: "ไม่มีรูป" },
+    low:     { th: "เอก",   mark: "่", rom: "ek" },
+    falling: { th: "โท",    mark: "้", rom: "tho" },
+    high:    { th: "ตรี",   mark: "๊", rom: "tri" },
+    rising:  { th: "จัตวา", mark: "๋", rom: "jattawa" }
   };
 
-  const classNames = { mid: "Mid class", high: "High class", low: "Low class" };
+  const classNames = {
+    mid:  { th: "อักษรกลาง", en: "mid class" },
+    high: { th: "อักษรสูง",  en: "high class" },
+    low:  { th: "อักษรต่ำ",  en: "low class" }
+  };
+
+  const lifeNames = {
+    live: { th: "คำเป็น", en: "live" },
+    dead: { th: "คำตาย", en: "dead" }
+  };
+
+  const lengthNames = {
+    short: { th: "สระสั้น", en: "short vowel" },
+    long:  { th: "สระยาว", en: "long vowel" }
+  };
+
+  // The tone chant every Thai child learns, one syllable per tone.
+  const chant = { mid: "กา", low: "ก่า", falling: "ก้า", high: "ก๊า", rising: "ก๋า" };
+
+  // Which of the three table lines applied, one per toneKey. The whole table is:
+  //   คำเป็น → สามัญ, except อักษรสูง → จัตวา
+  //   คำตาย → เอก, except อักษรต่ำ
+  //   อักษรต่ำ คำตาย: สระสั้น → ตรี, สระยาว → โท
+  const toneRules = {
+    "mid-live":       "คำเป็น → สามัญ. Mid class keeps the default.",
+    "mid-dead":       "คำตาย → เอก. Vowel length doesn't matter for mid class.",
+    "high-live":      "คำเป็น → สามัญ, except high class rises: จัตวา.",
+    "high-dead":      "คำตาย → เอก, same as mid class. Vowel length doesn't matter.",
+    "low-live":       "คำเป็น → สามัญ, same as mid class.",
+    "low-dead-short": "คำตาย → เอก, except low class: สระสั้น → ตรี (นก, รัก).",
+    "low-dead-long":  "คำตาย → เอก, except low class: สระยาว → โท (มาก, ลูก)."
+  };
 
   const cheatSheet = {
     title: "Live or dead cheat sheet",
@@ -157,12 +199,18 @@ const LiveDeadCopy = (function () {
       low: "All the rest: ค ฅ ฆ ง ช ซ ฌ ญ ฑ ฒ ณ ท ธ น พ ฟ ภ ม ย ร ล ว ฬ ฮ",
       note: "In a cluster the first letter decides. ห before ง ญ น ม ย ร ล ว is silent and makes it high class. อย is mid."
     },
+    toneRules: [
+      "คำเป็น → สามัญ · except อักษรสูง → จัตวา",
+      "คำตาย → เอก · except อักษรต่ำ:",
+      "อักษรต่ำ คำตาย: สระสั้น → ตรี (นก) · สระยาว → โท (มาก)"
+    ],
+    chant: "กา ก่า ก้า ก๊า ก๋า = สามัญ เอก โท ตรี จัตวา",
     toneTable: {
-      headers: ["Class", "Live", "Dead · short", "Dead · long"],
+      headers: ["", "คำเป็น", "คำตาย สระสั้น", "คำตาย สระยาว"],
       rows: [
-        ["Mid", "mid", "low", "low"],
-        ["High", "rising", "low", "low"],
-        ["Low", "mid", "high", "falling"]
+        ["อักษรกลาง", "สามัญ", "เอก", "เอก"],
+        ["อักษรสูง", "จัตวา", "เอก", "เอก"],
+        ["อักษรต่ำ", "สามัญ", "ตรี", "โท"]
       ]
     }
   };
@@ -187,9 +235,10 @@ const LiveDeadCopy = (function () {
     fluent: "Fluent: {seconds}s.",
     tooSlow: "Too slow: {seconds}s. Aim for under 2.",
     swipeHint: "Swipe left for Live, right for Dead. Keys: ← Live, → Dead.",
-    tapToHear: "Tap to hear it"
+    tapToHear: "Tap to hear it",
+    chantHint: "Sounds like {chant} in กา ก่า ก้า ก๊า ก๋า"
   };
 
-  return { levels, reasons, toneChains, toneNames, classNames, cheatSheet, ui };
+  return { levels, reasons, toneNames, classNames, lifeNames, lengthNames, chant, toneRules, cheatSheet, ui };
 })();
 if (typeof module !== "undefined" && module.exports) module.exports = LiveDeadCopy;

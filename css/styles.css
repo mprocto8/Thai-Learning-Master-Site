@@ -4647,6 +4647,60 @@ p { color: var(--text-1); }
   padding: var(--sp-2) var(--sp-3);
   color: var(--text-1);
   font-weight: 600;
+  display: inline-grid;
+  gap: 0;
+  justify-items: center;
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+}
+
+.ld-class-chip strong {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.ld-class-chip small {
+  font-family: var(--font-sans);
+  color: var(--text-2);
+  font-size: 0.75rem;
+}
+
+.ld-table-prompt {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.ld-clue-chip {
+  min-width: 150px;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-md);
+  background: var(--bg-1);
+  box-shadow: var(--shadow-sm);
+}
+
+.ld-clue-chip strong {
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.ld-clue-chip small {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.ld-clue-chip.live {
+  color: var(--live);
+}
+
+.ld-clue-chip.dead {
+  color: var(--dead);
 }
 
 .ld-syllable {
@@ -4791,6 +4845,108 @@ p { color: var(--text-1); }
   min-height: 76px;
 }
 
+.ld-tone-btn strong,
+.ld-tone-mark,
+.ld-verdict,
+.ld-chant,
+.ld-cheat-chant {
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+}
+
+/* Mark + Thai tone name on one row: the pair is the card's identity. */
+.ld-tone-id {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15em;
+  line-height: 1.5;
+}
+
+.ld-tone-btn .ld-tone-name {
+  font-size: 1.35rem;
+  line-height: 1.5;
+}
+
+.ld-tone-mark {
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+  font-size: 1.9rem;
+  line-height: 1.5;
+  color: var(--accent);
+}
+
+/* สามัญ has no mark: keep the circle so all five cards share one layout. */
+.ld-tone-mark.is-empty {
+  color: var(--text-2);
+}
+
+.ld-tone-btn .ld-tone-svg {
+  height: 18px;
+  width: 36px;
+}
+
+.ld-verdict-mark {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.ld-verdict-name {
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* The chain is the line to memorise; the rule and chant support it. */
+.ld-reason .ld-chain {
+  font-family: "Noto Sans Thai Looped", "Noto Sans Thai", Tahoma, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-0);
+}
+
+.ld-reason .ld-rule,
+.ld-reason .ld-chant,
+.ld-reason .ld-example {
+  font-size: 0.92rem;
+  color: var(--text-1);
+}
+
+.ld-reason .ld-example {
+  color: var(--text-2);
+}
+
+.ld-cheat-tone-title {
+  margin: var(--sp-6) 0 var(--sp-3);
+  font-size: 1.4rem;
+}
+
+.ld-tone-table .ld-cell-mark {
+  font-size: 1.3rem;
+}
+
+.ld-tone-table td {
+  white-space: nowrap;
+}
+
+.ld-cheat-tone-rules {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.ld-cheat-tone-rules p {
+  margin: 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+}
+
+.ld-cheat-chant {
+  margin: var(--sp-4) 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
 .ld-shape {
   width: 56px;
   height: 16px;
@@ -4878,6 +5034,16 @@ p { color: var(--text-1); }
   .ld-tone-btn {
     min-width: calc(33.333% - var(--sp-2));
     font-size: 0.84rem;
+  }
+
+  .ld-clue-chip {
+    min-width: 0;
+    flex: 1 1 100%;
+    padding: var(--sp-3);
+  }
+
+  .ld-clue-chip strong {
+    font-size: 1.75rem;
   }
 }
 

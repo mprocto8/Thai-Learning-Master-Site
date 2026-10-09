@@ -1,5 +1,5 @@
 // js/livedead.js - Live/Dead drill module.
-// Pure logic exposed for tests: LiveDead._test = { pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress }.
+// Pure logic exposed for tests: LiveDead._test = { pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress, migrateState, buildTableItem }.
 const LiveDead = (function () {
   const ROUND_SIZE = 12;
   const GOOD_SCORE = 11;
@@ -8,16 +8,19 @@ const LiveDead = (function () {
   const CORRECT_XP = 3;
   const ROUND_XP = 20;
   const AUTO_ADVANCE_MS = 1100;
+  const STATE_VERSION = 2;
   const TONES = ["mid", "low", "falling", "high", "rising"];
   const LIVE_DEAD_KEYS = ["final-live", "final-dead", "open-long", "open-short", "hidden-ending", "disguised-n", "disguised-t", "disguised-kp"];
   const TONE_KEYS = ["mid-live", "mid-dead", "high-live", "high-dead", "low-live", "low-dead-short", "low-dead-long"];
+  const TABLE_KEYS = TONE_KEYS.map(k => "table:" + k);
   const LEVELS = {
     1: { pool: ["final-live", "final-dead"], type: "life", rom: true, cls: false, timer: false },
     2: { pool: ["open-long", "open-short", "hidden-ending"], type: "life", rom: true, cls: false, timer: false },
     3: { pool: ["disguised-n", "disguised-t", "disguised-kp"], type: "life", rom: true, cls: false, timer: false },
     4: { pool: LIVE_DEAD_KEYS, type: "life", rom: false, cls: false, timer: false },
-    5: { pool: TONE_KEYS, type: "tone", rom: false, cls: true, timer: false },
-    6: { pool: TONE_KEYS, type: "tone", rom: false, cls: false, timer: true }
+    5: { pool: TABLE_KEYS, type: "tone", rom: false, cls: false, timer: false, table: true },
+    6: { pool: TONE_KEYS, type: "tone", rom: false, cls: true, timer: false },
+    7: { pool: TONE_KEYS, type: "tone", rom: false, cls: false, timer: true }
   };
 
   let bank = null;
@@ -53,13 +56,46 @@ const LiveDead = (function () {
     return out;
   }
 
+  function freshLevel() {
+    return { rounds: 0, good: 0, passed: false, best: 0, introSeen: false };
+  }
+
+  function normalizeLevel(l) {
+    const fresh = freshLevel();
+    return Object.assign(fresh, l || {}, {
+      rounds: (l && l.rounds) || 0,
+      good: (l && l.good) || 0,
+      passed: !!(l && l.passed),
+      best: (l && l.best) || 0,
+      introSeen: !!(l && l.introSeen)
+    });
+  }
+
+  function migrateState(current) {
+    const source = current && current.rules && current.levels ? current : { rules: {}, levels: {}, lastSession: null };
+    const oldLevels = source.levels || {};
+    const migrated = {
+      version: STATE_VERSION,
+      rules: source.rules || {},
+      levels: {},
+      lastSession: source.lastSession || null
+    };
+    if (!source.version || source.version < STATE_VERSION) {
+      for (let i = 1; i <= 4; i++) migrated.levels[i] = normalizeLevel(oldLevels[i]);
+      migrated.levels[5] = freshLevel();
+      migrated.levels[6] = normalizeLevel(oldLevels[5]);
+      migrated.levels[7] = normalizeLevel(oldLevels[6]);
+    } else {
+      for (let i = 1; i <= 7; i++) migrated.levels[i] = normalizeLevel(oldLevels[i]);
+    }
+    return migrated;
+  }
+
   function initState() {
     const current = (typeof State !== "undefined" && State.get().livedead) || null;
-    if (current && current.rules && current.levels) return current;
-    const levels = {};
-    for (let i = 1; i <= 6; i++) levels[i] = { rounds: 0, good: 0, passed: false, best: 0, introSeen: false };
-    const st = { rules: {}, levels, lastSession: null };
-    if (typeof State !== "undefined") State.set("livedead", st);
+    const st = migrateState(current);
+    const needsSave = !current || current.version !== STATE_VERSION || !current.rules || !current.levels || [1,2,3,4,5,6,7].some(n => !current.levels[n]);
+    if (typeof State !== "undefined" && needsSave) State.set("livedead", st);
     return st;
   }
 
@@ -96,7 +132,7 @@ const LiveDead = (function () {
   }
 
   function availableRules(pool, byRule) {
-    return pool.filter(k => byRule[k] && byRule[k].length);
+    return pool.filter(k => k.indexOf("table:") === 0 || (byRule[k] && byRule[k].length));
   }
 
   function pickRule(pool, rules, byRule, rand) {
@@ -117,6 +153,35 @@ const LiveDead = (function () {
     const fresh = words.filter(item => !recentSet.has(item.word.th));
     const pool = fresh.length ? fresh : words;
     return pool[Math.floor((rand || Math.random)() * pool.length)];
+  }
+
+  function stripTableKey(toneKey) {
+    return String(toneKey || "").replace(/^table:/, "");
+  }
+
+  function tableSpec(toneKey) {
+    return {
+      "mid-live": { cls: "mid", life: "live", tone: "mid" },
+      "mid-dead": { cls: "mid", life: "dead", tone: "low" },
+      "high-live": { cls: "high", life: "live", tone: "rising" },
+      "high-dead": { cls: "high", life: "dead", tone: "low" },
+      "low-live": { cls: "low", life: "live", tone: "mid" },
+      "low-dead-short": { cls: "low", life: "dead", length: "short", tone: "high" },
+      "low-dead-long": { cls: "low", life: "dead", length: "long", tone: "falling" }
+    }[stripTableKey(toneKey)];
+  }
+
+  function buildTableItem(toneKey, rand) {
+    const key = stripTableKey(toneKey);
+    const spec = tableSpec(key);
+    if (!spec) return null;
+    let length = spec.length || null;
+    if (spec.life === "dead" && !length) length = (rand || Math.random)() < 0.5 ? "short" : "long";
+    return { kind: "table", toneKey: key, cls: spec.cls, life: spec.life, length, tone: spec.tone };
+  }
+
+  function tableCombo(item) {
+    return item ? [item.cls, item.life, item.length || ""].join("|") : "";
   }
 
   function applyAnswer(ruleStat, correct, now) {
@@ -145,7 +210,7 @@ const LiveDead = (function () {
 
   function evaluateRound(level, score, total, times) {
     const med = median(times);
-    const qualifies = total >= ROUND_SIZE && score >= GOOD_SCORE && (Number(level) !== 6 || med < SPEED_MS);
+    const qualifies = total >= ROUND_SIZE && score >= GOOD_SCORE && (Number(level) !== 7 || med < SPEED_MS);
     return { qualifies, medianMs: med };
   }
 
@@ -236,7 +301,7 @@ const LiveDead = (function () {
           <small>${esc(ui.todaySub || "Mixed review.")}</small>
         </button>
         <div class="ld-level-list">
-          ${[1,2,3,4,5,6].map(n => renderLevelRow(st, n)).join("")}
+          ${[1,2,3,4,5,6,7].map(n => renderLevelRow(st, n)).join("")}
         </div>
         <button class="btn btn-secondary ld-cheat-btn" data-nav="#livedead/cheat">${esc(ui.cheatSheetButton || "Cheat sheet")}</button>
         <div id="ld-lock-panel" class="ld-lock-panel" hidden></div>
@@ -318,6 +383,9 @@ const LiveDead = (function () {
           <div><strong>Low</strong><p>${esc(c.classes && c.classes.low || "")}</p></div>
         </div>
         <p class="ld-note">${esc(c.classes && c.classes.note || "")}</p>
+        <h2 class="ld-cheat-tone-title">Tones · วรรณยุกต์</h2>
+        <div class="ld-cheat-tone-rules">${((c.toneRules || []).map(x => `<p>${esc(x)}</p>`).join(""))}</div>
+        ${c.chant ? `<p class="ld-cheat-chant">${esc(c.chant)}</p>` : ""}
         ${renderToneTable(c.toneTable || {})}
       </div>
     `);
@@ -336,8 +404,17 @@ const LiveDead = (function () {
     const rows = t.rows || [];
     return `<table class="ld-tone-table">
       <thead><tr>${headers.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead>
-      <tbody>${rows.map(r => `<tr>${r.map(cell => `<td>${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
+      <tbody>${rows.map(r => `<tr>${r.map(cell => `<td>${toneCellHtml(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
     </table>`;
+  }
+
+  // A table cell that is a tone name gets its mark beside it, like the answer cards.
+  function toneCellHtml(cell) {
+    const names = copy("toneNames", {});
+    const t = Object.keys(names).find(k => names[k].th === cell);
+    if (!t) return esc(cell);
+    const mark = names[t].mark || "";
+    return `<span class="ld-tone-mark ld-cell-mark${mark ? "" : " is-empty"}">◌${esc(mark)}</span> ${esc(cell)}`;
   }
 
   function startLevel(n, forceIntro) {
@@ -391,8 +468,8 @@ const LiveDead = (function () {
   }
 
   function unlockedLevels(st) {
-    const firstUnpassed = [1,2,3,4,5,6].find(n => !(st.levels[n] && st.levels[n].passed)) || 6;
-    return [1,2,3,4,5,6].filter(n => (st.levels[n] && st.levels[n].passed) || n === firstUnpassed);
+    const firstUnpassed = [1,2,3,4,5,6,7].find(n => !(st.levels[n] && st.levels[n].passed)) || 7;
+    return [1,2,3,4,5,6,7].filter(n => (st.levels[n] && st.levels[n].passed) || n === firstUnpassed);
   }
 
   function beginSession(opts) {
@@ -409,6 +486,7 @@ const LiveDead = (function () {
       answered: false,
       shownAt: 0,
       current: null,
+      lastTableCombo: "",
       drag: null
     };
     lastTen = [];
@@ -432,6 +510,13 @@ const LiveDead = (function () {
     const cfg = LEVELS[level];
     const rule = pickRule(cfg.pool, st.rules || {}, b.byRule, Math.random);
     if (!rule) return null;
+    if (cfg.table) {
+      let table = buildTableItem(rule, Math.random);
+      for (let i = 0; i < 4 && table && tableCombo(table) === session.lastTableCombo; i++) table = buildTableItem(rule, Math.random);
+      if (!table) return null;
+      session.lastTableCombo = tableCombo(table);
+      return { level, cfg, rule, table, analysis: table };
+    }
     const item = pickWord(b.byRule[rule], lastTen, Math.random);
     if (!item) return null;
     lastTen.push(item.word.th);
@@ -454,9 +539,10 @@ const LiveDead = (function () {
   function renderDrill(feedback) {
     const item = session.current;
     const ui = copy("ui", {});
-    const hasAudio = typeof LiveDeadAudio !== "undefined" && LiveDeadAudio.has && LiveDeadAudio.has(item.word.th);
+    const table = item.cfg.table;
+    const hasAudio = !table && typeof LiveDeadAudio !== "undefined" && LiveDeadAudio.has && LiveDeadAudio.has(item.word.th);
     const countLabel = session.mode === "today" ? remainingLabel() : `${feedback ? session.idx : session.idx + 1}/${ROUND_SIZE}`;
-    const lifeClass = feedback ? (item.analysis.live ? " v-live" : " v-dead") : "";
+    const lifeClass = feedback && !table ? (item.analysis.live ? " v-live" : " v-dead") : "";
     paint(`
       <div class="ld-drill ${feedback ? "is-feedback" : ""}">
         <div class="ld-drill-top">
@@ -465,12 +551,13 @@ const LiveDead = (function () {
         </div>
         ${item.cfg.timer ? `<div class="ld-timer"><span id="ld-timer-fill"></span></div>` : ""}
         <main class="ld-card-wrap">
-          ${item.cfg.cls && !feedback ? `<div class="ld-class-chip">${esc(className(item.analysis.cls))}</div>` : ""}
-          <button class="ld-syllable ${hasAudio ? "has-audio" : ""}${lifeClass}" id="ld-syllable" aria-label="${hasAudio ? esc(ui.tapToHear || "Tap to hear it") : esc(item.word.th)}">
+          ${item.cfg.cls && !feedback ? renderClassChip(item.analysis.cls) : ""}
+          ${table && !feedback ? renderTablePrompt(item.table) : ""}
+          ${!table ? `<button class="ld-syllable ${hasAudio ? "has-audio" : ""}${lifeClass}" id="ld-syllable" aria-label="${hasAudio ? esc(ui.tapToHear || "Tap to hear it") : esc(item.word.th)}">
             ${feedback ? renderHighlighted(item.word.th, highlightSet(item.analysis, item.cfg.type)) : esc(item.word.th)}
-          </button>
+          </button>` : ""}
           ${hasAudio && !feedback ? `<div class="ld-audio-hint">${esc(ui.tapToHear || "Tap to hear it")}</div>` : ""}
-          ${item.cfg.rom && !feedback ? `<div class="ld-rom">${esc(item.word.rom || "")}</div><div class="ld-en">${esc(item.word.en || "")}</div>` : ""}
+          ${item.cfg.rom && !feedback && !table ? `<div class="ld-rom">${esc(item.word.rom || "")}</div><div class="ld-en">${esc(item.word.en || "")}</div>` : ""}
           ${feedback ? renderFeedback(feedback) : `<div class="ld-hint">${item.cfg.type === "life" ? esc(ui.swipeHint || "") : ""}</div>`}
         </main>
         ${renderControls(item.cfg.type, feedback)}
@@ -502,7 +589,47 @@ const LiveDead = (function () {
 
   function className(cls) {
     const names = copy("classNames", {});
-    return names[cls] || (cls ? cls + " class" : "");
+    const v = names[cls];
+    return v && typeof v === "object" ? v.th : (v || (cls ? cls + " class" : ""));
+  }
+
+  function classObj(cls) {
+    const names = copy("classNames", {});
+    const v = names[cls];
+    return v && typeof v === "object" ? v : { th: className(cls), en: cls ? cls + " class" : "" };
+  }
+
+  function lifeObj(life) {
+    const names = copy("lifeNames", {});
+    const v = names[life];
+    return v && typeof v === "object" ? v : { th: life === "live" ? copy("ui.liveTh", "คำเป็น") : copy("ui.deadTh", "คำตาย"), en: life || "" };
+  }
+
+  function lengthObj(length) {
+    const names = copy("lengthNames", {});
+    const v = names[length];
+    return v && typeof v === "object" ? v : { th: length || "", en: "" };
+  }
+
+  function renderClassChip(cls) {
+    const obj = classObj(cls);
+    return `<div class="ld-class-chip"><strong>${esc(obj.th)}</strong><small>${esc(obj.en || "")}</small></div>`;
+  }
+
+  function renderClueChip(kind, obj, shapeKind) {
+    return `<div class="ld-clue-chip ${esc(kind)}">
+      ${shapeKind ? shape(shapeKind) : ""}
+      <strong>${esc(obj.th || "")}</strong>
+      <small>${esc(obj.en || "")}</small>
+    </div>`;
+  }
+
+  function renderTablePrompt(table) {
+    return `<div class="ld-table-prompt">
+      ${renderClueChip("class", classObj(table.cls))}
+      ${renderClueChip(table.life, lifeObj(table.life), table.life)}
+      ${table.length ? renderClueChip("length", lengthObj(table.length)) : ""}
+    </div>`;
   }
 
   function renderControls(type, feedback) {
@@ -516,7 +643,16 @@ const LiveDead = (function () {
     }
     return `<div class="ld-controls ld-tone-controls">${TONES.map((t, i) => {
       const name = toneName(t);
-      return `<button class="ld-tone-btn" data-answer="${t}">${toneSvg(t)}<span>${i + 1}. ${esc(name.en)}</span><small>${esc(name.th)}</small></button>`;
+      // Mark + Thai name side by side for instant recognition. The mark stands for the
+      // SOUND (the กา ก่า ก้า ก๊า ก๋า chant); สามัญ has no mark, so it shows a bare ◌.
+      return `<button class="ld-tone-btn" data-answer="${t}" aria-label="เสียง${esc(name.th || "")}">
+        <span class="ld-tone-id">
+          <span class="ld-tone-mark${name.mark ? "" : " is-empty"}">◌${esc(name.mark || "")}</span>
+          <strong class="ld-tone-name">${esc(name.th || "")}</strong>
+        </span>
+        ${toneSvg(t)}
+        <small>${esc(name.rom || "")} · ${i + 1}</small>
+      </button>`;
     }).join("")}</div>`;
   }
 
@@ -527,7 +663,42 @@ const LiveDead = (function () {
 
   function toneName(t) {
     const names = copy("toneNames", {});
-    return names[t] || { en: t, th: "" };
+    return names[t] || { th: t, mark: "", rom: t, noMark: "ไม่มีรูป" };
+  }
+
+  function toneMarkText(t) {
+    const name = toneName(t);
+    return "◌" + (name.mark || "");
+  }
+
+  function toneLabel(t) {
+    return "เสียง" + (toneName(t).th || "");
+  }
+
+  // Same mark + name pairing as the answer cards, so the verdict is recognised at a glance.
+  function toneVerdictHtml(t) {
+    const name = toneName(t);
+    return `<span class="ld-tone-mark ld-verdict-mark${name.mark ? "" : " is-empty"}">${esc(toneMarkText(t))}</span><span class="ld-verdict-name">${esc(toneLabel(t))}</span>`;
+  }
+
+  function toneChain(toneKey, info) {
+    const key = stripTableKey(toneKey);
+    const spec = info || tableSpec(key) || {};
+    const cls = classObj(spec.cls).th;
+    const lifeKey = spec.life || (spec.live ? "live" : "dead");
+    const life = lifeObj(lifeKey).th;
+    const length = (key === "low-dead-short" || key === "low-dead-long") ? lengthObj(spec.length || (key === "low-dead-short" ? "short" : "long")).th : "";
+    const tone = toneName(spec.tone).th;
+    return [cls, life, length, "เสียง" + tone].filter(Boolean).join(" → ");
+  }
+
+  function exampleForTone(toneKey) {
+    const b = buildBank();
+    const words = (b.byRule && b.byRule[stripTableKey(toneKey)]) || [];
+    if (!words.length) return "";
+    const picked = words[Math.floor(Math.random() * words.length)];
+    if (!picked || !picked.word) return "";
+    return "e.g. " + (picked.word.th || "") + (picked.word.rom ? " (" + picked.word.rom + ")" : "");
   }
 
   function toneSvg(t) {
@@ -646,25 +817,37 @@ const LiveDead = (function () {
   function renderFeedback(fb) {
     const item = session.current;
     const life = item.cfg.type === "life";
-    const label = a => life ? copy("ui." + a, a === "live" ? "Live" : "Dead") : toneName(a).en;
+    const label = a => life ? copy("ui." + a, a === "live" ? "Live" : "Dead") : toneLabel(a);
     // Verdict always wears the answer's own colour and shape (amber/trailing = live,
     // teal/hard stop = dead); right/wrong is shown separately so colours never contradict.
     const verdictClass = life ? fb.correctAnswer : "tone";
     const result = fb.correct ? "Correct" : "Not quite. You picked " + label(fb.chosen) + ".";
     return `<div class="ld-feedback ${fb.correct ? "correct" : "wrong"}">
       <div class="ld-result">${esc(result)}</div>
-      <div class="ld-verdict ${verdictClass}">${life ? shape(fb.correctAnswer) : toneSvg(fb.correctAnswer)} <strong>${esc(label(fb.correctAnswer))}</strong></div>
+      <div class="ld-verdict ${verdictClass}">${life ? shape(fb.correctAnswer) : toneSvg(fb.correctAnswer)} <strong>${life ? esc(label(fb.correctAnswer)) : toneVerdictHtml(fb.correctAnswer)}</strong></div>
       <div class="ld-reason">${reasonHtml(item)}</div>
-      <div class="ld-en">${esc(item.word.rom || "")}${item.word.rom ? " · " : ""}${esc(item.word.en || "")}</div>
+      ${item.word ? `<div class="ld-en">${esc(item.word.rom || "")}${item.word.rom ? " · " : ""}${esc(item.word.en || "")}</div>` : ""}
     </div>`;
   }
 
   function reasonHtml(item) {
-    const liveReason = fill(copy("reasons." + item.analysis.ruleKey, fallbackReason(item.analysis)), reasonVars(item.analysis));
     if (item.cfg.type === "tone") {
-      const chain = copy("toneChains." + item.analysis.toneKey, "");
-      return `<p>${esc(chain)}</p><p>${esc(liveReason)}</p>`;
+      const table = item.cfg.table;
+      const toneKey = table ? item.table.toneKey : item.analysis.toneKey;
+      const tone = table ? item.table.tone : item.analysis.tone;
+      const parts = [
+        `<p class="ld-chain">${esc(toneChain(toneKey, table ? item.table : item.analysis))}</p>`,
+        `<p class="ld-rule">${esc(copy("toneRules." + toneKey, ""))}</p>`,
+        `<p class="ld-chant">${esc(fill(copy("ui.chantHint", "Sounds like {chant} in กา ก่า ก้า ก๊า ก๋า"), { chant: copy("chant." + tone, "") }))}</p>`
+      ];
+      if (table) parts.push(`<p class="ld-example">${esc(exampleForTone(toneKey))}</p>`);
+      else {
+        const liveReason = fill(copy("reasons." + item.analysis.ruleKey, fallbackReason(item.analysis)), reasonVars(item.analysis));
+        parts.push(`<p>${esc(liveReason)}</p>`);
+      }
+      return parts.join("");
     }
+    const liveReason = fill(copy("reasons." + item.analysis.ruleKey, fallbackReason(item.analysis)), reasonVars(item.analysis));
     return `<p>${esc(liveReason)}</p>`;
   }
 
@@ -803,12 +986,14 @@ const LiveDead = (function () {
   };
 
   function ruleName(k) {
-    return RULE_LABELS[k] || copy("toneChains." + k, k);
+    if (String(k).indexOf("table:") === 0) return "Table: " + toneChain(stripTableKey(k), tableSpec(k));
+    if (TONE_KEYS.indexOf(k) !== -1) return toneChain(k, tableSpec(k));
+    return RULE_LABELS[k] || k;
   }
 
   return {
     show: route,
-    _test: { pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress }
+    _test: { pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress, migrateState, buildTableItem }
   };
 })();
 

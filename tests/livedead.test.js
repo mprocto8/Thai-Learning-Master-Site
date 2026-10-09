@@ -1,5 +1,5 @@
 // tests/livedead.test.js
-// Pure logic under test: LiveDead._test.{ pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress }.
+// Pure logic under test: LiveDead._test.{ pickRule, pickWord, applyAnswer, evaluateRound, median, updateLevelProgress, migrateState, buildTableItem }.
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -32,7 +32,28 @@ const sandbox = {
   Audio: { playLiveDead() {} },
   Syllable: { analyze() { return null; } },
   LiveDeadData: { words: [] },
-  LiveDeadCopy: {},
+  LiveDeadCopy: {
+    classNames: {
+      mid: { th: "อักษรกลาง", en: "mid class" },
+      high: { th: "อักษรสูง", en: "high class" },
+      low: { th: "อักษรต่ำ", en: "low class" }
+    },
+    lifeNames: {
+      live: { th: "คำเป็น", en: "live" },
+      dead: { th: "คำตาย", en: "dead" }
+    },
+    lengthNames: {
+      short: { th: "สระสั้น", en: "short vowel" },
+      long: { th: "สระยาว", en: "long vowel" }
+    },
+    toneNames: {
+      mid: { th: "สามัญ", mark: "", rom: "saaman", noMark: "ไม่มีรูป" },
+      low: { th: "เอก", mark: "่", rom: "ek" },
+      falling: { th: "โท", mark: "้", rom: "tho" },
+      high: { th: "ตรี", mark: "๊", rom: "tri" },
+      rising: { th: "จัตวา", mark: "๋", rom: "jattawa" }
+    }
+  },
   LiveDeadAudio: { has() { return false; } },
   setTimeout,
   clearTimeout,
@@ -110,8 +131,9 @@ run("pickWord avoids last ten when an alternative exists", () => {
 run("evaluateRound qualifies by score and speed rules", () => {
   assert(t.evaluateRound(1, 11, 12, Array(12).fill(2400)).qualifies, "11/12 should qualify level 1");
   assert(!t.evaluateRound(1, 10, 12, Array(12).fill(1200)).qualifies, "10/12 should not qualify");
-  assert(t.evaluateRound(6, 11, 12, Array(12).fill(1999)).qualifies, "level 6 median under 2000 should qualify");
-  assert(!t.evaluateRound(6, 11, 12, Array(12).fill(2000)).qualifies, "level 6 median 2000 should not qualify");
+  assert(t.evaluateRound(6, 11, 12, Array(12).fill(2400)).qualifies, "level 6 slow median should still qualify");
+  assert(t.evaluateRound(7, 11, 12, Array(12).fill(1999)).qualifies, "level 7 median under 2000 should qualify");
+  assert(!t.evaluateRound(7, 11, 12, Array(12).fill(2000)).qualifies, "level 7 median 2000 should not qualify");
 });
 
 run("passing requires two qualifying rounds", () => {
@@ -125,4 +147,40 @@ run("passing requires two qualifying rounds", () => {
   result = t.updateLevelProgress(result.level, 1, 12, 12, Array(12).fill(1000));
   assert(result.level.good === 2, "second qualifying round increments good");
   assert(result.level.passed, "two qualifying rounds pass");
+});
+
+run("migrateState shifts old tone levels and preserves rules", () => {
+  const old = {
+    rules: { "mid-live": { box: 3, seen: 4, correct: 3, lastSeen: 99 } },
+    levels: {
+      1: { rounds: 1, good: 1, passed: false, best: 10, introSeen: true },
+      5: { rounds: 5, good: 2, passed: true, best: 12, introSeen: true },
+      6: { rounds: 6, good: 1, passed: false, best: 11, introSeen: true }
+    },
+    lastSession: { at: 1 }
+  };
+  const migrated = t.migrateState(old);
+  assert(migrated.version === 2, "version should be 2");
+  assert(migrated.rules["mid-live"].box === 3, "rules should be preserved");
+  assert(migrated.levels[5].rounds === 0 && !migrated.levels[5].passed && !migrated.levels[5].introSeen, "new level 5 should be fresh");
+  assert(migrated.levels[6].rounds === 5 && migrated.levels[6].passed, "old level 5 should move to level 6");
+  assert(migrated.levels[7].rounds === 6 && migrated.levels[7].best === 11, "old level 6 should move to level 7");
+  for (let i = 1; i <= 7; i++) assert(migrated.levels[i], "missing level " + i);
+});
+
+run("buildTableItem assigns length only where the table needs it", () => {
+  const midLive = t.buildTableItem("mid-live", () => 0);
+  const lowLive = t.buildTableItem("low-live", () => 0);
+  assert(midLive.life === "live" && midLive.length === null, "mid live should not have length");
+  assert(lowLive.life === "live" && lowLive.length === null, "low live should not have length");
+
+  const midDeadShort = t.buildTableItem("mid-dead", () => 0.1);
+  const midDeadLong = t.buildTableItem("mid-dead", () => 0.9);
+  const highDead = t.buildTableItem("high-dead", () => 0.9);
+  assert(midDeadShort.length === "short", "mid dead can show short length");
+  assert(midDeadLong.length === "long", "mid dead can show long length");
+  assert(highDead.length === "long", "high dead should always get a length chip");
+
+  assert(t.buildTableItem("low-dead-short", () => 0.9).length === "short", "low dead short should force short");
+  assert(t.buildTableItem("table:low-dead-long", () => 0.1).length === "long", "low dead long should force long");
 });

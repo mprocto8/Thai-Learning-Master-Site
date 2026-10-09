@@ -21,11 +21,12 @@ Owned by `js/livedead.js`, read/written only via `State.get().livedead` / `State
 ```
 {
   rules:  { [ruleKey|toneKey]: { box: 0-4, seen, correct, lastSeen /* epoch ms */ } },
-  levels: { 1..6: { rounds, good, passed, best, introSeen } },   // good = qualifying rounds (≥11/12; level 6 also median < 2000 ms); passed after 2
+  version: 2,   // v1 (6 levels) saves are migrated on load: old 5 → 6, old 6 → 7, fresh 5
+  levels: { 1..7: { rounds, good, passed, best, introSeen } },   // good = qualifying rounds (≥11/12; level 7 also median < 2000 ms); passed after 2
   lastSession: { at, mode: "level"|"today", level, score, total, medianMs } | null
 }
 ```
-ruleKeys: final-live, final-dead, open-long, open-short, hidden-ending, disguised-n, disguised-t, disguised-kp. toneKeys: mid-live, mid-dead, high-live, high-dead, low-live, low-dead-short, low-dead-long. Correct → box +1 (max 4), wrong → box 0. Item selection weights rules by `5 - box`. The Learn tab's card reads `levels[n].passed` and `lastSession`. Live/Dead does not touch `topicStats` or any other existing key; it does call `addXP` (3 per correct, 20 per completed level round) and `checkStreak`.
+ruleKeys: final-live, final-dead, open-long, open-short, hidden-ending, disguised-n, disguised-t, disguised-kp. toneKeys: mid-live, mid-dead, high-live, high-dead, low-live, low-dead-short, low-dead-long. Level 5 (Tone table) tracks the same seven with a `table:` prefix (e.g. `table:low-dead-long`), separately from reading words. Correct → box +1 (max 4), wrong → box 0. Item selection weights rules by `5 - box`. The Learn tab's card reads `levels[n].passed` and `lastSession`. Live/Dead does not touch `topicStats` or any other existing key; it does call `addXP` (3 per correct, 20 per completed level round) and `checkStreak`.
 
 ### Profile-only settings (premium, mirrored to settings_json on push)
 - `voicePreference` (string, "ploy" | "serafina" | null) — which voice to use for premium users. Set via `State.setVoicePreference(id)`; read via `State.getVoicePreference()`. Only meaningful when `isPremium()` is true; `js/audio.js` falls back to "serafina" for premium users with no preference and "ploy" for everyone else.

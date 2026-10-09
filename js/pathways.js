@@ -42,7 +42,7 @@ const Pathways = (() => {
       <section class="pathway-tier">
         <h2 class="pathway-tier-title">Reading drill</h2>
         <div class="pathway-cards">
-          <article class="pathway-card learn-pathway-card ${passed === 6 ? "completed" : ""}">
+          <article class="pathway-card learn-pathway-card ${passed === 7 ? "completed" : ""}">
             <div class="learn-pathway-main">
               <span class="pathway-icon">🔔</span>
               <div class="pathway-info">
@@ -52,9 +52,9 @@ const Pathways = (() => {
             </div>
             <div class="pathway-progress-row">
               <div class="pathway-progress-bar">
-                <div class="pathway-progress-fill" style="width:${Math.round(passed / 6 * 100)}%"></div>
+                <div class="pathway-progress-fill" style="width:${Math.round(passed / 7 * 100)}%"></div>
               </div>
-              <span class="pathway-progress-text">${passed}/6</span>
+              <span class="pathway-progress-text">${passed}/7</span>
             </div>
             <div class="learn-pathway-actions">
               <button class="btn btn-sm btn-primary" onclick="UI.navigate('#livedead')">${started ? "Continue" : "Start"} →</button>

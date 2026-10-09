@@ -329,7 +329,7 @@ Built on branch `feature/livedead` (not pushed, not merged) from the Live/Dead k
 - **`livedead` state is local-only.** The Supabase snapshot has no column for it, and adding one needs a schema migration, so it doesn't sync across devices yet.
 - **Font:** Noto Sans Thai Looped from Google Fonts. It's the first web font in the app, and system Thai fonts are the fallback.
 - **Feedback colors:** the verdict and the highlighted letter always use the answer's own color and shape (amber with a trailing line = live, teal with a hard stop = dead). Right or wrong appears as separate text ("Correct" / "Not quite. You picked …"), so the colors never contradict. On tone levels the initial consonant gets a dotted underline. A combining vowel (ี, ุ…) is highlighted together with its base consonant, because splitting them breaks Thai rendering. The reason text names the vowel itself.
-- **Reduced motion:** the level 6 timer bar fills instantly but still switches to its "slow" state at 2 s.
+- **Reduced motion:** the Speed read (level 7, was 6) timer bar fills instantly but still switches to its "slow" state at 2 s.
 - **Opus fixes to the Codex UI** (all verified at 390px and 1280px, dark and light):
   - Quit, Home and intro Back did nothing when the hash was already `#livedead`.
   - "Missed rules" printed placeholder debris.
@@ -376,3 +376,12 @@ After listening, delete any bad clips. Then:
 - `node scripts/generate-livedead-audio.js --manifest-only` switches on the clips that remain.
 - `node scripts/generate-livedead-audio.js --words=จะ --force` regenerates a single clip.
 - `node scripts/generate-livedead-audio.js --all --approved` generates the full set, about 260 more clips.
+
+### Tone update (Aaron's request, 2026-10-09)
+- **Tone answers use Thai, not English.** Each answer card shows the tone mark and the Thai tone name side by side (◌่ เอก, ◌้ โท, ◌๊ ตรี, ◌๋ จัตวา, and a bare ◌ for สามัญ). The mark stands for the SOUND, as in the chant กา ก่า ก้า ก๊า ก๋า; it is not a claim that the word carries that mark. The feedback verdict and the cheat-sheet table use the same pairing.
+- **New level 5, "Tone table":** no word, just clue chips (อักษรสูง · คำตาย · สระยาว) and you pick the tone, so the class × live/dead × length table can be memorised on its own. Mid- and high-class dead clues randomly include a length chip, to teach that length only matters for low-class dead syllables. Its boxes use `table:` keys. The old levels 5 and 6 are now 6 (Read the tone) and 7 (Speed read); saved progress migrates (state `version: 2`).
+- **The whole table is taught as three lines:** คำเป็น → สามัญ (except อักษรสูง → จัตวา); คำตาย → เอก (except อักษรต่ำ); อักษรต่ำ คำตาย: สระสั้น → ตรี, สระยาว → โท. Every tone feedback shows the Thai chain (e.g. อักษรต่ำ → คำตาย → สระยาว → เสียงโท) as the headline, then the rule line, the chant comparison and an example word. The length step appears only for low-class dead syllables.
+- Every cell of the Thai table was checked against `Syllable.analyze` over all 281 words: no mismatches.
+- Codex implemented the code (`handoff/codex-03-thai-tones.md`). Opus wrote the Thai teaching copy, put the mark and name together on one row, made the chain the visual headline, and added marks to the cheat-sheet table.
+- `js/livedead-audio.js` had been switched on (all 20 test clips) outside this session on 2026-10-02 19:32, after the listen-check handoff. It's committed as found. If that wasn't intended, empty the `words` array to switch audio off again.
+- The in-app browser pane's screenshots crop at 125% Windows display scaling, so the phone-width screenshots were taken with headless Chrome instead.
