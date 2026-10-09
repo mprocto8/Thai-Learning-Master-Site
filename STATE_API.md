@@ -8,6 +8,9 @@ lastPlayedDate: null   showScript: false     darkMode: true
 topicStats: {}         alphabetStats: {}     flashcardStats: {}
 speedBests: {}         onboarded: false      badges: []
 tutorialsSeen: {}      autoPlayAudio: true     autoAdvanceSentenceBuilder: false
+pathwayProgress: {}    pathwayMasteryMigrationVersion: 0    pathwayLegacyMigrationCount: 0
+lastActivePathway: null
+activeSession: null
 livedead: null
 
 ### Settings fields
@@ -15,6 +18,7 @@ livedead: null
 - `autoAdvancePatternPractice` (bool, default `false`) — when true, Pattern Practice automatically advances to the next prompt after the post-answer audio sequence (slot → word → sentence) finishes + 1s buffer. When false, the user must tap **Continue** or press space.
 
 - `autoAdvanceSentenceBuilder` (bool, default `false`) - when true, Sentence Builder automatically advances after the successful completion sentence audio finishes + a short buffer. When false, the completion screen waits for **Continue** or space.
+- `pauseBetweenActivities` (bool, default `false`) - when true, Guided Session transition screens wait for a user tap. When false, they auto-advance after ~1.5 seconds.
 
 ### Live/Dead drill (`livedead`, default `null`)
 Owned by `js/livedead.js`, read/written only via `State.get().livedead` / `State.set("livedead", obj)` (no dedicated methods). Initialised lazily on first visit. **Local-only:** not included in the Supabase push/pull snapshot, so it does not sync across devices yet. `resetAll()` clears it. Shape:
@@ -59,6 +63,19 @@ hasPlayedToday() → bool
 recordTopicRound(topicId, correct, total) → void
 getTopicMastery(topicId) → float 0-1
 
+### Pathway Mode Mastery
+recordModeRound(pathwayId, modeId, correct, total) → void — records one mode round for pattern pathways only. `modeId` is `"listen"`, `"patternPractice"`, or `"sentenceBuilder"`. Each round stores `{ correct, total, accuracy, timestamp }`.
+getPathwayMasteryStatus(pathwayId) → { modes, completedModes, totalModes, completedRounds, requiredRounds, percentComplete, mastered, strictMastered, legacyMastered, displayMastered } — strict mastery means all three modes have 3+ rounds at ≥80%; `displayMastered` is true for strict or preserved legacy mastery.
+isPathwayMastered(pathwayId) → bool — strict mastery only; true when Listen, Pattern Practice, and Sentence Builder are all mastered.
+getPathwayLegacyMigrationCount() → int — number of pathways marked `legacyMastered` during the one-time local migration.
+setLastActivePathway(pathwayId) → void — records the most recently started guided-session pathway as `{ pathwayId, timestamp }`.
+getLastActivePathway() → { pathwayId, timestamp }|null — returns the most recently started guided-session pathway, if any.
+saveActiveSession(session) → void — persists a guided-session snapshot `{ pathwayId, plan, sessionType, currentActivityIndex, currentRound, startedAt, lastInteractionAt, status }`.
+updateActiveSessionProgress(pathwayId, currentActivityIndex, currentRound) → void — updates the saved guided-session position and `lastInteractionAt`.
+getActiveSession() → obj|null — returns the saved guided-session snapshot, if present.
+clearActiveSession() → void — removes any saved guided-session snapshot.
+getPathwayRecentApplicationAccuracy(pathwayId) → { hasPriorRounds, averageAccuracy, roundCount } — averages the last ~3 Listen and Sentence Builder rounds for adaptive teaching-vs-review sessions.
+
 ### Alphabet
 recordAlphabetAnswer(char, correct) → void
 
@@ -71,8 +88,8 @@ getSpeedBest(topicId) → int
 setSpeedBest(topicId, score) → void — only saves if new high
 
 ### Pathways & Badges
-getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, nextTopic } — for IA v2 pattern pathways, `mastered/total` approximates mastered pairs from topic mastery while preserving existing topic-level progress.
-resetPathwayProgress(pathwayId) → void — deletes `topicStats` for the pathway's topic(s) and removes that pathway badge only. XP, streak, other topics, flashcard/audio data, and account settings are kept.
+getPathwayProgress(pathwayId) → { mastered, total, percentComplete, isComplete, strictMastered, legacyMastered, modeStatus, nextTopic } — for IA v2 pattern pathways, `mastered/total` is high-accuracy mode rounds out of 9 required rounds. `isComplete` includes preserved legacy mastery; `strictMastered` does not.
+resetPathwayProgress(pathwayId) → void — deletes `topicStats` and `pathwayProgress` for the pathway's topic(s) and removes that pathway badge only. XP, streak, other topics, flashcard/audio data, and account settings are kept.
 earnBadge(pathwayId) → void
 hasBadge(pathwayId) → bool
 

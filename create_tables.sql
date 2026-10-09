@@ -73,8 +73,12 @@ create table if not exists public.user_game_stats (
   speed_bests     jsonb not null default '{}'::jsonb,
   alphabet_stats  jsonb not null default '{}'::jsonb,
   tutorials_seen  jsonb not null default '{}'::jsonb,
+  pathway_progress jsonb not null default '{}'::jsonb,
   updated_at      timestamptz not null default now()
 );
+
+alter table public.user_game_stats
+  add column if not exists pathway_progress jsonb not null default '{}'::jsonb;
 
 -- ============================================================
 -- Row-level security

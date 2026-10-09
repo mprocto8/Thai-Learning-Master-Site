@@ -24,10 +24,10 @@
 | File | Globals | Depends on |
 |------|---------|------------|
 | js/supabase.js — Supabase SDK wrapper (ONLY file that touches the SDK) | SupabaseClient | @supabase/supabase-js (CDN) |
-| js/state.js — all persistence, XP, streaks, stats, auth, sync | State | SupabaseClient (optional) |
+| js/state.js — all persistence, XP, streaks, stats, auth, sync, and strict three-mode pathway mastery with legacy mastery migration | State | SupabaseClient (optional) |
 | js/ui.js — routing, render(), navigate(), nav/header bar, sync pill, toast | UI | State |
 | js/thai-time.js — Thai numeral/time/date generation | ThaiTime | nothing |
-| js/audio.js — TTS + MP3 playback wrapper (speak / playWord / playSentence / playSlot / playSentenceBuilderWord / playSentenceBuilderFull). Fires `speechSynthesis.speak()` and HTMLAudioElement `.play()` in the caller's gesture tick (iOS requirement). Resolves the active voice folder per call from State (free → ploy, premium → user preference / serafina). playWord/playSentence/playSlot return Promises that resolve on the audio element's `ended` event so callers can await a sequence. Fallback chain on missing/error: active voice → default voice (ploy) → TTS. | Audio | TOPICS, State (for tier + voice preference), window.speechSynthesis |
+| js/audio.js — TTS + MP3 playback wrapper (speak / playWord / playSentence / playSlot / playSentenceBuilderWord / playSentenceBuilderFull / unlock / isUnlocked). Fires `speechSynthesis.speak()` and HTMLAudioElement `.play()` in the caller's gesture tick (iOS requirement). Resolves the active voice folder per call from State (free → ploy, premium → user preference / serafina). playWord/playSentence/playSlot return Promises that resolve on the audio element's `ended` event so callers can await a sequence. Fallback chain on missing/error: active voice → default voice (ploy) → TTS. `unlock()` primes browser audio from a user gesture for guided-session autoplay. | Audio | TOPICS, State (for tier + voice preference), window.speechSynthesis |
 
 ### Feature Modules (self-contained, never depend on each other)
 | File | Globals | Depends on |
@@ -39,8 +39,9 @@
 | js/clock.js — live analog + digital Thai clock | Clock | UI, ThaiTime |
 | js/time-game.js — tell-the-time quiz | TimeGame | State, UI, ThaiTime |
 | js/tone-trainer.js — 5 Thai tones: browse + quiz | ToneTrainer | State, UI |
-| js/sentence-builder.js — word arrangement game | SentenceBuilder | State, UI, SENTENCES |
-| js/pathways.js — Learn tab with a "Reading drill" card for Live or Dead (reads `State.get().livedead` for levels passed) above the Tier 1-5 pattern pathways, status badges, pair-count progress, and replay for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
+| js/sentence-builder.js — word arrangement game; records pattern-tagged Sentence Builder mastery rounds | SentenceBuilder | State, UI, SENTENCES |
+| js/session.js — guided pathway session controller with intro, transitions, completion, and three-mode orchestration | Session | State, UI, PATHWAYS, TOPICS, PatternPractice, ListenChoose, SentenceBuilder |
+| js/pathways.js — Learn tab with a "Reading drill" card for Live or Dead (reads `State.get().livedead` for levels passed) above the Tier 1-5 pattern pathways, strict per-mode progress, legacy mastery indicators, pathway detail view, and restart for mastered pathways | Pathways | State, UI, PATHWAYS, TOPICS |
 | js/practice-hub.js — Library tab with Script group, tools, and topic launcher | PracticeHub | State, UI, TOPICS, alphabet data |
 | js/topic-detail.js - topic review screen with item list, pair audio, and mode launchers | TopicDetail | State, UI, TOPICS, Audio |
 | js/typing-challenge.js — type the romanized Thai (active recall) | TypingChallenge | State, UI, TOPICS |
@@ -54,7 +55,7 @@
 ### App Shell
 | File | Globals | Depends on |
 |------|---------|------------|
-| js/app.js — Home v2 dashboard, onboarding, settings, routes | App | State, UI, all modules |
+| js/app.js — Home v2 dashboard, onboarding, settings, routes; "You Can Now" reflects strict and legacy pathway mastery | App | State, UI, all modules |
 
 ### Styles
 | File | Purpose |
@@ -79,13 +80,16 @@
 | audio/ploy/, audio/serafina/ | Pre-generated MP3 output, split by voice. Free users hear Ploy; premium users hear Serafina (or whichever voice they pick in Settings). Naming: `{topicId}-{i}-word.mp3`, `{topicId}-{i}-sentence.mp3`, for pattern topics `{topicId}-{i}-slot-{slotIdx}.mp3`, and for Sentence Builder `sentence-{exerciseIdx}-word-{wordIdx}.mp3` + `sentence-{exerciseIdx}-full.mp3` (where `exerciseIdx` is the SENTENCES array position). Committed so the app loads them with no extra build step. |
 
 ## Script Load Order
-@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/syllable.js → js/livedead-data.js → js/livedead-copy.js → js/livedead-audio.js → js/livedead.js → js/app.js
+@supabase/supabase-js CDN → data/* → js/supabase.js → js/state.js → js/ui.js → js/thai-time.js → js/audio.js → feature modules → js/syllable.js → js/livedead-data.js → js/livedead-copy.js → js/livedead-audio.js → js/livedead.js → js/session.js → js/app.js
 
 ## IA v2 Tab Structure
 - Home (`#home`, legacy `#dashboard`) — focused dashboard with one primary pathway session CTA, capabilities, quick review/daily actions, and Word of the Day.
-- Learn (`#learn`, legacy `#pathways`) — a "Reading drill" card (Live or Dead, `#livedead`) above the Tier 1-5 pattern pathways. Completed pathways can be replayed, which resets mastery for that pathway only.
+- Learn (`#learn`, legacy `#pathways`) — a "Reading drill" card (Live or Dead, `#livedead`) above the Tier 1-5 pattern pathways. `#pathway/{id}` opens pathway details. Completed pathways can be restarted, which resets mastery for that pathway only.
 - Library (`#library`, legacy `#practice`) — topic library and tools. Script learning now appears as the top Library group and routes to the existing Script/Tone screens.
 - Settings (`#settings`) — unchanged.
+
+## Pathway Mastery
+Pattern pathways use strict three-mode mastery. A pathway is strictly mastered only after Listen, Pattern Practice, and Sentence Builder each have 3+ rounds at 80%+ accuracy in `State.pathwayProgress`. Existing old-rule completions are preserved with `legacyMastered: true` during the one-time State migration and display as `Mastered ★`.
 
 ## Auth & Sync (optional layer)
 - Supabase provides email/password auth + cross-device progress sync.

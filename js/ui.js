@@ -4,6 +4,16 @@
 const UI = (() => {
   const app = () => document.getElementById("app");
 
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   /* Simple hash-based router */
   let _routes = {};
 
@@ -13,10 +23,10 @@ const UI = (() => {
 
   function navigate(hash) {
     // QOL 6: save scroll position when leaving home/dashboard
-    if (["#dashboard", "#home"].includes(window.location.hash || "#dashboard") && typeof App !== "undefined") {
+    if (["#dashboard", "#home"].includes(window.location.hash || "#home") && typeof App !== "undefined") {
       App.saveDashScroll();
     }
-    const current = window.location.hash || "#dashboard";
+    const current = window.location.hash || "#home";
     if (current === hash) {
       // hashchange won't fire when the hash doesn't change. This matters when
       // a screen was rendered ad-hoc (e.g. Mistake Review launched from the
@@ -122,13 +132,13 @@ const UI = (() => {
   function handleRoute() {
     // Run cleanup from previous route
     if (_cleanupFn) { _cleanupFn(); _cleanupFn = null; }
-    const hash = window.location.hash || "#dashboard";
+    const hash = window.location.hash || "#home";
     const baseHash = hash.split("/")[0].split("?")[0];
     const route = _routes[hash] || _routes[baseHash];
     if (route) {
       route();
     } else {
-      _routes["#dashboard"]();
+      _routes["#home"]();
     }
   }
 
@@ -163,14 +173,16 @@ const UI = (() => {
     const s = State.get();
     const name = s.userName || "Learner";
     const initial = (name.trim()[0] || "?").toUpperCase();
+    const safeName = escapeHtml(name);
+    const safeInitial = escapeHtml(initial);
     const progress = State.getLevelProgress();
     const level = State.getLevel();
     return `
       <div class="user-header">
         <div class="user-header-identity">
-          <div class="user-avatar" title="${level.name} — ${s.xp} XP">${initial}</div>
+          <div class="user-avatar" title="${level.name} — ${s.xp} XP">${safeInitial}</div>
           <div class="user-header-info">
-            <div class="user-header-name">${name}</div>
+            <div class="user-header-name">${safeName}</div>
             <div class="user-header-xp">
               <div class="user-header-xp-fill" style="width:${progress * 100}%"></div>
             </div>

@@ -21,6 +21,7 @@ const ListenChoose = (() => {
   let isActive = false;
 
   let rate = DEFAULT_RATE;
+  let sessionOptions = null;
   // iOS Safari blocks speechSynthesis until the user has tapped something in
   // the round. We gate autoplay on this so Q1 waits for a tap; Q2+ autoplay.
   let hasInteractedThisRound = false;
@@ -45,9 +46,19 @@ const ListenChoose = (() => {
     else Audio.speak(pair.script);
   }
 
-  function start(topicId) {
+  function start(topicId, options) {
+    sessionOptions = options && options.sessionMode ? options : null;
     topic = TOPICS.find(t => t.id === topicId);
-    if (!topic) { UI.navigate("#dashboard"); return; }
+    if (!topic) {
+      if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+        const callback = sessionOptions.onComplete;
+        sessionOptions = null;
+        callback({ correct: 0, total: 0, accuracy: 0, unavailable: true });
+      } else {
+        UI.navigate("#library");
+      }
+      return;
+    }
 
     const shuffled = [...topic.pairs].sort(() => Math.random() - 0.5);
     queue = shuffled.slice(0, Math.min(ROUND_SIZE, shuffled.length));
@@ -59,13 +70,14 @@ const ListenChoose = (() => {
     xpEarned = 0;
     answered = false;
     isActive = true;
-    hasInteractedThisRound = false;
+    hasInteractedThisRound = !!(sessionOptions && sessionOptions.audioUnlocked);
     nextPrompt();
   }
 
   /** Quick Listen — 10 random pairs pulled from all played topics.
    *  Fallback: greetings-phrases for brand-new users. */
   function startQuick() {
+    sessionOptions = null;
     const s = State.get();
     const playedIds = Object.keys(s.topicStats || {}).filter(id => {
       const ts = s.topicStats[id];
@@ -83,7 +95,7 @@ const ListenChoose = (() => {
       }
     }
 
-    if (pool.length === 0) { UI.navigate("#dashboard"); return; }
+    if (pool.length === 0) { UI.navigate("#home"); return; }
 
     // Synthetic topic so existing render/record paths keep working.
     topic = {
@@ -139,6 +151,8 @@ const ListenChoose = (() => {
           <h2>🎧 ${topic.emoji} ${topic.label}</h2>
           <div class="listen-progress-count">${idx + 1} / ${queue.length}</div>
         </div>
+
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="listen-progress">
           <div class="listen-progress-bar" style="width:${(idx / queue.length) * 100}%"></div>
@@ -251,6 +265,15 @@ const ListenChoose = (() => {
     const total = correct + wrong;
     const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
     State.recordTopicRound(topic.id, correct, total);
+    if (topic.type === "pattern") {
+      State.recordModeRound(topic.id, "listen", correct, total);
+    }
+    if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+      const callback = sessionOptions.onComplete;
+      sessionOptions = null;
+      callback({ correct, total, accuracy });
+      return;
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
@@ -279,7 +302,7 @@ const ListenChoose = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="ListenChoose.start('${topic.id}')">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Back to Topics</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
@@ -291,7 +314,7 @@ const ListenChoose = (() => {
     UI.render(`
       <div class="listen-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="${canReturn ? 'ListenChoose.resumeRound()' : "UI.navigate('#dashboard')"}">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${canReturn ? 'ListenChoose.resumeRound()' : "UI.navigate('#library')"}">← Library</button>
           <h2>🎧 Listen &amp; Choose</h2>
           <div></div>
         </div>
@@ -308,7 +331,7 @@ const ListenChoose = (() => {
           <div class="round-actions">
             ${canReturn
               ? `<button class="btn btn-primary" onclick="ListenChoose.resumeRound()">Back to round</button>`
-              : `<button class="btn btn-primary" onclick="UI.navigate('#dashboard')">Back to Dashboard</button>`}
+              : `<button class="btn btn-primary" onclick="UI.navigate('#library')">Back to Library</button>`}
           </div>
         </div>
       </div>
@@ -321,13 +344,15 @@ const ListenChoose = (() => {
 
   function resumeRound() {
     if (isActive && queue.length > 0) renderPrompt();
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function quit() {
     isActive = false;
     Audio.cancel();
-    UI.navigate("#dashboard");
+    const wasSession = !!sessionOptions;
+    sessionOptions = null;
+    UI.navigate(wasSession ? "#home" : "#library");
   }
 
   return { start, startQuick, answer, playAgain, setRate, continueNext, quit, showAudioHelp, resumeRound };

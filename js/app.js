@@ -33,6 +33,16 @@ const App = (() => {
     'polite-request': 'Make polite requests'
   };
 
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   function _topicType(t) {
     return t.type || "vocabulary";
   }
@@ -46,6 +56,7 @@ const App = (() => {
     UI.registerRoute("#home", renderDashboard);
     UI.registerRoute("#pathways", () => Pathways.show());
     UI.registerRoute("#learn", () => Pathways.show());
+    UI.registerRoute("#pathway", routePathway);
     UI.registerRoute("#practice", () => PracticeHub.show());
     UI.registerRoute("#library", () => PracticeHub.show());
     UI.registerRoute("#topic", routeTopic);
@@ -67,6 +78,7 @@ const App = (() => {
     UI.registerRoute("#listen-quick", () => ListenChoose.startQuick());
     UI.registerRoute("#pattern", routePattern);
     UI.registerRoute("#livedead", () => LiveDead.show());
+    UI.registerRoute("#session", routeSession);
 
     // Initialize Supabase and attempt to restore a session. Non-blocking —
     // the app boots immediately in guest mode; the header bar updates once
@@ -107,13 +119,14 @@ const App = (() => {
       }).catch(e => console.warn("[App] session restore failed:", e));
     }
 
-    // `L` on dashboard → today's listening practice.
+    // `L` on home/dashboard → today's listening practice.
     document.addEventListener("keydown", e => {
       if (e.key !== "l" && e.key !== "L") return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       if (tag === "input" || tag === "textarea" || document.activeElement?.isContentEditable) return;
-      if ((window.location.hash || "#dashboard") !== "#dashboard") return;
+      const currentHash = window.location.hash || "#home";
+      if (!["#home", "#dashboard"].includes(currentHash)) return;
       e.preventDefault();
       startTodayListen();
     });
@@ -230,16 +243,7 @@ const App = (() => {
   }
 
   function getCurrentPathwaySession() {
-    const pathways = (typeof PATHWAYS !== "undefined" ? PATHWAYS : []).filter(p => !p.usesAlphabet && p.topics && p.topics.length);
-    const started = pathways.find(p => {
-      const prog = State.getPathwayProgress(p.id);
-      const hasProgress = prog.mastered > 0 || p.topics.some(topicId => {
-        const ts = State.get().topicStats[topicId];
-        return ts && ts.played > 0;
-      });
-      return hasProgress && !prog.isComplete;
-    });
-    const target = started || pathways.find(p => !State.getPathwayProgress(p.id).isComplete) || pathways[pathways.length - 1];
+    const target = Session.resolveCurrentPathway ? Session.resolveCurrentPathway() : null;
     if (!target) return null;
     const prog = State.getPathwayProgress(target.id);
     const nextTopicId = prog.nextTopic || target.topics[0];
@@ -247,21 +251,58 @@ const App = (() => {
     return {
       pathway: target,
       topic,
-      route: topic ? getTopicRoute(topic.id) : "#learn",
+      route: "#session/" + target.id,
       isReplay: prog.isComplete,
       progress: prog
     };
   }
 
   function getHomeCapabilities() {
-    const items = Object.keys(CAPABILITY_MAP).map(topicId => {
-      const mastery = State.getTopicMastery(topicId);
+    const items = (typeof PATHWAYS !== "undefined" ? PATHWAYS : []).map(pathway => {
+      const topicId = pathway.topics && pathway.topics[0];
       const topic = TOPICS.find(t => t.id === topicId);
-      return { topicId, topic, label: CAPABILITY_MAP[topicId], done: mastery >= 0.7 };
+      const status = State.getPathwayMasteryStatus(pathway.id);
+      return {
+        pathwayId: pathway.id,
+        topicId,
+        topic,
+        label: CAPABILITY_MAP[pathway.id] || pathway.label,
+        strictMastered: status.strictMastered,
+        legacyMastered: status.legacyMastered,
+        done: status.displayMastered
+      };
     }).filter(item => item.topic);
     const completed = items.filter(item => item.done);
     const next = items.find(item => !item.done);
     return { completed, next };
+  }
+
+  function renderHomeCapability(item) {
+    const legacy = item.legacyMastered && !item.strictMastered;
+    return `
+      <div class="home-capability home-capability-link done ${legacy ? 'legacy' : 'strict'}"
+        onclick="UI.navigate('#pathway/${item.pathwayId}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${item.pathwayId}');}">
+        <span class="home-capability-icon">&#10003;</span>
+        <span class="home-capability-label">${item.label}</span>
+        ${legacy ? '<span class="home-capability-legacy">★</span>' : ''}
+        <span class="home-capability-arrow">&rarr;</span>
+      </div>
+    `;
+  }
+
+  function renderHomeNextCapability(item) {
+    return `
+      <div class="home-capability home-capability-link next"
+        onclick="UI.navigate('#pathway/${item.pathwayId}')"
+        role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();UI.navigate('#pathway/${item.pathwayId}');}">
+        <span class="home-capability-icon">&rarr;</span>
+        <span class="home-capability-label">${item.label}</span>
+        <span class="home-capability-arrow">&rarr;</span>
+      </div>
+    `;
   }
 
   function renderDashboard() {
@@ -279,7 +320,7 @@ const App = (() => {
 
         <div class="dash-header home-v2-header">
           <div class="dash-greeting">
-            <h1>สวัสดี ${s.userName || "Learner"}</h1>
+            <h1>สวัสดี ${escapeHtml(s.userName || "Learner")}</h1>
             <p class="dash-subtitle">${getGreeting()}</p>
           </div>
           <div class="home-streak-strip">🔥 ${s.streak || 0} day streak · Day ${dayNumber}</div>
@@ -303,7 +344,7 @@ const App = (() => {
               <span class="home-session-label">TODAY'S SESSION</span>
               <span class="home-session-time">~10 min</span>
             </div>
-            <h2>${session.isReplay ? "Replay" : "Continue"} ${session.pathway.label}</h2>
+            <h2>${session.isReplay ? "Restart" : "Continue"} ${session.pathway.label}</h2>
             <p>${session.topic ? `Next up: ${session.topic.label}. Build the pattern, hear it, then lock it in.` : "Pick up the next guided step in Learn."}</p>
             <button class="btn btn-primary home-session-button" onclick="event.stopPropagation();UI.navigate('${session.route}')">Start session →</button>
           </section>
@@ -312,23 +353,13 @@ const App = (() => {
         <section class="home-capabilities-card">
           <div class="home-card-label">YOU CAN NOW</div>
           <div class="home-capability-list">
-            ${capabilities.completed.length ? capabilities.completed.map(item => `
-              <div class="home-capability done">
-                <span class="home-capability-icon">✓</span>
-                <span>${item.label}</span>
-              </div>
-            `).join("") : `
+            ${capabilities.completed.length ? capabilities.completed.map(renderHomeCapability).join("") : `
               <div class="home-capability muted">
                 <span class="home-capability-icon">·</span>
                 <span>Start your first pathway to unlock capabilities</span>
               </div>
             `}
-            ${capabilities.next ? `
-              <div class="home-capability next">
-                <span class="home-capability-icon">→</span>
-                <span>${capabilities.next.label}</span>
-              </div>
-            ` : ''}
+            ${capabilities.next ? renderHomeNextCapability(capabilities.next) : ''}
           </div>
         </section>
 
@@ -490,49 +521,61 @@ const App = (() => {
   function routeGame() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Game.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeTopic() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) TopicDetail.show(topicId);
-    else UI.navigate("#practice");
+    else UI.navigate("#library");
   }
 
   function routeFlashcard() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Flashcard.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeSpeed() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) Speed.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeTyping() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) TypingChallenge.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routeListen() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
     if (topicId) ListenChoose.start(topicId);
-    else UI.navigate("#dashboard");
+    else UI.navigate("#library");
   }
 
   function routePattern() {
     const topicId = (window.location.hash.split("/")[1] || "").split("?")[0];
-    if (!topicId) { UI.navigate("#dashboard"); return; }
+    if (!topicId) { UI.navigate("#library"); return; }
     const t = TOPICS.find(tp => tp.id === topicId);
     if (!t || _topicType(t) !== "pattern") {
       UI.toast("Pattern Practice is only available for pattern topics.", "info");
-      UI.navigate("#practice");
+      UI.navigate("#library");
       return;
     }
     PatternPractice.start(topicId);
+  }
+
+  function routePathway() {
+    const pathwayId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (!pathwayId) { UI.navigate("#learn"); return; }
+    Pathways.showDetails(pathwayId);
+  }
+
+  function routeSession() {
+    const pathwayId = (window.location.hash.split("/")[1] || "").split("?")[0];
+    if (pathwayId) Session.start(pathwayId);
+    else Session.startNext();
   }
 
   /* Settings */
@@ -551,7 +594,7 @@ const App = (() => {
         <div class="settings-list">
           <div class="setting-item">
             <label>Your Name</label>
-            <input type="text" id="setting-name" value="${s.userName}" maxlength="20"
+            <input type="text" id="setting-name" maxlength="20"
               onchange="App.updateName(this.value)" />
           </div>
 
@@ -597,6 +640,15 @@ const App = (() => {
             <div class="setting-hint">When off, tap Continue (or press space) after each completed sentence.</div>
           </div>
 
+          <div class="setting-item">
+            <label>Pause between activities</label>
+            <div class="toggle-group">
+              <button class="btn btn-sm ${s.pauseBetweenActivities ? 'btn-active' : ''}" onclick="App.togglePauseBetweenActivities(true)">On</button>
+              <button class="btn btn-sm ${!s.pauseBetweenActivities ? 'btn-active' : ''}" onclick="App.togglePauseBetweenActivities(false)">Off</button>
+            </div>
+            <div class="setting-hint">When off, guided sessions continue automatically after transitions.</div>
+          </div>
+
           ${renderVoiceSection(s)}
 
           ${renderAccountSection(s)}
@@ -631,6 +683,9 @@ const App = (() => {
         </div>
       </div>
     `);
+
+    const nameInput = document.getElementById("setting-name");
+    if (nameInput) nameInput.value = s.userName || "";
   }
 
   function updateName(name) {
@@ -660,6 +715,11 @@ const App = (() => {
 
   function toggleSentenceBuilderAutoAdvance(on) {
     State.set("autoAdvanceSentenceBuilder", !!on);
+    renderSettings();
+  }
+
+  function togglePauseBetweenActivities(on) {
+    State.set("pauseBetweenActivities", !!on);
     renderSettings();
   }
 
@@ -840,7 +900,7 @@ const App = (() => {
           </div>
 
           <div class="login-guest">
-            <a href="#dashboard" onclick="event.preventDefault();App.continueAsGuest()">Continue as guest →</a>
+            <a href="#home" onclick="event.preventDefault();App.continueAsGuest()">Continue as guest →</a>
             <p class="login-guest-hint">Guest progress stays on this device only.</p>
           </div>
         </div>
@@ -874,7 +934,7 @@ const App = (() => {
         await State.login(email, password);
       }
       UI.toast("Signed in!", "info");
-      UI.navigate("#dashboard");
+      UI.navigate("#home");
     } catch (e) {
       const msg = (e && e.message) ? e.message : "Something went wrong.";
       if (errEl) { errEl.textContent = msg; errEl.style.display = "block"; }
@@ -883,7 +943,7 @@ const App = (() => {
   }
 
   function continueAsGuest() {
-    UI.navigate("#dashboard");
+    UI.navigate("#home");
   }
 
   /* ------------------------------------------------------------
@@ -995,7 +1055,7 @@ const App = (() => {
       await State.updatePassword(pw);
       State.clearRecoveryMode();
       UI.toast("Password updated!", "info");
-      UI.navigate("#dashboard");
+      UI.navigate("#home");
     } catch (e) {
       const msg = (e && e.message) ? e.message : "Something went wrong.";
       // Most common failure: the recovery link expired or was reused.
@@ -1017,7 +1077,7 @@ const App = (() => {
   return {
     init, completeOnboarding, updateName, setScript, setTheme,
     confirmReset, reviewMistakes, flipWotd, playWotd, setTopicView, saveDashScroll,
-    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, setVoice, toggleDashSection,
+    startTodayListen, toggleAutoPlay, togglePatternAutoAdvance, toggleSentenceBuilderAutoAdvance, togglePauseBetweenActivities, setVoice, toggleDashSection,
     // Auth
     submitLogin, switchLoginMode, continueAsGuest, confirmLogout,
     submitResetRequest, submitResetConfirm

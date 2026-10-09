@@ -18,8 +18,12 @@ const SentenceBuilder = (() => {
   let completedInRound = new Set();
   let completionShowing = false;
   let completionToken = 0;
+  let patternRoundStats = {};
+  let currentHadMistake = false;
+  let sessionOptions = null;
 
   function show() {
+    sessionOptions = null;
     currentSentence = null;
     completionShowing = false;
     completionToken++;
@@ -55,7 +59,7 @@ const SentenceBuilder = (() => {
             <div class="locked-icon">🔒</div>
             <h3>Unlock Sentence Builder</h3>
             <p>Master any vocabulary topic to 40% to unlock sentences using those words.</p>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Go Practice Vocabulary</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Go to Library</button>
           </div>
         `}
 
@@ -78,12 +82,30 @@ const SentenceBuilder = (() => {
     }
   }
 
-  function startRound() {
+  function start(pathwayId, options) {
+    sessionOptions = options && options.sessionMode ? options : null;
+    availableSentences = SENTENCES.filter(s => s.patternId === pathwayId);
+    if (availableSentences.length === 0) {
+      if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+        const callback = sessionOptions.onComplete;
+        sessionOptions = null;
+        callback({ correct: 0, total: 0, accuracy: 0, unavailable: true });
+      } else {
+        show();
+      }
+      return;
+    }
+    startRound(sessionOptions);
+  }
+
+  function startRound(options) {
+    if (options && options.sessionMode) sessionOptions = options;
     roundIndex = 0;
     roundCorrect = 0;
     roundTotal = 0;
     score = 0;
     completedInRound = new Set();
+    patternRoundStats = {};
     completionShowing = false;
     completionToken++;
     // Pick up to 8 random sentences
@@ -99,6 +121,7 @@ const SentenceBuilder = (() => {
 
     currentSentence = roundSentences[roundIndex];
     hintRevealed = false;
+    currentHadMistake = false;
     completionShowing = false;
     // Shuffle words — use indices to handle duplicate words
     shuffledWords = currentSentence.words.map((w, i) => ({ word: w, origIdx: i, placed: false }));
@@ -133,10 +156,12 @@ const SentenceBuilder = (() => {
     UI.render(`
       <div class="sb-active">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">← Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${sessionOptions ? "SentenceBuilder.quit()" : "SentenceBuilder.show()"}">${sessionOptions ? "Quit" : "Back"}</button>
           <h2>📝 Build</h2>
           <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
         </div>
+
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="flashcard-progress">
           <div class="flashcard-progress-bar" style="width:${(roundIndex / roundSentences.length) * 100}%"></div>
@@ -272,11 +297,19 @@ const SentenceBuilder = (() => {
       State.addXP(15);
       State.checkStreak();
       completedInRound.add(roundIndex);
+      if (currentSentence.patternId) {
+        if (!patternRoundStats[currentSentence.patternId]) {
+          patternRoundStats[currentSentence.patternId] = { correct: 0, total: 0 };
+        }
+        patternRoundStats[currentSentence.patternId].total += 1;
+        if (!currentHadMistake) patternRoundStats[currentSentence.patternId].correct += 1;
+      }
 
       // Animate success
       document.querySelectorAll(".sb-slot").forEach(s => s.classList.add("correct"));
       showCompletion();
     } else {
+      currentHadMistake = true;
       // Highlight wrong positions
       document.querySelectorAll(".sb-slot").forEach((slot, i) => {
         if (placedWords[i] && placedWords[i].word !== correctOrder[i]) {
@@ -309,10 +342,11 @@ const SentenceBuilder = (() => {
     UI.render(`
       <div class="sb-complete-screen">
         <div class="game-header">
-          <button class="btn btn-ghost back-btn" onclick="SentenceBuilder.show()">&larr; Back</button>
+          <button class="btn btn-ghost back-btn" onclick="${sessionOptions ? "SentenceBuilder.quit()" : "SentenceBuilder.show()"}">${sessionOptions ? "Quit" : "Back"}</button>
           <h2>&#128221; Build</h2>
           <span class="card-counter">${roundIndex + 1}/${roundSentences.length}</span>
         </div>
+        ${sessionOptions && typeof Session !== "undefined" ? Session.modeProgressHtml(sessionOptions.activityIndex || 0, sessionOptions.roundIndex || 0, sessionOptions.roundTotal || 1) : ""}
 
         <div class="flashcard-progress">
           <div class="flashcard-progress-bar" style="width:${((roundIndex + 1) / roundSentences.length) * 100}%"></div>
@@ -384,6 +418,18 @@ const SentenceBuilder = (() => {
     completionToken++;
     State.addXP(50);
     const accuracy = roundTotal > 0 ? Math.round((roundCorrect / roundTotal) * 100) : 0;
+    for (const patternId in patternRoundStats) {
+      const stats = patternRoundStats[patternId];
+      if (stats && stats.total > 0) {
+        State.recordModeRound(patternId, "sentenceBuilder", stats.correct, stats.total);
+      }
+    }
+    if (sessionOptions && typeof sessionOptions.onComplete === "function") {
+      const callback = sessionOptions.onComplete;
+      sessionOptions = null;
+      callback({ correct: roundCorrect, total: roundTotal, accuracy });
+      return;
+    }
     const streakMaintained = State.hasPlayedToday();
     const s = State.get();
 
@@ -412,12 +458,21 @@ const SentenceBuilder = (() => {
           </div>
           <div class="round-actions">
             <button class="btn btn-primary" onclick="SentenceBuilder.startRound()">Play Again</button>
-            <button class="btn btn-secondary" onclick="UI.navigate('#dashboard')">Dashboard</button>
+            <button class="btn btn-secondary" onclick="UI.navigate('#library')">Back to Library</button>
           </div>
         </div>
       </div>
     `);
   }
 
-  return { show, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer, replayCompletion, continueNext };
+  function quit() {
+    currentSentence = null;
+    completionShowing = false;
+    completionToken++;
+    sessionOptions = null;
+    Audio.cancel();
+    UI.navigate("#home");
+  }
+
+  return { show, start, setDisplay, startRound, selectWord, removeFromSlot, resetSentence, shuffleBank, revealHint, skipSentence, checkAnswer, replayCompletion, continueNext, quit };
 })();
